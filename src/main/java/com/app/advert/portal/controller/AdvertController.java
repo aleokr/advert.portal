@@ -1,7 +1,7 @@
 package com.app.advert.portal.controller;
 
-import com.app.advert.portal.mapper.UserMapper;
-import com.app.advert.portal.model.User;
+import com.app.advert.portal.mapper.AdvertMapper;
+import com.app.advert.portal.model.Advert;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -11,18 +11,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/adverts")
 @CrossOrigin
 @RequiredArgsConstructor
-public class UserController {
+public class AdvertController {
 
-    private final UserMapper userMapper;
+    private final AdvertMapper advertMapper;
 
-    @Operation(tags = {"User"}, description = "Return all users")
-	@GetMapping("/getAll")
-    public List<User> getAll() {
-        return userMapper.getAll();
+    @Operation(tags = {"Advert"}, description = "Return all adverts")
+    @GetMapping("/getAll")
+    public List<Advert> getAll() {
+        return advertMapper.getAll();
     }
 }
