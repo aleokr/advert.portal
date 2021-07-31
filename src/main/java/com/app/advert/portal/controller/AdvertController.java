@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/adverts")
+@RequestMapping("/api/v1/adverts")
 @CrossOrigin
 @RequiredArgsConstructor
 public class AdvertController {

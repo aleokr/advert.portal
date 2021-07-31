@@ -4,14 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+import java.util.List;
+
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
 
-    private long id;
+    private Long id;
 
     private String name;
 
@@ -23,5 +24,13 @@ public class User {
 
     private String password;
 
-    private Timestamp createdAt;
+    private List<Role> roles;
+
+    public User(String name, String surname, String email, String login, String password) {
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+        this.login = login;
+        this.password = password;
+    }
 }

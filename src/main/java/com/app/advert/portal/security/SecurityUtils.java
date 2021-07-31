@@ -1,0 +1,36 @@
+package com.app.advert.portal.security;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public final class SecurityUtils {
+
+    private final JwtTokenProperties jwtTokenProperties;
+
+    public String getSecretKey() {
+        return jwtTokenProperties.getSecretKey();
+    }
+
+    public Long getExpirationTime() {
+        return jwtTokenProperties.getExpirationTime();
+    }
+
+    public Long getRefreshExpirationTime() {
+        return jwtTokenProperties.getRefreshExpirationTime();
+    }
+
+    public static Long getLoggedUserId() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+
+        if (authentication != null && authentication.getPrincipal() != null) {
+            return ((UserPrincipal) authentication.getPrincipal()).getUserId();
+        }
+        return null;
+    }
+}

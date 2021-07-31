@@ -1,28 +1,31 @@
 package com.app.advert.portal.controller;
 
-import com.app.advert.portal.mapper.UserMapper;
 import com.app.advert.portal.model.User;
+import com.app.advert.portal.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 @CrossOrigin
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
-    private final UserMapper userMapper;
+    private final UserService userService;
 
-    @Operation(tags = {"User"}, description = "Return all users")
-	@GetMapping("/getAll")
-    public List<User> getAll() {
-        return userMapper.getAll();
+    @Operation(tags = {"User"}, description = "Get user by id")
+    @GetMapping("/{id}")
+//    @PreAuthorize("hasAnyRole('INDIVIDUAL_USER', 'COMPANY_USER')")
+    public ResponseEntity<User> getById(@PathVariable Long id) {
+        log.debug("UserController: Get user by id: " + id);
+        return ResponseEntity.ok().body(userService.getById(id));
     }
+
 }
