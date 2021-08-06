@@ -6,7 +6,7 @@ import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-//import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ public class UserManagementController {
 
     @GetMapping("/getAll")
     @Operation(tags = {"User management"}, description = "Get all users")
-//    @PreAuthorize("hasAnyRole('ROLE_INDIVIDUAL_USER', 'ROLE_COMPANY_USER')")
+    @PreAuthorize("hasAuthority('INDIVIDUAL_USER')")
     public List<User> getAll() {
         return userService.getAll();
     }
@@ -50,7 +50,7 @@ public class UserManagementController {
 
     @DeleteMapping("/deleteUser/{id}")
     @Operation(tags = {"User management"}, description = "Delete user")
-//    @PreAuthorize("hasAuthority('user:write')")
+    @PreAuthorize("hasAuthority('USER_WRITE')")
     public ResponseEntity<String> deleteUser(@PathVariable("id") Long userId) {
         try{
             if(!userId.equals(SecurityUtils.getLoggedUserId())){
@@ -67,7 +67,7 @@ public class UserManagementController {
 
     @PutMapping("/updateUser/{id}")
     @Operation(tags = {"User management"}, description = "Update user")
-//    @PreAuthorize("hasAuthority('user:write')")
+    @PreAuthorize("hasAuthority('USER_WRITE')")
     public ResponseEntity<String> updateUser(@PathVariable("id") Long userId, @RequestBody UserDto userDto) {
         try{
             log.debug("UserManagementController: Update user: " + userId);

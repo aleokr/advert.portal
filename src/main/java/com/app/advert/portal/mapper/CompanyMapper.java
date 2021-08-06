@@ -4,7 +4,6 @@ import com.app.advert.portal.model.Company;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
-
 @Mapper
 public interface CompanyMapper {
 

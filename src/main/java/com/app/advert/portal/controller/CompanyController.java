@@ -4,7 +4,7 @@ import com.app.advert.portal.mapper.UserMapper;
 import com.app.advert.portal.model.Company;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-//import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -17,7 +17,7 @@ public class CompanyController {
 
     @Operation(tags = {"Company"}, description = "Get company by id")
     @GetMapping("/{id}")
-//    @PreAuthorize("hasAnyRole('ROLE_INDIVIDUAL_USER, ROLE_COMPANY_USER')")
+    @PreAuthorize("hasAnyAuthority('INDIVIDUAL_USER, COMPANY_USER')")
     public Company getById(@PathVariable Integer id) {
         return new Company(id, "Firma", "Opis");
     }

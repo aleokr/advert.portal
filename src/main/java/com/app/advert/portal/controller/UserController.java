@@ -9,8 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
-
 @RestController
 @RequestMapping("/api/v1/users")
 @CrossOrigin
@@ -22,7 +20,7 @@ public class UserController {
 
     @Operation(tags = {"User"}, description = "Get user by id")
     @GetMapping("/{id}")
-//    @PreAuthorize("hasAnyRole('INDIVIDUAL_USER', 'COMPANY_USER')")
+    @PreAuthorize("hasAnyAuthority('INDIVIDUAL_USER', 'COMPANY_USER')")
     public ResponseEntity<User> getById(@PathVariable Long id) {
         log.debug("UserController: Get user by id: " + id);
         return ResponseEntity.ok().body(userService.getById(id));
