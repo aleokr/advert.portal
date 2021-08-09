@@ -18,9 +18,9 @@ public interface UserService {
 
     List<Role> getRolesByUserId(Long id);
 
-    void saveUser(UserDto userDto);
+    User saveUser(UserDto userDto);
 
-    void updateUser(UserDto userDto, Long userId);
+    User updateUser(UserDto userDto, Long userId);
 
     void deleteUser(Long userId);
 }

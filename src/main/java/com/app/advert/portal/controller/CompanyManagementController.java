@@ -1,8 +1,10 @@
 package com.app.advert.portal.controller;
 
 import com.app.advert.portal.model.Company;
+import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/management/api/v1/companies")
 @CrossOrigin
 @RequiredArgsConstructor
+@Api(value = "Company management Controller", produces = MediaType.APPLICATION_JSON_VALUE, tags = {"Company management"})
 public class CompanyManagementController {
 
     @PostMapping("/addCompany")

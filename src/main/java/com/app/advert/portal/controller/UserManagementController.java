@@ -4,8 +4,10 @@ import com.app.advert.portal.dto.UserDto;
 import com.app.advert.portal.model.User;
 import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.UserService;
+import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import java.util.List;
 @CrossOrigin
 @RequiredArgsConstructor
 @Slf4j
+@Api(value = "User management Controller", produces = MediaType.APPLICATION_JSON_VALUE, tags = {"User management"})
 public class UserManagementController {
 
     private final UserService userService;
@@ -32,18 +35,16 @@ public class UserManagementController {
 
     @PostMapping("/addUser")
     @Operation(tags = {"User management"}, description = "Register new user")
-    public ResponseEntity<String> registerNewUser(@RequestBody UserDto userDto) {
+    public ResponseEntity registerNewUser(@RequestBody UserDto userDto) {
         try{
             log.debug("UserManagementController: Register new user");
             User user = userService.getByUsername(userDto.getLogin());
             if (user != null) {
-                return new ResponseEntity<>("User with login " + user.getLogin() + " already exist", HttpStatus.BAD_REQUEST);
+                return ResponseEntity.unprocessableEntity().body("User with login " + user.getLogin() + " already exists");
             }
-
-            userService.saveUser(userDto);
-            return ResponseEntity.ok().body("User created!");
+            return ResponseEntity.ok().body(userService.saveUser(userDto));
         }catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
 
     }
@@ -60,21 +61,23 @@ public class UserManagementController {
             userService.deleteUser(userId);
             return ResponseEntity.ok().body("User deleted!");
         }catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
 
     }
 
     @PutMapping("/updateUser/{id}")
     @Operation(tags = {"User management"}, description = "Update user")
-    @PreAuthorize("hasAuthority('USER_WRITE')")
-    public ResponseEntity<String> updateUser(@PathVariable("id") Long userId, @RequestBody UserDto userDto) {
+    @PreAuthorize("hasAnyAuthority('USER_WRITE', 'COMPANY_USER')")
+    public ResponseEntity updateUser(@PathVariable("id") Long userId, @RequestBody UserDto userDto) {
         try{
+            if(!userId.equals(SecurityUtils.getLoggedUserId())){
+                return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
+            }
             log.debug("UserManagementController: Update user: " + userId);
-            userService.updateUser(userDto, userId);
-            return ResponseEntity.ok().body("User updated!");
+            return ResponseEntity.ok().body(userService.updateUser(userDto, userId));
         }catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 }

@@ -2,8 +2,10 @@ package com.app.advert.portal.controller;
 
 import com.app.advert.portal.model.User;
 import com.app.advert.portal.service.UserService;
+import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 @RequiredArgsConstructor
 @Slf4j
+@Api(value = "User Controller", produces = MediaType.APPLICATION_JSON_VALUE, tags = {"User"})
+
 public class UserController {
 
     private final UserService userService;

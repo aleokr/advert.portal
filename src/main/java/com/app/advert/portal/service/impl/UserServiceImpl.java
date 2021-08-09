@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -43,16 +44,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveUser(UserDto userDto) {
-        User user = new User(userDto.getName(), userDto.getSurname(), userDto.getEmail(), userDto.getLogin(), passwordEncoder.encode(userDto.getPassword()));
+    public User saveUser(UserDto userDto) {
+        User user = new User(null, userDto.getName(), userDto.getSurname(), userDto.getEmail(),
+                userDto.getLogin(), passwordEncoder.encode(userDto.getPassword()), null);
         userMapper.saveUser(user);
         userMapper.addRoleToUser(userDto.getUserRole().name(), user.getLogin());
+        return getByUsername(user.getLogin());
     }
 
     @Override
-    public void updateUser(UserDto userDto, Long userId) {
-        User user = new User(userDto.getName(), userDto.getSurname(), userDto.getEmail(), userDto.getLogin(), userDto.getPassword());
+    public User updateUser(UserDto userDto, Long userId) {
+        User user = new User(userDto.getName(), userDto.getSurname(), userDto.getEmail());
         userMapper.updateUser(user, userId);
+        return getById(userId);
     }
 
     @Override
