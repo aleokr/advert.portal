@@ -24,6 +24,8 @@ public class User {
 
     private String password;
 
+    private Long companyId;
+
     private List<Role> roles;
 
     public User(String name, String surname, String email) {

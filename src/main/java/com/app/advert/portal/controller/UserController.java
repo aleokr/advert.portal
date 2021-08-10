@@ -1,6 +1,5 @@
 package com.app.advert.portal.controller;
 
-import com.app.advert.portal.model.User;
 import com.app.advert.portal.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,9 +24,13 @@ public class UserController {
     @Operation(tags = {"User"}, description = "Get user by id")
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('INDIVIDUAL_USER', 'COMPANY_USER')")
-    public ResponseEntity<User> getById(@PathVariable Long id) {
-        log.debug("UserController: Get user by id: " + id);
-        return ResponseEntity.ok().body(userService.getById(id));
+    public ResponseEntity getById(@PathVariable Long id) {
+        try {
+            log.debug("UserController: Get user by id: " + id);
+            return ResponseEntity.ok().body(userService.getById(id));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e);
+        }
     }
 
 }

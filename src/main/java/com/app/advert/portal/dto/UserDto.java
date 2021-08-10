@@ -1,13 +1,11 @@
 package com.app.advert.portal.dto;
 
 import com.app.advert.portal.enums.UserRole;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Value
+@Builder
+@Getter
 public class UserDto {
 
     String name;
