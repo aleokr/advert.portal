@@ -10,14 +10,14 @@ import java.util.List;
 @Mapper
 public interface UserMapper {
 
-    @Select("SELECT id, name, surname, email, login, companyId from USERS where id=#{id}")
+    @Select("SELECT id, name, surname, email, login, company_id from USERS where id=#{id}")
     @Results(value = {
             @Result(property = "id", column = "id"),
             @Result(property = "name", column = "name"),
             @Result(property = "surname", column = "surname"),
             @Result(property = "email", column = "email"),
             @Result(property = "login", column = "login"),
-            @Result(property = "companyId", column = "companyId"),
+            @Result(property = "companyId", column = "company_id"),
             @Result(property = "roles", javaType = List.class, column = "id", many = @Many(select = "getRolesAndPermissionsByUserId"))})
     User getById(Long id);
 
@@ -56,4 +56,10 @@ public interface UserMapper {
 
     @Select("SELECT p.id, p.name FROM PERMISSIONS p JOIN ROLE_PERMISSION rp ON rp.permission_id = p.id WHERE rp.role_id=#{id}")
     Permission getPermissionByRoleId(Long id);
+
+    @Update("UPDATE USERS SET company_id = #{companyId} where id = #{userId}")
+    void addCompanyToUser(Long userId, Long companyId);
+
+    @Update("UPDATE USERS SET company_id = null where company_id = #{companyId}")
+    void deleteCompanyFromUsers(Long companyId);
 }
