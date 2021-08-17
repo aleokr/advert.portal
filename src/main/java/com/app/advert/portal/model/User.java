@@ -24,13 +24,13 @@ public class User {
 
     private String password;
 
+    private Long companyId;
+
     private List<Role> roles;
 
-    public User(String name, String surname, String email, String login, String password) {
+    public User(String name, String surname, String email) {
         this.name = name;
         this.surname = surname;
         this.email = email;
-        this.login = login;
-        this.password = password;
     }
 }
