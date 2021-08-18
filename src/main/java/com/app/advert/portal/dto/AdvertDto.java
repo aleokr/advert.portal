@@ -7,11 +7,14 @@ import lombok.Value;
 @Value
 @Builder
 @Getter
-public class CompanyDto {
+public class AdvertDto {
 
     Long id;
 
-    String name;
+    String title;
 
-    String description;
+    String shortDescription;
+
+    String longDescription;
+
 }

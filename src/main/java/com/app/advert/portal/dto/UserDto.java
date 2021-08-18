@@ -8,6 +8,8 @@ import lombok.*;
 @Getter
 public class UserDto {
 
+    Long id;
+
     String name;
 
     String surname;

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/management/api/v1/companies")
-@CrossOrigin
 @RequiredArgsConstructor
 @Slf4j
 @Api(value = "Company management Controller", produces = MediaType.APPLICATION_JSON_VALUE, tags = {"Company management"})
@@ -24,7 +23,7 @@ public class CompanyManagementController {
     @PostMapping("/addCompany")
     @Operation(tags = {"Company management"}, description = "Register new company")
     @PreAuthorize("hasAuthority('COMPANY_USER')")
-    public ResponseEntity registerNewCompany(@RequestBody CompanyDto companyDto){
+    public ResponseEntity<?> registerNewCompany(@RequestBody CompanyDto companyDto) {
         try {
             log.debug("CompanyController: Register new company");
             return companyService.saveCompany(companyDto);
@@ -36,7 +35,7 @@ public class CompanyManagementController {
     @DeleteMapping("/deleteCompany/{id}")
     @Operation(tags = {"Company management"}, description = "Delete company")
     @PreAuthorize("hasAuthority('COMPANY_WRITE')")
-    public ResponseEntity deleteCompany(@PathVariable("id") Long companyId){
+    public ResponseEntity<?> deleteCompany(@PathVariable("id") Long companyId) {
         try {
             log.debug("CompanyController: Delete company with id: " + companyId);
             return companyService.deleteCompany(companyId);
@@ -45,13 +44,13 @@ public class CompanyManagementController {
         }
     }
 
-    @PutMapping("/updateCompany/{id}")
+    @PutMapping("/updateCompany")
     @Operation(tags = {"Company management"}, description = "Update company")
     @PreAuthorize("hasAuthority('COMPANY_WRITE')")
-    public ResponseEntity updateCompany(@PathVariable("id") Long companyId, @RequestBody CompanyDto companyDto){
+    public ResponseEntity<?> updateCompany(@RequestBody CompanyDto companyDto) {
         try {
-            log.debug("CompanyController: Update company with id: " + companyId);
-            return companyService.updateCompany(companyDto, companyId);
+            log.debug("CompanyController: Update company with id: " + companyDto.getId());
+            return companyService.updateCompany(companyDto);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }

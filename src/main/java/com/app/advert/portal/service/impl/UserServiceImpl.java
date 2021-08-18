@@ -3,7 +3,6 @@ package com.app.advert.portal.service.impl;
 import com.app.advert.portal.dto.UserDto;
 import com.app.advert.portal.enums.UserRole;
 import com.app.advert.portal.mapper.UserMapper;
-import com.app.advert.portal.model.Role;
 import com.app.advert.portal.model.User;
 import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.UserService;
@@ -13,8 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 
 @Service
@@ -27,9 +24,9 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public ResponseEntity getById(Long id) {
+    public ResponseEntity<?> getById(Long id) {
         User user = userMapper.getById(SecurityUtils.getLoggedUserId());
-        if (user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.INDIVIDUAL_USER.name())) && user.getCompanyId() != id) {
+        if (user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.COMPANY_USER.name())) || !user.getId().equals(id)) {
             return ResponseEntity.badRequest().body("No access to resource");
         }
         return ResponseEntity.ok().body(userMapper.getById(id));
@@ -41,12 +38,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Role> getRolesByUserId(Long id) {
-        return userMapper.getRolesAndPermissionsByUserId(id);
-    }
-
-    @Override
-    public ResponseEntity saveUser(UserDto userDto) {
+    public ResponseEntity<?> saveUser(UserDto userDto) {
 
         User user = getByUsername(userDto.getLogin());
         if (user != null) {
@@ -62,22 +54,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity updateUser(UserDto userDto, Long userId) {
-
-        if(!userId.equals(SecurityUtils.getLoggedUserId())){
+    public ResponseEntity<?> updateUser(UserDto userDto) {
+        if (!userDto.getId().equals(SecurityUtils.getLoggedUserId())) {
             return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
         }
 
-        User user = new User(userDto.getName(), userDto.getSurname(), userDto.getEmail());
-        userMapper.updateUser(user, userId);
+        User user = new User(userDto.getId(), userDto.getName(), userDto.getSurname(), userDto.getEmail());
+        userMapper.updateUser(user);
 
-        return ResponseEntity.ok().body(userMapper.getById(userId));
+        return ResponseEntity.ok().body(userMapper.getById(user.getId()));
     }
 
     @Override
-    public ResponseEntity deleteUser(Long userId) {
-
-        if(!userId.equals(SecurityUtils.getLoggedUserId())){
+    public ResponseEntity<?> deleteUser(Long userId) {
+        if (!userId.equals(SecurityUtils.getLoggedUserId())) {
             return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
         }
 
