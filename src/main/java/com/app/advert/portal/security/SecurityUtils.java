@@ -33,4 +33,14 @@ public final class SecurityUtils {
         }
         return null;
     }
+
+    public static Long getLoggedCompanyId() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+
+        if (authentication != null && authentication.getPrincipal() != null) {
+            return ((UserPrincipal) authentication.getPrincipal()).getCompanyId();
+        }
+        return null;
+    }
 }

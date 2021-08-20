@@ -7,11 +7,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface CompanyService {
-    ResponseEntity getById(Long id);
 
-    ResponseEntity saveCompany(CompanyDto companyDto);
+    ResponseEntity<?> getById(Long id);
 
-    ResponseEntity updateCompany(CompanyDto companyDto, Long companyId);
+    ResponseEntity<?> saveCompany(CompanyDto companyDto);
 
-    ResponseEntity deleteCompany(Long companyId);
+    ResponseEntity<?> updateCompany(CompanyDto companyDto);
+
+    ResponseEntity<?> deleteCompany(Long companyId);
 }

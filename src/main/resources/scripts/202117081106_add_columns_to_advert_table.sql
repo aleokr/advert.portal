@@ -1,0 +1,6 @@
+--liquibase formatted sql
+--changeset aokrutny:170820211216
+ALTER TABLE ADVERTS ADD COLUMN archived BOOLEAN default false;
+ALTER TABLE ADVERTS ADD COLUMN user_id INTEGER NOT NULL;
+ALTER TABLE ADVERTS ADD CONSTRAINT f_user_id FOREIGN KEY (user_id) REFERENCES USERS(id);
+

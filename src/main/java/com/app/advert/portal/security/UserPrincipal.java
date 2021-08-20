@@ -18,6 +18,8 @@ public class UserPrincipal implements UserDetails {
 
     private Long userId;
 
+    private Long companyId;
+
     private Collection<? extends GrantedAuthority> authorities;
 
     public UserPrincipal(String username, String password, Long userId) {

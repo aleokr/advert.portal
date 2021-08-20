@@ -9,12 +9,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Advert {
 
-    private long id;
+    private Long id;
 
     private String title;
 
     private String shortDescription;
 
     private String longDescription;
+
+    private Long userId;
 
 }

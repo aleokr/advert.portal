@@ -24,16 +24,16 @@ public class CompanyServiceImpl implements CompanyService {
     private final UserMapper userMapper;
 
     @Override
-    public ResponseEntity getById(Long id) {
+    public ResponseEntity<?> getById(Long id) {
         User user = userMapper.getById(SecurityUtils.getLoggedUserId());
-        if (user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.INDIVIDUAL_USER.name())) && user.getCompanyId() != id) {
+        if (user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.INDIVIDUAL_USER.name())) && !user.getCompanyId().equals(id)) {
             return ResponseEntity.badRequest().body("No access to resource");
         }
         return ResponseEntity.ok().body(companyMapper.getById(id));
     }
 
     @Override
-    public ResponseEntity saveCompany(CompanyDto companyDto) {
+    public ResponseEntity<?> saveCompany(CompanyDto companyDto) {
         User user = userMapper.getById(SecurityUtils.getLoggedUserId());
 
         if (user.getCompanyId() != null || user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.COMPANY_USER.name()))) {
@@ -55,14 +55,14 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public ResponseEntity updateCompany(CompanyDto companyDto, Long companyId) {
+    public ResponseEntity<?> updateCompany(CompanyDto companyDto) {
         User user = userMapper.getById(SecurityUtils.getLoggedUserId());
 
-        if (!user.getCompanyId().equals(companyId) || user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.COMPANY_USER.name()))) {
+        if (!user.getCompanyId().equals(companyDto.getId()) || user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.COMPANY_USER.name()))) {
             return ResponseEntity.badRequest().body("No access to resource");
         }
         Company companyByName = companyMapper.getCompanyByName(companyDto.getName());
-        if (companyByName != null && !companyByName.getId().equals(companyId)) {
+        if (companyByName != null && !companyByName.getId().equals(companyDto.getId())) {
             return ResponseEntity.unprocessableEntity().body("Company with name " + companyDto.getName() + " already exists");
         }
 
@@ -70,13 +70,13 @@ public class CompanyServiceImpl implements CompanyService {
         company.setName(companyDto.getName());
         company.setDescription(companyDto.getDescription());
 
-        companyMapper.updateCompany(company, companyId);
+        companyMapper.updateCompany(company);
 
         return ResponseEntity.ok().body(companyMapper.getCompanyByName(company.getName()));
     }
 
     @Override
-    public ResponseEntity deleteCompany(Long companyId) {
+    public ResponseEntity<?> deleteCompany(Long companyId) {
         User user = userMapper.getById(SecurityUtils.getLoggedUserId());
 
         if (user.getCompanyId() != companyId || user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.COMPANY_USER.name()))) {

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/management/api/v1/users")
-@CrossOrigin
 @RequiredArgsConstructor
 @Slf4j
 @Api(value = "User management Controller", produces = MediaType.APPLICATION_JSON_VALUE, tags = {"User management"})
@@ -24,11 +23,11 @@ public class UserManagementController {
 
     @PostMapping("/addUser")
     @Operation(tags = {"User management"}, description = "Register new user")
-    public ResponseEntity registerNewUser(@RequestBody UserDto userDto) {
-        try{
+    public ResponseEntity<?> registerNewUser(@RequestBody UserDto userDto) {
+        try {
             log.debug("UserManagementController: Register new user");
             return userService.saveUser(userDto);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
 
@@ -37,24 +36,24 @@ public class UserManagementController {
     @DeleteMapping("/deleteUser/{id}")
     @Operation(tags = {"User management"}, description = "Delete user")
     @PreAuthorize("hasAuthority('USER_WRITE')")
-    public ResponseEntity deleteUser(@PathVariable("id") Long userId) {
-        try{
+    public ResponseEntity<?> deleteUser(@PathVariable("id") Long userId) {
+        try {
             log.debug("UserManagementController: Delete user: " + userId);
             return userService.deleteUser(userId);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
 
     }
 
-    @PutMapping("/updateUser/{id}")
+    @PutMapping("/updateUser")
     @Operation(tags = {"User management"}, description = "Update user")
     @PreAuthorize("hasAnyAuthority('USER_WRITE', 'COMPANY_USER')")
-    public ResponseEntity updateUser(@PathVariable("id") Long userId, @RequestBody UserDto userDto) {
-        try{
-            log.debug("UserManagementController: Update user: " + userId);
-            return userService.updateUser(userDto, userId);
-        }catch (Exception e){
+    public ResponseEntity<?> updateUser(@RequestBody UserDto userDto) {
+        try {
+            log.debug("UserManagementController: Update user: " + userDto.getId());
+            return userService.updateUser(userDto);
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }

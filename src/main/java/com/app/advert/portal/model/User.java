@@ -28,7 +28,8 @@ public class User {
 
     private List<Role> roles;
 
-    public User(String name, String surname, String email) {
+    public User(Long id, String name, String surname, String email) {
+        this.id = id;
         this.name = name;
         this.surname = surname;
         this.email = email;

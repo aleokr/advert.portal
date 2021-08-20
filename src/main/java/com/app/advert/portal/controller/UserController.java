@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/users")
-@CrossOrigin
 @RequiredArgsConstructor
 @Slf4j
 @Api(value = "User Controller", produces = MediaType.APPLICATION_JSON_VALUE, tags = {"User"})
@@ -24,7 +23,7 @@ public class UserController {
     @Operation(tags = {"User"}, description = "Get user by id")
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('INDIVIDUAL_USER', 'COMPANY_USER')")
-    public ResponseEntity getById(@PathVariable Long id) {
+    public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
             log.debug("UserController: Get user by id: " + id);
             return ResponseEntity.ok().body(userService.getById(id));
