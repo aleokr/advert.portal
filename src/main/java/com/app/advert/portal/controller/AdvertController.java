@@ -25,7 +25,7 @@ public class AdvertController {
     @GetMapping("/getAdverts")
     public ResponseEntity<?> getAdverts(@RequestBody AdvertListRequest advertListRequest) {
         try {
-            log.debug("AdvertController: Get adverts list");
+            log.info("AdvertController: Get adverts list");
             return advertService.getAdverts(advertListRequest);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -36,7 +36,7 @@ public class AdvertController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getAdvertById(@PathVariable Long id) {
         try {
-            log.debug("AdvertController: Get advert by id");
+            log.info("AdvertController: Get advert by id");
             return advertService.getById(id);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -47,7 +47,7 @@ public class AdvertController {
     @PostMapping("/save")
     public ResponseEntity<?> saveAdvert(@RequestBody AdvertDto advertDto) {
         try {
-            log.debug("AdvertController: Save new advert");
+            log.info("AdvertController: Save new advert");
             return advertService.saveAdvert(advertDto);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -58,7 +58,7 @@ public class AdvertController {
     @PutMapping("/update")
     public ResponseEntity<?> updateAdvert(@RequestBody AdvertDto advertDto) {
         try {
-            log.debug("AdvertController: Update advert: " + advertDto.getId());
+            log.info("AdvertController: Update advert: " + advertDto.getId());
             return advertService.updateAdvert(advertDto);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

@@ -25,31 +25,31 @@ public class CompanyManagementController {
     @PreAuthorize("hasAuthority('COMPANY_USER')")
     public ResponseEntity<?> registerNewCompany(@RequestBody CompanyDto companyDto) {
         try {
-            log.debug("CompanyController: Register new company");
+            log.info("CompanyController: Register new company");
             return companyService.saveCompany(companyDto);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }
     }
 
-    @DeleteMapping("/deleteCompany/{id}")
+    @DeleteMapping("{id}")
     @Operation(tags = {"Company management"}, description = "Delete company")
     @PreAuthorize("hasAuthority('COMPANY_WRITE')")
     public ResponseEntity<?> deleteCompany(@PathVariable("id") Long companyId) {
         try {
-            log.debug("CompanyController: Delete company with id: " + companyId);
+            log.info("CompanyController: Delete company with id: " + companyId);
             return companyService.deleteCompany(companyId);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }
     }
 
-    @PutMapping("/updateCompany")
+    @PutMapping("/update")
     @Operation(tags = {"Company management"}, description = "Update company")
     @PreAuthorize("hasAuthority('COMPANY_WRITE')")
     public ResponseEntity<?> updateCompany(@RequestBody CompanyDto companyDto) {
         try {
-            log.debug("CompanyController: Update company with id: " + companyDto.getId());
+            log.info("CompanyController: Update company with id: " + companyDto.getId());
             return companyService.updateCompany(companyDto);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);

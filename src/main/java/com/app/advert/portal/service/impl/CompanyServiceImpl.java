@@ -67,6 +67,7 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         Company company = new Company();
+        company.setId(companyDto.getId());
         company.setName(companyDto.getName());
         company.setDescription(companyDto.getDescription());
 

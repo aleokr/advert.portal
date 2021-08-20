@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> getById(Long id) {
         User user = userMapper.getById(SecurityUtils.getLoggedUserId());
-        if (user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.COMPANY_USER.name())) || !user.getId().equals(id)) {
+        if (user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.COMPANY_USER.name())) && !user.getId().equals(id)) {
             return ResponseEntity.badRequest().body("No access to resource");
         }
         return ResponseEntity.ok().body(userMapper.getById(id));

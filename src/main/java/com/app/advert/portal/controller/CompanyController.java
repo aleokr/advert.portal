@@ -25,7 +25,7 @@ public class CompanyController {
     @PreAuthorize("hasAnyAuthority('INDIVIDUAL_USER, COMPANY_USER')")
     public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
-            log.debug("CompanyController: Get company by id: " + id);
+            log.info("CompanyController: Get company by id: " + id);
             return companyService.getById(id);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);

@@ -25,7 +25,7 @@ public class UserManagementController {
     @Operation(tags = {"User management"}, description = "Register new user")
     public ResponseEntity<?> registerNewUser(@RequestBody UserDto userDto) {
         try {
-            log.debug("UserManagementController: Register new user");
+            log.info("UserManagementController: Register new user");
             return userService.saveUser(userDto);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -33,12 +33,12 @@ public class UserManagementController {
 
     }
 
-    @DeleteMapping("/deleteUser/{id}")
+    @DeleteMapping("/{id}")
     @Operation(tags = {"User management"}, description = "Delete user")
     @PreAuthorize("hasAuthority('USER_WRITE')")
     public ResponseEntity<?> deleteUser(@PathVariable("id") Long userId) {
         try {
-            log.debug("UserManagementController: Delete user: " + userId);
+            log.info("UserManagementController: Delete user: " + userId);
             return userService.deleteUser(userId);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -46,12 +46,12 @@ public class UserManagementController {
 
     }
 
-    @PutMapping("/updateUser")
+    @PutMapping("/update")
     @Operation(tags = {"User management"}, description = "Update user")
     @PreAuthorize("hasAnyAuthority('USER_WRITE', 'COMPANY_USER')")
     public ResponseEntity<?> updateUser(@RequestBody UserDto userDto) {
         try {
-            log.debug("UserManagementController: Update user: " + userDto.getId());
+            log.info("UserManagementController: Update user: " + userDto.getId());
             return userService.updateUser(userDto);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

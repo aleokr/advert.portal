@@ -55,7 +55,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 stream(roles).forEach(role ->
                         authorities.add(new SimpleGrantedAuthority(role)));
 
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(new UserPrincipal(decodedJWT.getSubject(), null, decodedJWT.getClaim("id").asLong()), null, authorities);
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(new UserPrincipal(decodedJWT.getSubject(), null, decodedJWT.getClaim("id").asLong(), decodedJWT.getClaim("companyId").asLong(), authorities), null, authorities);
 
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 filterChain.doFilter(request, response);
