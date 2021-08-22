@@ -1,6 +1,6 @@
 package com.app.advert.portal.controller;
 
-import com.app.advert.portal.dto.CompanyDto;
+import com.app.advert.portal.dto.CompanyRequestDto;
 import com.app.advert.portal.service.CompanyService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,8 +22,8 @@ public class CompanyManagementController {
 
     @PostMapping("/addCompany")
     @Operation(tags = {"Company management"}, description = "Register new company")
-    @PreAuthorize("hasAuthority('COMPANY_USER')")
-    public ResponseEntity<?> registerNewCompany(@RequestBody CompanyDto companyDto) {
+    @PreAuthorize("hasAuthority('COMPANY_ADMIN')")
+    public ResponseEntity<?> registerNewCompany(@RequestBody CompanyRequestDto companyDto) {
         try {
             log.info("CompanyController: Register new company");
             return companyService.saveCompany(companyDto);
@@ -47,7 +47,7 @@ public class CompanyManagementController {
     @PutMapping("/update")
     @Operation(tags = {"Company management"}, description = "Update company")
     @PreAuthorize("hasAuthority('COMPANY_WRITE')")
-    public ResponseEntity<?> updateCompany(@RequestBody CompanyDto companyDto) {
+    public ResponseEntity<?> updateCompany(@RequestBody CompanyRequestDto companyDto) {
         try {
             log.info("CompanyController: Update company with id: " + companyDto.getId());
             return companyService.updateCompany(companyDto);

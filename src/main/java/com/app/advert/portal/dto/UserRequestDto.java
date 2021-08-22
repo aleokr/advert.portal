@@ -6,7 +6,7 @@ import lombok.*;
 @Value
 @Builder
 @Getter
-public class UserDto {
+public class UserRequestDto {
 
     Long id;
 
@@ -21,4 +21,6 @@ public class UserDto {
     String password;
 
     UserRole userRole;
+
+    Long companyId;
 }

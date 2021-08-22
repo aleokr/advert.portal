@@ -1,7 +1,11 @@
 package com.app.advert.portal.mapper;
 
+import com.app.advert.portal.dto.CompanyRequestDto;
+import com.app.advert.portal.dto.CompanyResponse;
 import com.app.advert.portal.model.Company;
 import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 @Mapper
 public interface CompanyMapper {
@@ -20,4 +24,12 @@ public interface CompanyMapper {
 
     @Delete("DELETE FROM COMPANIES WHERE id = #{companyId}")
     void deleteCompanyById(Long companyId);
+
+    @Select("<script>" +
+            "SELECT id, name FROM COMPANIES WHERE 1 = 1 " +
+            "<if test = 'name != null'> and name LIKE  CONCAT('%', #{name}, '%') </if> " +
+            "<if test = 'limit != null'> LIMIT #{limit}</if> " +
+            "<if test = 'offset != null'> OFFSET #{offset}</if> " +
+            "</script>")
+    List<CompanyResponse>getCompaniesList(CompanyRequestDto request);
 }

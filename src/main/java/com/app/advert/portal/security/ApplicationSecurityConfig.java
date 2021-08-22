@@ -49,7 +49,8 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/v1/auth/refreshToken",
                 "/api/v1/adverts/getAdverts",
                 "/api/v1/adverts/{id}",
-                "/management/api/v1/users/addUser").permitAll();
+                "/management/api/v1/users/addUser",
+                "/api/v1/companies/list").permitAll();
 
         http.authorizeRequests().antMatchers(
                 "/swagger-resources",

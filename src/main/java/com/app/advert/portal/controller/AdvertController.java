@@ -1,6 +1,6 @@
 package com.app.advert.portal.controller;
 
-import com.app.advert.portal.dto.AdvertDto;
+import com.app.advert.portal.dto.AdvertRequestDto;
 import com.app.advert.portal.dto.AdvertListRequest;
 import com.app.advert.portal.service.AdvertService;
 import io.swagger.annotations.Api;
@@ -45,10 +45,10 @@ public class AdvertController {
 
     @Operation(tags = {"Advert"}, description = "Save advert")
     @PostMapping("/save")
-    public ResponseEntity<?> saveAdvert(@RequestBody AdvertDto advertDto) {
+    public ResponseEntity<?> saveAdvert(@RequestBody AdvertRequestDto advertRequestDto) {
         try {
             log.info("AdvertController: Save new advert");
-            return advertService.saveAdvert(advertDto);
+            return advertService.saveAdvert(advertRequestDto);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
@@ -56,10 +56,10 @@ public class AdvertController {
 
     @Operation(tags = {"Advert"}, description = "Update advert")
     @PutMapping("/update")
-    public ResponseEntity<?> updateAdvert(@RequestBody AdvertDto advertDto) {
+    public ResponseEntity<?> updateAdvert(@RequestBody AdvertRequestDto advertRequestDto) {
         try {
-            log.info("AdvertController: Update advert: " + advertDto.getId());
-            return advertService.updateAdvert(advertDto);
+            log.info("AdvertController: Update advert: " + advertRequestDto.getId());
+            return advertService.updateAdvert(advertRequestDto);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }

@@ -1,6 +1,7 @@
 package com.app.advert.portal.controller;
 
-import com.app.advert.portal.dto.UserDto;
+import com.app.advert.portal.dto.UserListRequest;
+import com.app.advert.portal.dto.UserRequestDto;
 import com.app.advert.portal.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,7 +24,7 @@ public class UserManagementController {
 
     @PostMapping("/addUser")
     @Operation(tags = {"User management"}, description = "Register new user")
-    public ResponseEntity<?> registerNewUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<?> registerNewUser(@RequestBody UserRequestDto userDto) {
         try {
             log.info("UserManagementController: Register new user");
             return userService.saveUser(userDto);
@@ -49,10 +50,34 @@ public class UserManagementController {
     @PutMapping("/update")
     @Operation(tags = {"User management"}, description = "Update user")
     @PreAuthorize("hasAnyAuthority('USER_WRITE', 'COMPANY_USER')")
-    public ResponseEntity<?> updateUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<?> updateUser(@RequestBody UserRequestDto userDto) {
         try {
             log.info("UserManagementController: Update user: " + userDto.getId());
             return userService.updateUser(userDto);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/list")
+    @Operation(tags = {"User management"}, description = "List of users")
+    @PreAuthorize("hasAnyAuthority('COMPANY_ADMIN')")
+    public ResponseEntity<?> readUsersList(@RequestBody UserListRequest userListRequest) {
+        try {
+            log.info("UserManagementController: List of users");
+            return userService.getUsers(userListRequest);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/activate/{userId}")
+    @Operation(tags = {"User management"}, description = "Activate user")
+    @PreAuthorize("hasAnyAuthority('COMPANY_ADMIN')")
+    public ResponseEntity<?> activateUser(@PathVariable Long userId) {
+        try {
+            log.info("UserManagementController: Activate user " + userId);
+            return userService.activateUser(userId);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }

@@ -1,5 +1,7 @@
 package com.app.advert.portal.mapper;
 
+import com.app.advert.portal.dto.UserListRequest;
+import com.app.advert.portal.dto.UserResponse;
 import com.app.advert.portal.model.Permission;
 import com.app.advert.portal.model.Role;
 import com.app.advert.portal.model.User;
@@ -29,7 +31,7 @@ public interface UserMapper {
             @Result(property = "permissions", javaType = List.class, column = "id", many = @Many(select = "getPermissionByRoleId"))})
     List<Role> getRolesAndPermissionsByUserId(Long id);
 
-    @Insert("INSERT INTO USERS(name, surname, email, login, password, created_at) values (#{name},#{surname},#{email},#{login},#{password}, now())")
+    @Insert("INSERT INTO USERS(name, surname, email, login, password, created_at, active, company_id) values (#{name},#{surname},#{email},#{login},#{password}, now(),#{active},#{companyId})")
     void saveUser(User user);
 
     @Update("UPDATE USERS SET name = #{name}, surname = #{surname}, email = #{email} where id = #{id}")
@@ -52,4 +54,16 @@ public interface UserMapper {
 
     @Update("UPDATE USERS SET company_id = null where company_id = #{companyId}")
     void deleteCompanyFromUsers(Long companyId);
+
+    @Select("<script>" +
+            "SELECT id, name, surname, email FROM USERS WHERE id != #{userId} " +
+            "<if test = 'request.companyId != null'> and company_id = #{request.companyId} </if> " +
+            "<if test = 'request.active != null'> and active = #{request.active}</if> " +
+            "<if test = 'request.limit != null'> LIMIT #{request.limit}</if> " +
+            "<if test = 'request.offset != null'> OFFSET #{request.offset}</if> " +
+            "</script>")
+    List<UserResponse> getUserList(UserListRequest request, Long userId);
+
+    @Update("UPDATE USERS SET active = true where id = #{userId}")
+    void activateUser(Long userId);
 }

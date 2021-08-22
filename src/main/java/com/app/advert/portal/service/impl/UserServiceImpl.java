@@ -1,6 +1,7 @@
 package com.app.advert.portal.service.impl;
 
-import com.app.advert.portal.dto.UserDto;
+import com.app.advert.portal.dto.UserListRequest;
+import com.app.advert.portal.dto.UserRequestDto;
 import com.app.advert.portal.enums.UserRole;
 import com.app.advert.portal.mapper.UserMapper;
 import com.app.advert.portal.model.User;
@@ -38,7 +39,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> saveUser(UserDto userDto) {
+    public ResponseEntity<?> saveUser(UserRequestDto userDto) {
 
         User user = getByUsername(userDto.getLogin());
         if (user != null) {
@@ -46,7 +47,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User userToSave = new User(null, userDto.getName(), userDto.getSurname(), userDto.getEmail(),
-                userDto.getLogin(), passwordEncoder.encode(userDto.getPassword()), null, null);
+                userDto.getLogin(), passwordEncoder.encode(userDto.getPassword()), userDto.getCompanyId(), null, userDto.getUserRole().equals(UserRole.INDIVIDUAL_USER) || userDto.getUserRole().equals(UserRole.COMPANY_ADMIN));
         userMapper.saveUser(userToSave);
         userMapper.addRoleToUser(userDto.getUserRole().name(), userToSave.getLogin());
 
@@ -54,7 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> updateUser(UserDto userDto) {
+    public ResponseEntity<?> updateUser(UserRequestDto userDto) {
         if (!userDto.getId().equals(SecurityUtils.getLoggedUserId())) {
             return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
         }
@@ -74,6 +75,24 @@ public class UserServiceImpl implements UserService {
         userMapper.deleteUserRoles(userId);
         userMapper.deleteUserById(userId);
 
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<?> getUsers(UserListRequest userListRequest) {
+        if (userListRequest.getCompanyId() != null && !userListRequest.getCompanyId().equals(SecurityUtils.getLoggedCompanyId())) {
+            return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
+        }
+        return ResponseEntity.ok().body(userMapper.getUserList(userListRequest, SecurityUtils.getLoggedUserId()));
+    }
+
+    @Override
+    public ResponseEntity<?> activateUser(Long userId) {
+        User user = userMapper.getById(userId);
+        if (!user.getCompanyId().equals(SecurityUtils.getLoggedCompanyId())) {
+            return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
+        }
+        userMapper.activateUser(userId);
         return ResponseEntity.ok().build();
     }
 }

@@ -7,14 +7,13 @@ import lombok.Value;
 @Value
 @Builder
 @Getter
-public class AdvertDto {
+public class ApplicationListRequest {
 
-    Long id;
+    Long userId;
 
-    String title;
+    Long companyId;
 
-    String shortDescription;
+    Long limit;
 
-    String longDescription;
-
+    Long offset;
 }

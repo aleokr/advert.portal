@@ -28,6 +28,8 @@ public class User {
 
     private List<Role> roles;
 
+    private Boolean active;
+
     public User(Long id, String name, String surname, String email) {
         this.id = id;
         this.name = name;

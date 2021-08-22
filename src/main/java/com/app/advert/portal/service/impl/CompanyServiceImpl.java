@@ -1,6 +1,6 @@
 package com.app.advert.portal.service.impl;
 
-import com.app.advert.portal.dto.CompanyDto;
+import com.app.advert.portal.dto.CompanyRequestDto;
 import com.app.advert.portal.enums.UserRole;
 import com.app.advert.portal.mapper.CompanyMapper;
 import com.app.advert.portal.mapper.UserMapper;
@@ -33,10 +33,10 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public ResponseEntity<?> saveCompany(CompanyDto companyDto) {
+    public ResponseEntity<?> saveCompany(CompanyRequestDto companyDto) {
         User user = userMapper.getById(SecurityUtils.getLoggedUserId());
 
-        if (user.getCompanyId() != null || user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.COMPANY_USER.name()))) {
+        if (user.getCompanyId() != null || user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.COMPANY_ADMIN.name()))) {
             return ResponseEntity.badRequest().body("User has already a company or hasn't access to create a company");
         }
         if (companyMapper.getCompanyByName(companyDto.getName()) != null) {
@@ -55,7 +55,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public ResponseEntity<?> updateCompany(CompanyDto companyDto) {
+    public ResponseEntity<?> updateCompany(CompanyRequestDto companyDto) {
         User user = userMapper.getById(SecurityUtils.getLoggedUserId());
 
         if (!user.getCompanyId().equals(companyDto.getId()) || user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.COMPANY_USER.name()))) {
@@ -88,5 +88,10 @@ public class CompanyServiceImpl implements CompanyService {
 
         companyMapper.deleteCompanyById(companyId);
         return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<?> companiesList(CompanyRequestDto requestDto) {
+        return ResponseEntity.ok().body(companyMapper.getCompaniesList(requestDto));
     }
 }
