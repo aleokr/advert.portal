@@ -12,14 +12,14 @@ import java.util.List;
 @Mapper
 public interface UserMapper {
 
-    @Select("SELECT id, name, surname, email, login, company_id from USERS where id=#{id}")
+    @Select("SELECT id, name, surname, email, login, company_id, active from USERS where id=#{id}")
     @Results(value = {
             @Result(property = "id", column = "id"),
             @Result(property = "companyId", column = "company_id"),
             @Result(property = "roles", javaType = List.class, column = "id", many = @Many(select = "getRolesAndPermissionsByUserId"))})
     User getById(Long id);
 
-    @Select("SELECT id, name, surname, email, login, password, company_id from USERS where login=#{username}")
+    @Select("SELECT id, name, surname, email, login, password, company_id, active from USERS where login=#{username}")
     @Results(value = {
             @Result(property = "id", column = "id"),
             @Result(property = "companyId", column = "company_id"),

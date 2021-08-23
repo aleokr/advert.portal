@@ -34,7 +34,7 @@ public class CompanyManagementController {
 
     @DeleteMapping("{id}")
     @Operation(tags = {"Company management"}, description = "Delete company")
-    @PreAuthorize("hasAuthority('COMPANY_WRITE')")
+    @PreAuthorize("hasAuthority('COMPANY_ADMIN')")
     public ResponseEntity<?> deleteCompany(@PathVariable("id") Long companyId) {
         try {
             log.info("CompanyController: Delete company with id: " + companyId);
@@ -46,7 +46,7 @@ public class CompanyManagementController {
 
     @PutMapping("/update")
     @Operation(tags = {"Company management"}, description = "Update company")
-    @PreAuthorize("hasAuthority('COMPANY_WRITE')")
+    @PreAuthorize("hasAuthority('COMPANY_ADMIN')")
     public ResponseEntity<?> updateCompany(@RequestBody CompanyRequestDto companyDto) {
         try {
             log.info("CompanyController: Update company with id: " + companyDto.getId());

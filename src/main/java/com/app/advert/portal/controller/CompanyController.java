@@ -23,7 +23,7 @@ public class CompanyController {
 
     @Operation(tags = {"Company"}, description = "Get company by id")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('INDIVIDUAL_USER, COMPANY_USER')")
+    @PreAuthorize("hasAnyAuthority('INDIVIDUAL_USER', 'COMPANY_USER', 'COMPANY_ADMIN')")
     public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
             log.info("CompanyController: Get company by id: " + id);

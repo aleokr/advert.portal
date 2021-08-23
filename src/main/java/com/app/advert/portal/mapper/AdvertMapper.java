@@ -49,7 +49,6 @@ public interface AdvertMapper {
     @Select("SELECT u.id, u.name, u.surname, u.email, u.login, u.company_id from USERS u LEFT JOIN ADVERTS a on a.user_id = u.id " +
             "where a.id=#{advertId}")
     @Results(value = {
-            @Result(property = "companyId", column = "company_id")
-    })
+            @Result(property = "companyId", column = "company_id")})
     User getUserByAdvertId(Long advertId);
 }

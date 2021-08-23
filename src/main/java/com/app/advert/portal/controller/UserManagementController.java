@@ -49,7 +49,7 @@ public class UserManagementController {
 
     @PutMapping("/update")
     @Operation(tags = {"User management"}, description = "Update user")
-    @PreAuthorize("hasAnyAuthority('USER_WRITE', 'COMPANY_USER')")
+    @PreAuthorize("hasAnyAuthority('USER_WRITE', 'COMPANY_USER', 'COMPANY_ADMIN')")
     public ResponseEntity<?> updateUser(@RequestBody UserRequestDto userDto) {
         try {
             log.info("UserManagementController: Update user: " + userDto.getId());

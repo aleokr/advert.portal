@@ -22,7 +22,7 @@ public class UserController {
 
     @Operation(tags = {"User"}, description = "Get user by id")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('INDIVIDUAL_USER', 'COMPANY_USER')")
+    @PreAuthorize("hasAnyAuthority('INDIVIDUAL_USER', 'COMPANY_USER', 'COMPANY_ADMIN')")
     public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
             log.info("UserController: Get user by id: " + id);
