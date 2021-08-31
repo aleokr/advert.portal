@@ -36,10 +36,10 @@ public class CompanyController {
 
     @Operation(tags = {"Company"}, description = "Return companies list")
     @GetMapping("/list")
-    public ResponseEntity<?> getCompaniesList(@RequestBody CompanyRequestDto companyRequestDto) {
+    public ResponseEntity<?> getCompaniesList() {
         try {
             log.info("CompanyController: Return companies list");
-            return companyService.companiesList(companyRequestDto);
+            return companyService.companiesList(CompanyRequestDto.builder().build());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }

@@ -95,4 +95,9 @@ public class UserServiceImpl implements UserService {
         userMapper.activateUser(userId);
         return ResponseEntity.ok().build();
     }
+
+    @Override
+    public ResponseEntity<?> getUserRoles() {
+        return ResponseEntity.ok().body(userMapper.getUserRoles());
+    }
 }

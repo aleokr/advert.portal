@@ -27,8 +27,8 @@ public interface CompanyMapper {
 
     @Select("<script>" +
             "SELECT id, name FROM COMPANIES WHERE 1 = 1 " +
-            "<if test = 'name != null'> and name LIKE  CONCAT('%', #{name}, '%') </if> " +
-            "<if test = 'limit != null'> LIMIT #{limit}</if> " +
+            "<if test = 'name != null'> and name LIKE CONCAT('%', #{name}, '%') </if> " +
+            "<if test = 'limit != null'> LIMIT #{limit} </if> " +
             "<if test = 'offset != null'> OFFSET #{offset}</if> " +
             "</script>")
     List<CompanyResponse>getCompaniesList(CompanyRequestDto request);

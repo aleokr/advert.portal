@@ -23,4 +23,6 @@ public interface UserService {
     ResponseEntity<?>  getUsers(UserListRequest userListRequest);
 
     ResponseEntity<?> activateUser(Long userId);
+
+    ResponseEntity<?> getUserRoles();
 }

@@ -28,7 +28,7 @@ public final class SecurityUtils {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
 
-        if (authentication != null && authentication.getPrincipal() != null) {
+        if (authentication != null && authentication.getPrincipal() != null && !authentication.getPrincipal().equals("anonymousUser")) {
             return ((UserPrincipal) authentication.getPrincipal()).getUserId();
         }
         return null;
@@ -38,7 +38,7 @@ public final class SecurityUtils {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
 
-        if (authentication != null && authentication.getPrincipal() != null) {
+        if (authentication != null && authentication.getPrincipal() != null && !authentication.getPrincipal().equals("anonymousUser")) {
             return ((UserPrincipal) authentication.getPrincipal()).getCompanyId();
         }
         return null;

@@ -32,4 +32,16 @@ public class UserController {
         }
     }
 
+    @Operation(tags = {"User"}, description = "Get user roles")
+    @GetMapping("/roles")
+    public ResponseEntity<?> getUserRoles() {
+        try {
+            log.info("UserController: Get user roles");
+            return userService.getUserRoles();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e);
+        }
+    }
+
+
 }
