@@ -1,6 +1,6 @@
 package com.app.advert.portal.controller;
 
-import com.app.advert.portal.dto.CompanyRequestDto;
+import com.app.advert.portal.dto.CompanyListRequest;
 import com.app.advert.portal.service.CompanyService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,10 +36,19 @@ public class CompanyController {
 
     @Operation(tags = {"Company"}, description = "Return companies list")
     @GetMapping("/list")
-    public ResponseEntity<?> getCompaniesList() {
+    public ResponseEntity<?> getCompaniesList(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Long offset,
+            @RequestParam(required = false) Long limit
+    ) {
         try {
+            CompanyListRequest companyListRequest = CompanyListRequest.builder()
+                    .name(name)
+                    .offset(offset)
+                    .limit(limit)
+                    .build();
             log.info("CompanyController: Return companies list");
-            return companyService.companiesList(CompanyRequestDto.builder().build());
+            return companyService.companiesList(companyListRequest);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }

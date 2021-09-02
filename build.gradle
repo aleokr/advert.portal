@@ -27,6 +27,7 @@ dependencies {
 	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
 	implementation 'org.liquibase:liquibase-core'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.4'
+	implementation group: 'org.springframework.boot', name:  'spring-boot-starter-validation'
 	runtime 'mysql:mysql-connector-java:8.0.25'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

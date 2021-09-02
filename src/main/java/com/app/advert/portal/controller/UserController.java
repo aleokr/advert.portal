@@ -43,5 +43,14 @@ public class UserController {
         }
     }
 
-
+    @Operation(tags = {"User"}, description = "Get user by token")
+    @GetMapping("/loggedUser")
+    public ResponseEntity<?> getLoggedUserInfo() {
+        try {
+            log.info("UserController: Get user by token");
+            return userService.getLoggedUserInfo();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e);
+        }
+    }
 }

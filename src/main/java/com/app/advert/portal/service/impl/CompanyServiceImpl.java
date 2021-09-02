@@ -1,5 +1,6 @@
 package com.app.advert.portal.service.impl;
 
+import com.app.advert.portal.dto.CompanyListRequest;
 import com.app.advert.portal.dto.CompanyRequestDto;
 import com.app.advert.portal.enums.UserRole;
 import com.app.advert.portal.mapper.CompanyMapper;
@@ -91,7 +92,22 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public ResponseEntity<?> companiesList(CompanyRequestDto requestDto) {
-        return ResponseEntity.ok().body(companyMapper.getCompaniesList(requestDto));
+    public ResponseEntity<?> companiesList(CompanyListRequest companyListRequest) {
+        Long limit = null;
+        Long offset = null;
+        if(companyListRequest.getOffset() != null && companyListRequest.getLimit() == null){
+            limit = 100L;
+        }
+
+        if(companyListRequest.getLimit() != null && companyListRequest.getOffset() == null){
+            offset = 0L;
+        }
+
+        CompanyListRequest request = CompanyListRequest.builder()
+                .name(companyListRequest.getName())
+                .limit(limit != null ? limit : companyListRequest.getLimit())
+                .offset(offset != null ? offset : companyListRequest.getOffset())
+                .build();
+        return ResponseEntity.ok().body(companyMapper.getCompaniesList(request));
     }
 }

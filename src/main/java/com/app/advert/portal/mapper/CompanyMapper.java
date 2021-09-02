@@ -1,6 +1,6 @@
 package com.app.advert.portal.mapper;
 
-import com.app.advert.portal.dto.CompanyRequestDto;
+import com.app.advert.portal.dto.CompanyListRequest;
 import com.app.advert.portal.dto.CompanyResponse;
 import com.app.advert.portal.model.Company;
 import org.apache.ibatis.annotations.*;
@@ -31,5 +31,5 @@ public interface CompanyMapper {
             "<if test = 'limit != null'> LIMIT #{limit} </if> " +
             "<if test = 'offset != null'> OFFSET #{offset}</if> " +
             "</script>")
-    List<CompanyResponse>getCompaniesList(CompanyRequestDto request);
+    List<CompanyResponse>getCompaniesList(CompanyListRequest companyListRequest);
 }

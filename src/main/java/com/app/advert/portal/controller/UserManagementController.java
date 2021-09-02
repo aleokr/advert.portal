@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -24,7 +25,7 @@ public class UserManagementController {
 
     @PostMapping("/addUser")
     @Operation(tags = {"User management"}, description = "Register new user")
-    public ResponseEntity<?> registerNewUser(@RequestBody UserRequestDto userDto) {
+    public ResponseEntity<?> registerNewUser(@Validated @RequestBody UserRequestDto userDto) {
         try {
             log.info("UserManagementController: Register new user");
             return userService.saveUser(userDto);
@@ -50,7 +51,7 @@ public class UserManagementController {
     @PutMapping("/update")
     @Operation(tags = {"User management"}, description = "Update user")
     @PreAuthorize("hasAnyAuthority('USER_WRITE', 'COMPANY_USER', 'COMPANY_ADMIN')")
-    public ResponseEntity<?> updateUser(@RequestBody UserRequestDto userDto) {
+    public ResponseEntity<?> updateUser(@Validated @RequestBody UserRequestDto userDto) {
         try {
             log.info("UserManagementController: Update user: " + userDto.getId());
             return userService.updateUser(userDto);
@@ -62,8 +63,20 @@ public class UserManagementController {
     @GetMapping("/list")
     @Operation(tags = {"User management"}, description = "List of users")
     @PreAuthorize("hasAnyAuthority('COMPANY_ADMIN')")
-    public ResponseEntity<?> readUsersList(@RequestBody UserListRequest userListRequest) {
+    public ResponseEntity<?> readUsersList(
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) Long companyId,
+            @RequestParam(required = false) Long offset,
+            @RequestParam(required = false) Long limit
+    ) {
         try {
+            UserListRequest userListRequest = UserListRequest.builder()
+                    .active(active)
+                    .companyId(companyId)
+                    .offset(offset)
+                    .limit(limit)
+                    .build();
+
             log.info("UserManagementController: List of users");
             return userService.getUsers(userListRequest);
         } catch (Exception e) {
@@ -71,7 +84,7 @@ public class UserManagementController {
         }
     }
 
-    @GetMapping("/activate/{userId}")
+    @PutMapping("/activate/{userId}")
     @Operation(tags = {"User management"}, description = "Activate user")
     @PreAuthorize("hasAnyAuthority('COMPANY_ADMIN')")
     public ResponseEntity<?> activateUser(@PathVariable Long userId) {

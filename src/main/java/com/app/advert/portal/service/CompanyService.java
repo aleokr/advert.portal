@@ -1,5 +1,6 @@
 package com.app.advert.portal.service;
 
+import com.app.advert.portal.dto.CompanyListRequest;
 import com.app.advert.portal.dto.CompanyRequestDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,6 @@ public interface CompanyService {
 
     ResponseEntity<?> deleteCompany(Long companyId);
 
-    ResponseEntity<?> companiesList(CompanyRequestDto requestDto);
+    ResponseEntity<?> companiesList(CompanyListRequest companyListRequest);
 
 }

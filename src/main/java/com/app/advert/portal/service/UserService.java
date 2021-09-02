@@ -25,4 +25,6 @@ public interface UserService {
     ResponseEntity<?> activateUser(Long userId);
 
     ResponseEntity<?> getUserRoles();
+
+    ResponseEntity<?> getLoggedUserInfo();
 }

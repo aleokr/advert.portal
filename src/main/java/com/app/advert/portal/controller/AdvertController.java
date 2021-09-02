@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -23,8 +24,22 @@ public class AdvertController {
 
     @Operation(tags = {"Advert"}, description = "Return adverts list")
     @GetMapping("/getAdverts")
-    public ResponseEntity<?> getAdverts(@RequestBody AdvertListRequest advertListRequest) {
+    public ResponseEntity<?> getAdverts(
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) Long companyId,
+            @RequestParam(required = false) Long offset,
+            @RequestParam(required = false) Long limit
+    ) {
         try {
+            AdvertListRequest advertListRequest = AdvertListRequest.builder()
+                    .id(id)
+                    .userId(userId)
+                    .companyId(companyId)
+                    .offset(offset)
+                    .limit(limit)
+                    .build();
+
             log.info("AdvertController: Get adverts list");
             return advertService.getAdverts(advertListRequest);
         } catch (Exception e) {
@@ -45,7 +60,7 @@ public class AdvertController {
 
     @Operation(tags = {"Advert"}, description = "Save advert")
     @PostMapping("/save")
-    public ResponseEntity<?> saveAdvert(@RequestBody AdvertRequestDto advertRequestDto) {
+    public ResponseEntity<?> saveAdvert(@Validated @RequestBody AdvertRequestDto advertRequestDto) {
         try {
             log.info("AdvertController: Save new advert");
             return advertService.saveAdvert(advertRequestDto);
@@ -56,7 +71,7 @@ public class AdvertController {
 
     @Operation(tags = {"Advert"}, description = "Update advert")
     @PutMapping("/update")
-    public ResponseEntity<?> updateAdvert(@RequestBody AdvertRequestDto advertRequestDto) {
+    public ResponseEntity<?> updateAdvert(@Validated @RequestBody AdvertRequestDto advertRequestDto) {
         try {
             log.info("AdvertController: Update advert: " + advertRequestDto.getId());
             return advertService.updateAdvert(advertRequestDto);

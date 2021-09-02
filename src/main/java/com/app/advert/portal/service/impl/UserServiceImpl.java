@@ -100,4 +100,9 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> getUserRoles() {
         return ResponseEntity.ok().body(userMapper.getUserRoles());
     }
+
+    @Override
+    public ResponseEntity<?> getLoggedUserInfo() {
+        return ResponseEntity.ok().body(userMapper.getById(SecurityUtils.getLoggedUserId()));
+    }
 }

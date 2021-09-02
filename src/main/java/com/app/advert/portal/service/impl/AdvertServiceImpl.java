@@ -54,7 +54,7 @@ public class AdvertServiceImpl implements AdvertService {
     @Override
     public ResponseEntity<?> updateAdvert(AdvertRequestDto advertDto) {
 
-        if (checkAccessToAdvert(advertDto.getId())){
+        if (noAccessToAdvert(advertDto.getId())) {
             return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
         }
 
@@ -69,7 +69,7 @@ public class AdvertServiceImpl implements AdvertService {
 
     @Override
     public ResponseEntity<?> deleteAdvert(Long advertId) {
-        if (checkAccessToAdvert(advertId)){
+        if (noAccessToAdvert(advertId)) {
             return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
         }
 
@@ -79,7 +79,7 @@ public class AdvertServiceImpl implements AdvertService {
 
     @Override
     public ResponseEntity<?> archivedAdvert(Long advertId) {
-        if (checkAccessToAdvert(advertId)){
+        if (noAccessToAdvert(advertId)) {
             return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
         }
 
@@ -88,7 +88,8 @@ public class AdvertServiceImpl implements AdvertService {
         return ResponseEntity.ok().body(advertMapper.getById(advertId));
     }
 
-    private boolean checkAccessToAdvert(Long advertId) {
+    private boolean noAccessToAdvert(Long advertId) {
+        if (advertId == null) return true;
         User user = advertMapper.getUserByAdvertId(advertId);
         return user == null || !user.getId().equals(SecurityUtils.getLoggedUserId()) || (user.getCompanyId() != null && !user.getCompanyId().equals(SecurityUtils.getLoggedCompanyId()));
     }

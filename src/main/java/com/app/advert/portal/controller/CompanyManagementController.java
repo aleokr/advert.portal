@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,7 +24,7 @@ public class CompanyManagementController {
     @PostMapping("/addCompany")
     @Operation(tags = {"Company management"}, description = "Register new company")
     @PreAuthorize("hasAuthority('COMPANY_ADMIN')")
-    public ResponseEntity<?> registerNewCompany(@RequestBody CompanyRequestDto companyDto) {
+    public ResponseEntity<?> registerNewCompany(@Validated @RequestBody CompanyRequestDto companyDto) {
         try {
             log.info("CompanyController: Register new company");
             return companyService.saveCompany(companyDto);
@@ -47,7 +48,7 @@ public class CompanyManagementController {
     @PutMapping("/update")
     @Operation(tags = {"Company management"}, description = "Update company")
     @PreAuthorize("hasAuthority('COMPANY_ADMIN')")
-    public ResponseEntity<?> updateCompany(@RequestBody CompanyRequestDto companyDto) {
+    public ResponseEntity<?> updateCompany(@Validated @RequestBody CompanyRequestDto companyDto) {
         try {
             log.info("CompanyController: Update company with id: " + companyDto.getId());
             return companyService.updateCompany(companyDto);
