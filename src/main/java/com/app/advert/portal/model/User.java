@@ -1,5 +1,6 @@
 package com.app.advert.portal.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,11 +23,14 @@ public class User {
 
     private String login;
 
+    @JsonIgnore
     private String password;
 
     private Long companyId;
 
     private List<Role> roles;
+
+    private Boolean active;
 
     public User(Long id, String name, String surname, String email) {
         this.id = id;

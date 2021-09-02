@@ -1,5 +1,6 @@
 package com.app.advert.portal.controller;
 
+import com.app.advert.portal.dto.CompanyListRequest;
 import com.app.advert.portal.service.CompanyService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,11 +23,32 @@ public class CompanyController {
 
     @Operation(tags = {"Company"}, description = "Get company by id")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('INDIVIDUAL_USER, COMPANY_USER')")
+    @PreAuthorize("hasAnyAuthority('INDIVIDUAL_USER', 'COMPANY_USER', 'COMPANY_ADMIN')")
     public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
-            log.debug("CompanyController: Get company by id: " + id);
+            log.info("CompanyController: Get company by id: " + id);
             return companyService.getById(id);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e);
+        }
+
+    }
+
+    @Operation(tags = {"Company"}, description = "Return companies list")
+    @GetMapping("/list")
+    public ResponseEntity<?> getCompaniesList(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Long offset,
+            @RequestParam(required = false) Long limit
+    ) {
+        try {
+            CompanyListRequest companyListRequest = CompanyListRequest.builder()
+                    .name(name)
+                    .offset(offset)
+                    .limit(limit)
+                    .build();
+            log.info("CompanyController: Return companies list");
+            return companyService.companiesList(companyListRequest);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }

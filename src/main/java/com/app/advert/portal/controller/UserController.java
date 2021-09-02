@@ -22,14 +22,35 @@ public class UserController {
 
     @Operation(tags = {"User"}, description = "Get user by id")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('INDIVIDUAL_USER', 'COMPANY_USER')")
+    @PreAuthorize("hasAnyAuthority('INDIVIDUAL_USER', 'COMPANY_USER', 'COMPANY_ADMIN')")
     public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
-            log.debug("UserController: Get user by id: " + id);
-            return ResponseEntity.ok().body(userService.getById(id));
+            log.info("UserController: Get user by id: " + id);
+            return userService.getById(id);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }
     }
 
+    @Operation(tags = {"User"}, description = "Get user roles")
+    @GetMapping("/roles")
+    public ResponseEntity<?> getUserRoles() {
+        try {
+            log.info("UserController: Get user roles");
+            return userService.getUserRoles();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e);
+        }
+    }
+
+    @Operation(tags = {"User"}, description = "Get user by token")
+    @GetMapping("/loggedUser")
+    public ResponseEntity<?> getLoggedUserInfo() {
+        try {
+            log.info("UserController: Get user by token");
+            return userService.getLoggedUserInfo();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e);
+        }
+    }
 }

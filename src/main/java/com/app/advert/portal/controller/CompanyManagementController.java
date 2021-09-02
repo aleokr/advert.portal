@@ -1,6 +1,6 @@
 package com.app.advert.portal.controller;
 
-import com.app.advert.portal.dto.CompanyDto;
+import com.app.advert.portal.dto.CompanyRequestDto;
 import com.app.advert.portal.service.CompanyService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,34 +23,34 @@ public class CompanyManagementController {
 
     @PostMapping("/addCompany")
     @Operation(tags = {"Company management"}, description = "Register new company")
-    @PreAuthorize("hasAuthority('COMPANY_USER')")
-    public ResponseEntity<?> registerNewCompany(@RequestBody CompanyDto companyDto) {
+    @PreAuthorize("hasAuthority('COMPANY_ADMIN')")
+    public ResponseEntity<?> registerNewCompany(@Validated @RequestBody CompanyRequestDto companyDto) {
         try {
-            log.debug("CompanyController: Register new company");
+            log.info("CompanyController: Register new company");
             return companyService.saveCompany(companyDto);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }
     }
 
-    @DeleteMapping("/deleteCompany/{id}")
+    @DeleteMapping("{id}")
     @Operation(tags = {"Company management"}, description = "Delete company")
-    @PreAuthorize("hasAuthority('COMPANY_WRITE')")
+    @PreAuthorize("hasAuthority('COMPANY_ADMIN')")
     public ResponseEntity<?> deleteCompany(@PathVariable("id") Long companyId) {
         try {
-            log.debug("CompanyController: Delete company with id: " + companyId);
+            log.info("CompanyController: Delete company with id: " + companyId);
             return companyService.deleteCompany(companyId);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }
     }
 
-    @PutMapping("/updateCompany")
+    @PutMapping("/update")
     @Operation(tags = {"Company management"}, description = "Update company")
-    @PreAuthorize("hasAuthority('COMPANY_WRITE')")
-    public ResponseEntity<?> updateCompany(@RequestBody CompanyDto companyDto) {
+    @PreAuthorize("hasAuthority('COMPANY_ADMIN')")
+    public ResponseEntity<?> updateCompany(@Validated @RequestBody CompanyRequestDto companyDto) {
         try {
-            log.debug("CompanyController: Update company with id: " + companyDto.getId());
+            log.info("CompanyController: Update company with id: " + companyDto.getId());
             return companyService.updateCompany(companyDto);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);

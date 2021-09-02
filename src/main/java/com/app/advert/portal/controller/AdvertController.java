@@ -1,6 +1,6 @@
 package com.app.advert.portal.controller;
 
-import com.app.advert.portal.dto.AdvertDto;
+import com.app.advert.portal.dto.AdvertRequestDto;
 import com.app.advert.portal.dto.AdvertListRequest;
 import com.app.advert.portal.service.AdvertService;
 import io.swagger.annotations.Api;
@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -23,9 +24,23 @@ public class AdvertController {
 
     @Operation(tags = {"Advert"}, description = "Return adverts list")
     @GetMapping("/getAdverts")
-    public ResponseEntity<?> getAdverts(@RequestBody AdvertListRequest advertListRequest) {
+    public ResponseEntity<?> getAdverts(
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) Long companyId,
+            @RequestParam(required = false) Long offset,
+            @RequestParam(required = false) Long limit
+    ) {
         try {
-            log.debug("AdvertController: Get adverts list");
+            AdvertListRequest advertListRequest = AdvertListRequest.builder()
+                    .id(id)
+                    .userId(userId)
+                    .companyId(companyId)
+                    .offset(offset)
+                    .limit(limit)
+                    .build();
+
+            log.info("AdvertController: Get adverts list");
             return advertService.getAdverts(advertListRequest);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -36,7 +51,7 @@ public class AdvertController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getAdvertById(@PathVariable Long id) {
         try {
-            log.debug("AdvertController: Get advert by id");
+            log.info("AdvertController: Get advert by id");
             return advertService.getById(id);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -45,10 +60,10 @@ public class AdvertController {
 
     @Operation(tags = {"Advert"}, description = "Save advert")
     @PostMapping("/save")
-    public ResponseEntity<?> saveAdvert(@RequestBody AdvertDto advertDto) {
+    public ResponseEntity<?> saveAdvert(@Validated @RequestBody AdvertRequestDto advertRequestDto) {
         try {
-            log.debug("AdvertController: Save new advert");
-            return advertService.saveAdvert(advertDto);
+            log.info("AdvertController: Save new advert");
+            return advertService.saveAdvert(advertRequestDto);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
@@ -56,10 +71,10 @@ public class AdvertController {
 
     @Operation(tags = {"Advert"}, description = "Update advert")
     @PutMapping("/update")
-    public ResponseEntity<?> updateAdvert(@RequestBody AdvertDto advertDto) {
+    public ResponseEntity<?> updateAdvert(@Validated @RequestBody AdvertRequestDto advertRequestDto) {
         try {
-            log.debug("AdvertController: Update advert: " + advertDto.getId());
-            return advertService.updateAdvert(advertDto);
+            log.info("AdvertController: Update advert: " + advertRequestDto.getId());
+            return advertService.updateAdvert(advertRequestDto);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }

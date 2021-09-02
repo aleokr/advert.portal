@@ -42,14 +42,16 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManagerBean(), securityUtils);
         authenticationFilter.setFilterProcessesUrl("/api/v1/auth");
         http.csrf().disable();
-        http.cors();
+        http.cors().and();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests().antMatchers(
                 "/api/v1/auth",
                 "/api/v1/auth/refreshToken",
                 "/api/v1/adverts/getAdverts",
                 "/api/v1/adverts/{id}",
-                "/management/api/v1/users/addUser").permitAll();
+                "/management/api/v1/users/addUser",
+                "/api/v1/users/roles",
+                "/api/v1/companies/list").permitAll();
 
         http.authorizeRequests().antMatchers(
                 "/swagger-resources",
@@ -72,7 +74,8 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedHeaders(List.of("Content-Type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

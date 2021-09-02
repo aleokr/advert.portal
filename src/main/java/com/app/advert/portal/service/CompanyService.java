@@ -1,6 +1,7 @@
 package com.app.advert.portal.service;
 
-import com.app.advert.portal.dto.CompanyDto;
+import com.app.advert.portal.dto.CompanyListRequest;
+import com.app.advert.portal.dto.CompanyRequestDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -10,9 +11,12 @@ public interface CompanyService {
 
     ResponseEntity<?> getById(Long id);
 
-    ResponseEntity<?> saveCompany(CompanyDto companyDto);
+    ResponseEntity<?> saveCompany(CompanyRequestDto companyDto);
 
-    ResponseEntity<?> updateCompany(CompanyDto companyDto);
+    ResponseEntity<?> updateCompany(CompanyRequestDto companyDto);
 
     ResponseEntity<?> deleteCompany(Long companyId);
+
+    ResponseEntity<?> companiesList(CompanyListRequest companyListRequest);
+
 }

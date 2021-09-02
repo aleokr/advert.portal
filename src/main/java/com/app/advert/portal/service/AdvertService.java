@@ -1,6 +1,6 @@
 package com.app.advert.portal.service;
 
-import com.app.advert.portal.dto.AdvertDto;
+import com.app.advert.portal.dto.AdvertRequestDto;
 import com.app.advert.portal.dto.AdvertListRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,9 +13,9 @@ public interface AdvertService {
 
     ResponseEntity<?> getAdverts(AdvertListRequest request);
 
-    ResponseEntity<?> saveAdvert(AdvertDto advertDto);
+    ResponseEntity<?> saveAdvert(AdvertRequestDto advertRequestDto);
 
-    ResponseEntity<?> updateAdvert(AdvertDto advertDto);
+    ResponseEntity<?> updateAdvert(AdvertRequestDto advertRequestDto);
 
     ResponseEntity<?> deleteAdvert(Long advertId);
 

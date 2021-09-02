@@ -57,7 +57,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 authorities.add(new SimpleGrantedAuthority(permission.getName()));
             }
         }
-        return new UserPrincipal(user.getLogin(), user.getPassword(), user.getId(), user.getCompanyId(), authorities);
+        return new UserPrincipal(user.getLogin(), user.getPassword(), user.getId(), user.getActive() ? user.getCompanyId() : null, authorities);
     }
 
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
