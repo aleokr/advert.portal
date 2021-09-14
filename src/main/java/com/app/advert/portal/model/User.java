@@ -1,5 +1,6 @@
 package com.app.advert.portal.model;
 
+import com.app.advert.portal.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +28,8 @@ public class User {
     private String password;
 
     private Long companyId;
+
+    private UserRole type;
 
     private List<Role> roles;
 

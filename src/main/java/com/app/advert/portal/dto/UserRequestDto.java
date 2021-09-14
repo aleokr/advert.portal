@@ -27,7 +27,6 @@ public class UserRequestDto {
     @NotEmpty
     String password;
 
-    @NotEmpty
     UserRole userRole;
 
     Long companyId;

@@ -1,12 +1,14 @@
 package com.app.advert.portal.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Value;
+import com.app.advert.portal.enums.AdvertCategory;
+import com.app.advert.portal.enums.AdvertType;
+import lombok.*;
+
 
 @Value
 @Builder
 @Getter
+@AllArgsConstructor
 public class AdvertResponse {
 
     Long id;
@@ -20,4 +22,13 @@ public class AdvertResponse {
     Long userId;
 
     Boolean applicationExists;
+
+    AdvertCategory advertCategory;
+
+    AdvertType advertType;
+
+    String createdAt;
+
+    String addedBy;
+
 }

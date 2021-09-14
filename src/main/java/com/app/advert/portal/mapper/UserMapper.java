@@ -31,7 +31,7 @@ public interface UserMapper {
             @Result(property = "permissions", javaType = List.class, column = "id", many = @Many(select = "getPermissionByRoleId"))})
     List<Role> getRolesAndPermissionsByUserId(Long id);
 
-    @Insert("INSERT INTO USERS(name, surname, email, login, password, created_at, active, company_id) values (#{name},#{surname},#{email},#{login},#{password}, now(),#{active},#{companyId})")
+    @Insert("INSERT INTO USERS(name, surname, email, login, password, created_at, active, company_id, user_type) values (#{name},#{surname},#{email},#{login},#{password},now(),#{active},#{companyId},#{type})")
     void saveUser(User user);
 
     @Update("UPDATE USERS SET name = #{name}, surname = #{surname}, email = #{email} where id = #{id}")
