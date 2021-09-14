@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User userToSave = new User(null, userDto.getName(), userDto.getSurname(), userDto.getEmail(),
-                userDto.getLogin(), passwordEncoder.encode(userDto.getPassword()), userDto.getCompanyId(), null, userDto.getUserRole().equals(UserRole.INDIVIDUAL_USER) || userDto.getUserRole().equals(UserRole.COMPANY_ADMIN));
+                userDto.getLogin(), passwordEncoder.encode(userDto.getPassword()), userDto.getCompanyId(), userDto.getUserRole(), null, userDto.getUserRole().equals(UserRole.INDIVIDUAL_USER) || userDto.getUserRole().equals(UserRole.COMPANY_ADMIN));
         userMapper.saveUser(userToSave);
         userMapper.addRoleToUser(userDto.getUserRole().name(), userToSave.getLogin());
 

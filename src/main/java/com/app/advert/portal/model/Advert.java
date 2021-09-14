@@ -1,5 +1,7 @@
 package com.app.advert.portal.model;
 
+import com.app.advert.portal.enums.AdvertCategory;
+import com.app.advert.portal.enums.AdvertType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,5 +20,9 @@ public class Advert {
     private String longDescription;
 
     private Long userId;
+
+//    private AdvertCategory category;
+//
+//    private AdvertType advertType;
 
 }
