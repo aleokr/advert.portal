@@ -20,4 +20,6 @@ public interface AdvertService {
     ResponseEntity<?> deleteAdvert(Long advertId);
 
     ResponseEntity<?> archivedAdvert(Long advertId);
+
+    ResponseEntity<?> getAdvertCategories();
 }

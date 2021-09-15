@@ -88,6 +88,12 @@ public class AdvertServiceImpl implements AdvertService {
         return ResponseEntity.ok().body(advertMapper.getById(advertId));
     }
 
+    @Override
+    public ResponseEntity<?> getAdvertCategories() {
+        return ResponseEntity.ok().body(advertMapper.getAdvertCategories());
+    }
+
+
     private boolean noAccessToAdvert(Long advertId) {
         if (advertId == null) return true;
         User user = advertMapper.getUserByAdvertId(advertId);

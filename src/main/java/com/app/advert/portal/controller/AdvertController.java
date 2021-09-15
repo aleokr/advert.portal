@@ -103,4 +103,15 @@ public class AdvertController {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
+
+    @Operation(tags = {"Advert"}, description = "Return categories of adverts")
+    @GetMapping("/categories")
+    public ResponseEntity<?> getAdvertCategories() {
+        try {
+            log.info("AdvertController: Return categories of adverts");
+            return advertService.getAdvertCategories();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
 }

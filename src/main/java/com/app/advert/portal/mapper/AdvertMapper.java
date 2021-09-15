@@ -2,6 +2,7 @@ package com.app.advert.portal.mapper;
 
 import com.app.advert.portal.dto.AdvertListRequest;
 import com.app.advert.portal.dto.AdvertResponse;
+import com.app.advert.portal.enums.AdvertCategory;
 import com.app.advert.portal.model.Advert;
 import com.app.advert.portal.model.User;
 import org.apache.ibatis.annotations.*;
@@ -60,4 +61,7 @@ public interface AdvertMapper {
     @Results(value = {
             @Result(property = "companyId", column = "company_id")})
     User getUserByAdvertId(Long advertId);
+
+    @Select("SELECT name from ADVERT_CATEGORY")
+    List<AdvertCategory> getAdvertCategories();
 }
