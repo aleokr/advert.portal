@@ -1,5 +1,6 @@
 package com.app.advert.portal.dto;
 
+import com.app.advert.portal.enums.AdvertCategory;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
@@ -20,5 +21,7 @@ public class AdvertRequestDto {
     String shortDescription;
 
     String longDescription;
+
+    AdvertCategory category;
 
 }

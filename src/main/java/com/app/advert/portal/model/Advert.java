@@ -21,8 +21,8 @@ public class Advert {
 
     private Long userId;
 
-//    private AdvertCategory category;
-//
-//    private AdvertType advertType;
+    private AdvertCategory category;
+
+    private AdvertType type;
 
 }

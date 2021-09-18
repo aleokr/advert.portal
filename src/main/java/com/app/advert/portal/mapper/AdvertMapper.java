@@ -41,7 +41,10 @@ public interface AdvertMapper {
             @Result(property = "userId", column = "user_id")})
     Advert getById(Long id);
 
-    @Insert("INSERT INTO ADVERTS(title, short_description, long_description, user_id) values (#{title}, #{shortDescription}, #{longDescription}, #{userId})")
+    @Insert("INSERT INTO ADVERTS(title, short_description, long_description, user_id, category_id, type_id, created_at) " +
+            "values (#{title}, #{shortDescription}, #{longDescription}, #{userId}," +
+            "(SELECT id FROM ADVERT_CATEGORY WHERE name = #{category})," +
+            "(SELECT id FROM ADVERT_TYPE WHERE name = #{type}), now()) ")
     void saveAdvert(Advert advert);
 
     @Update("UPDATE ADVERTS SET title = #{title}, short_description = #{shortDescription}, long_description = #{longDescription} where id = #{id}")
@@ -62,6 +65,6 @@ public interface AdvertMapper {
             @Result(property = "companyId", column = "company_id")})
     User getUserByAdvertId(Long advertId);
 
-    @Select("SELECT name from ADVERT_CATEGORY")
+    @Select("SELECT name from ADVERT_CATEGORY ORDER BY name ASC")
     List<AdvertCategory> getAdvertCategories();
 }

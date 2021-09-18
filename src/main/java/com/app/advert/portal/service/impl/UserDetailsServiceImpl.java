@@ -27,7 +27,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Service
@@ -78,6 +78,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                         .withExpiresAt(new Date(System.currentTimeMillis() + securityUtils.getExpirationTime()))
                         .withIssuer(request.getRequestURL().toString())
                         .withClaim("roles", user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
+                        .withClaim("id", user.getId())
+                        .withClaim("companyId", user.getCompanyId())
                         .sign(algorithm);
 
                 Map<String, String> tokens = new HashMap<>();
@@ -87,7 +89,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 new ObjectMapper().writeValue(response.getOutputStream(), tokens);
 
             } catch (Exception exception) {
-                response.setStatus(FORBIDDEN.value());
+                response.setStatus(UNAUTHORIZED.value());
                 Map<String, String> errors = new HashMap<>();
                 errors.put("error_message", exception.getMessage());
                 response.setContentType(APPLICATION_JSON_VALUE);

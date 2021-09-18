@@ -3,6 +3,7 @@ package com.app.advert.portal.service.impl;
 import com.app.advert.portal.dto.AdvertRequestDto;
 import com.app.advert.portal.dto.AdvertListRequest;
 import com.app.advert.portal.dto.AdvertResponse;
+import com.app.advert.portal.enums.AdvertType;
 import com.app.advert.portal.mapper.AdvertMapper;
 import com.app.advert.portal.model.Advert;
 import com.app.advert.portal.model.User;
@@ -46,7 +47,8 @@ public class AdvertServiceImpl implements AdvertService {
 
     @Override
     public ResponseEntity<?> saveAdvert(AdvertRequestDto advertRequestDto) {
-        Advert advert = new Advert(null, advertRequestDto.getTitle(), advertRequestDto.getShortDescription(), advertRequestDto.getLongDescription(), SecurityUtils.getLoggedUserId());
+        Advert advert = new Advert(null, advertRequestDto.getTitle(), advertRequestDto.getShortDescription(),
+                advertRequestDto.getLongDescription(), SecurityUtils.getLoggedUserId(), advertRequestDto.getCategory(), SecurityUtils.getLoggedCompanyId() != null ? AdvertType.COMPANY : AdvertType.INDIVIDUAL);
         advertMapper.saveAdvert(advert);
         return ResponseEntity.ok().body(advertMapper.getById(advertMapper.lastAddAdvertId()));
     }
