@@ -67,6 +67,6 @@ public interface UserMapper {
     @Update("UPDATE USERS SET active = true where id = #{userId}")
     void activateUser(Long userId);
 
-    @Select("SELECT name from ROLES")
+    @Select("SELECT name from ROLES ORDER BY name ASC")
     List<Role> getUserRoles();
 }
