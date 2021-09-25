@@ -3,6 +3,7 @@ package com.app.advert.portal.controller;
 import com.app.advert.portal.dto.AdvertRequestDto;
 import com.app.advert.portal.dto.AdvertListRequest;
 import com.app.advert.portal.enums.AdvertType;
+import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.AdvertService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,12 +32,12 @@ public class AdvertController {
             @RequestParam(required = false) Long companyId,
             @RequestParam(required = false) Long offset,
             @RequestParam(required = false) Long limit,
-            @RequestParam AdvertType type) {
+            @RequestParam(required = false) AdvertType type) {
         try {
             AdvertListRequest advertListRequest = AdvertListRequest.builder()
                     .id(id)
-                    .userId(userId)
-                    .companyId(companyId)
+                    .userId(type != null ? userId : (SecurityUtils.getLoggedCompanyId() == null ? SecurityUtils.getLoggedUserId() : null))
+                    .companyId(type != null ? companyId : SecurityUtils.getLoggedCompanyId())
                     .offset(offset)
                     .limit(limit)
                     .type(type)
