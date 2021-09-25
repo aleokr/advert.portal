@@ -1,5 +1,7 @@
 package com.app.advert.portal.dto;
 
+import com.app.advert.portal.enums.AdvertCategory;
+import com.app.advert.portal.service.ApplicationService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,11 +17,15 @@ public class ApplicationResponse {
 
     String advertTitle;
 
+    String advertShortDescription;
+
     Long userId;
 
-    String userName;
+    String addedBy;
 
     Long companyId;
 
-    String companyName;
+    AdvertCategory advertCategory;
+
+    String createdAt;
 }
