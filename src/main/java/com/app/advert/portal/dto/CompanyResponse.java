@@ -1,14 +1,24 @@
 package com.app.advert.portal.dto;
 
 import lombok.Builder;
+import lombok.Data;
+import lombok.Setter;
 import lombok.Value;
 
+import java.util.List;
+
 @Builder
-@Value
+@Data
 public class CompanyResponse {
 
-    Long id;
+    private Long id;
 
-    String name;
+    private String name;
+
+    private String description;
+
+    private List<UserResponse> members;
+
+    private List<UserResponse> requestToJoin;
 
 }

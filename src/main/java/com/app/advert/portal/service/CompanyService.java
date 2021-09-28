@@ -19,4 +19,5 @@ public interface CompanyService {
 
     ResponseEntity<?> companiesList(CompanyListRequest companyListRequest);
 
+    ResponseEntity<?> getLoggedUserCompany();
 }

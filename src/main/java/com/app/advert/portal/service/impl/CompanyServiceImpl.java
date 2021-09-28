@@ -2,6 +2,7 @@ package com.app.advert.portal.service.impl;
 
 import com.app.advert.portal.dto.CompanyListRequest;
 import com.app.advert.portal.dto.CompanyRequestDto;
+import com.app.advert.portal.dto.CompanyResponse;
 import com.app.advert.portal.enums.UserRole;
 import com.app.advert.portal.mapper.CompanyMapper;
 import com.app.advert.portal.mapper.UserMapper;
@@ -95,11 +96,11 @@ public class CompanyServiceImpl implements CompanyService {
     public ResponseEntity<?> companiesList(CompanyListRequest companyListRequest) {
         Long limit = null;
         Long offset = null;
-        if(companyListRequest.getOffset() != null && companyListRequest.getLimit() == null){
+        if (companyListRequest.getOffset() != null && companyListRequest.getLimit() == null) {
             limit = 100L;
         }
 
-        if(companyListRequest.getLimit() != null && companyListRequest.getOffset() == null){
+        if (companyListRequest.getLimit() != null && companyListRequest.getOffset() == null) {
             offset = 0L;
         }
 
@@ -109,5 +110,18 @@ public class CompanyServiceImpl implements CompanyService {
                 .offset(offset != null ? offset : companyListRequest.getOffset())
                 .build();
         return ResponseEntity.ok().body(companyMapper.getCompaniesList(request));
+    }
+
+    @Override
+    public ResponseEntity<?> getLoggedUserCompany() {
+        if (SecurityUtils.getLoggedCompanyId() == null) {
+            return ResponseEntity.badRequest().body("No company id!");
+        }
+        CompanyResponse company = companyMapper.getLoggedUserCompany(SecurityUtils.getLoggedCompanyId());
+
+        if (SecurityUtils.isUserCompanyAdmin()) {
+            company.setRequestToJoin(companyMapper.getRequestToJoin(SecurityUtils.getLoggedCompanyId()));
+        }
+        return ResponseEntity.ok().body(company);
     }
 }
