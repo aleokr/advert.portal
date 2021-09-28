@@ -2,6 +2,7 @@ package com.app.advert.portal.mapper;
 
 import com.app.advert.portal.dto.CompanyListRequest;
 import com.app.advert.portal.dto.CompanyResponse;
+import com.app.advert.portal.dto.UserResponse;
 import com.app.advert.portal.model.Company;
 import org.apache.ibatis.annotations.*;
 
@@ -26,10 +27,26 @@ public interface CompanyMapper {
     void deleteCompanyById(Long companyId);
 
     @Select("<script>" +
-            "SELECT id, name FROM COMPANIES WHERE 1 = 1 " +
+            "SELECT id, name, null, null, null FROM COMPANIES WHERE 1 = 1 " +
             "<if test = 'name != null'> and name LIKE CONCAT('%', #{name}, '%') </if> " +
             "<if test = 'limit != null'> LIMIT #{limit} </if> " +
             "<if test = 'offset != null'> OFFSET #{offset}</if> " +
             "</script>")
-    List<CompanyResponse>getCompaniesList(CompanyListRequest companyListRequest);
+    List<CompanyResponse> getCompaniesList(CompanyListRequest companyListRequest);
+
+    @Select("SELECT id, name, description, null, null from COMPANIES where id=#{id}")
+    @Results(value = {
+            @Result(property = "id", column = "id"),
+            @Result(property = "members", javaType = List.class, column = "id", many = @Many(select = "getCompanyUsers"))
+    })
+    CompanyResponse getLoggedUserCompany(Long id);
+
+    @Select("SELECT id, name, surname, email from USERS where company_id=#{id} and active = true")
+    @Results(value = {
+            @Result(property = "id", column = "id")
+    })
+    List<UserResponse> getCompanyUsers(Long id);
+
+    @Select("SELECT id, name, surname, email from USERS where company_id=#{id} and active = false")
+    List<UserResponse> getRequestToJoin(Long id);
 }

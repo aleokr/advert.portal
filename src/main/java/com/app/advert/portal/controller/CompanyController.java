@@ -54,4 +54,16 @@ public class CompanyController {
         }
 
     }
+
+    @Operation(tags = {"Company"}, description = "Get logged user company")
+    @GetMapping("/")
+    public ResponseEntity<?> getLoggedUserCompany() {
+        try {
+            log.info("CompanyController: Get logged user company");
+            return companyService.getLoggedUserCompany();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e);
+        }
+
+    }
 }
