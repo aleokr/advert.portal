@@ -37,7 +37,7 @@ public class UserManagementController {
 
     @DeleteMapping("/{id}")
     @Operation(tags = {"User management"}, description = "Delete user")
-    @PreAuthorize("hasAuthority('USER_WRITE')")
+    @PreAuthorize("hasAnyAuthority('USER_WRITE', 'COMPANY_ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable("id") Long userId) {
         try {
             log.info("UserManagementController: Delete user: " + userId);

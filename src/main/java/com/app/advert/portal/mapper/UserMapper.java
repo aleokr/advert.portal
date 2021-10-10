@@ -35,7 +35,11 @@ public interface UserMapper {
     @Insert("INSERT INTO USERS(name, surname, email, login, password, created_at, active, company_id, user_type) values (#{name},#{surname},#{email},#{login},#{password},now(),#{active},#{companyId},#{type})")
     void saveUser(User user);
 
-    @Update("UPDATE USERS SET name = #{name}, surname = #{surname}, email = #{email} where id = #{id}")
+    @Update("<script>" +
+            "UPDATE USERS SET name = #{name}, surname = #{surname}, email = #{email}" +
+            " <if test = 'password != null'>, password = #{password} </if> " +
+            "where id = #{id} " +
+            "</script>")
     void updateUser(User user);
 
     @Insert("INSERT INTO USER_ROLE(role_id, user_id) values ((SELECT id FROM ROLES WHERE name = #{roleName}),(SELECT id FROM USERS WHERE login = #{username}))")

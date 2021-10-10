@@ -24,7 +24,6 @@ public class UserRequestDto {
     @NotEmpty
     String login;
 
-    @NotEmpty
     String password;
 
     UserRole userRole;

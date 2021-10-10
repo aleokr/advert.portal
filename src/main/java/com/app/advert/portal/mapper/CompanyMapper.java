@@ -41,12 +41,12 @@ public interface CompanyMapper {
     })
     CompanyResponse getLoggedUserCompany(Long id);
 
-    @Select("SELECT id, name, surname, email from USERS where company_id=#{id} and active = true")
+    @Select("SELECT id, name, surname, email, login from USERS where company_id=#{id} and active = true")
     @Results(value = {
             @Result(property = "id", column = "id")
     })
     List<UserResponse> getCompanyUsers(Long id);
 
-    @Select("SELECT id, name, surname, email from USERS where company_id=#{id} and active = false")
+    @Select("SELECT id, name, surname, email, login from USERS where company_id=#{id} and active = false")
     List<UserResponse> getRequestToJoin(Long id);
 }

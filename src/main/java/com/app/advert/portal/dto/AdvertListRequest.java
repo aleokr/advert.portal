@@ -21,4 +21,6 @@ public class AdvertListRequest {
     Long limit;
 
     AdvertType type;
+
+    boolean count;
 }

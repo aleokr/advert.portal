@@ -67,4 +67,14 @@ public interface AdvertMapper {
 
     @Select("SELECT name from ADVERT_CATEGORY ORDER BY name ASC")
     List<AdvertCategory> getAdvertCategories();
+
+    @Select("<script>" +
+                    "SELECT  count(*) " +
+                    "FROM ADVERTS a " +
+                    "LEFT JOIN USERS u ON u.id = a.user_id " +
+                    "WHERE 1 = 1 " +
+                    "<if test = 'companyId != null'> and u.company_id = #{companyId} </if> " +
+                    "<if test = 'userId != null'> and u.id = #{userId} </if> " +
+                    "</script>")
+    Integer getAdvertsCountByUser(Long companyId, Long userId);
 }

@@ -64,4 +64,33 @@ public interface ApplicationMapper {
             " LIMIT 1) " +
             "</script>")
     Boolean checkApplicationExists(Long advertId, Long userId, Long companyId);
+
+    @Select("<script>" +
+            "SELECT  count(*) " +
+            "FROM APPLICATIONS a " +
+            "LEFT JOIN USERS u ON u.id = a.user_id " +
+            "WHERE 1 = 1 " +
+            "<if test = 'companyId != null'> and a.company_id = #{companyId} </if> " +
+            "<if test = 'userId != null'> and a.user_id = #{userId} </if> " +
+            "</script>")
+    Integer getResponsesCountByUser(Long companyId, Long userId);
+
+    @Select("<script>" +
+            "SELECT  count(*) " +
+            "FROM APPLICATIONS a " +
+            "LEFT JOIN ADVERTS ad ON ad.id = a.advert_id " +
+            "<choose>" +
+            "  <when test='companyId != null'> " +
+            "   LEFT JOIN USERS u on u.id = a.user_id" +
+            "   LEFT JOIN USERS ur on ur.id = ad.user_id " +
+            " </when>" +
+            "  <otherwise> " +
+            "   LEFT JOIN COMPANIES c ON c.id = a.company_id  " +
+            "  </otherwise>" +
+            "</choose>" +
+            "WHERE 1 = 1 " +
+            "<if test = 'userId != null'> and ad.user_id = #{userId} </if> " +
+            "<if test = 'companyId != null'> and ur.company_id = #{companyId} </if> " +
+            "</script>")
+    Integer getApplicationsCountByUser(Long companyId, Long userId);
 }

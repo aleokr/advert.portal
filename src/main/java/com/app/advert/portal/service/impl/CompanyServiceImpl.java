@@ -60,7 +60,7 @@ public class CompanyServiceImpl implements CompanyService {
     public ResponseEntity<?> updateCompany(CompanyRequestDto companyDto) {
         User user = userMapper.getById(SecurityUtils.getLoggedUserId());
 
-        if (!user.getCompanyId().equals(companyDto.getId()) || user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.COMPANY_USER.name()))) {
+        if (!user.getCompanyId().equals(companyDto.getId()) || user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.COMPANY_ADMIN.name()))) {
             return ResponseEntity.badRequest().body("No access to resource");
         }
         Company companyByName = companyMapper.getCompanyByName(companyDto.getName());
