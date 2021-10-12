@@ -1,14 +1,12 @@
 package com.app.advert.portal.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Value;
+import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 
-@Value
-@Builder
-@Getter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CompanyRequestDto {
 
     Long id;

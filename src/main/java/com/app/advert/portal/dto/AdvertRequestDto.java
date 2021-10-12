@@ -1,15 +1,13 @@
 package com.app.advert.portal.dto;
 
 import com.app.advert.portal.enums.AdvertCategory;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Value;
+import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 
-@Value
-@Builder
-@Getter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AdvertRequestDto {
 
     Long id;

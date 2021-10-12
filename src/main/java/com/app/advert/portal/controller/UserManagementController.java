@@ -70,13 +70,7 @@ public class UserManagementController {
             @RequestParam(required = false) Long limit
     ) {
         try {
-            UserListRequest userListRequest = UserListRequest.builder()
-                    .active(active)
-                    .companyId(companyId)
-                    .offset(offset)
-                    .limit(limit)
-                    .build();
-
+            UserListRequest userListRequest = new UserListRequest(companyId, offset, limit, active);
             log.info("UserManagementController: List of users");
             return userService.getUsers(userListRequest);
         } catch (Exception e) {

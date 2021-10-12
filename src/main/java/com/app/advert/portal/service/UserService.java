@@ -14,13 +14,13 @@ public interface UserService {
 
     User getByUsername(String username);
 
-    ResponseEntity<?>  saveUser(UserRequestDto userDto);
+    ResponseEntity<?> saveUser(UserRequestDto userDto);
 
-    ResponseEntity<?>  updateUser(UserRequestDto userDto);
+    ResponseEntity<?> updateUser(UserRequestDto userDto);
 
-    ResponseEntity<?>  deleteUser(Long userId);
+    ResponseEntity<?> deleteUser(Long userId);
 
-    ResponseEntity<?>  getUsers(UserListRequest userListRequest);
+    ResponseEntity<?> getUsers(UserListRequest userListRequest);
 
     ResponseEntity<?> activateUser(Long userId);
 

@@ -1,5 +1,6 @@
 package com.app.advert.portal.dto;
 
+import com.app.advert.portal.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -24,6 +25,12 @@ public class UserResponse {
     private String email;
 
     private String login;
+
+    private Long companyId;
+
+    private Boolean active;
+
+    private UserRole type;
 
     private Integer advertsCount;
 

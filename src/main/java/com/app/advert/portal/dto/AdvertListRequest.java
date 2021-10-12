@@ -1,13 +1,11 @@
 package com.app.advert.portal.dto;
 
 import com.app.advert.portal.enums.AdvertType;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Value;
+import lombok.*;
 
-@Value
-@Builder
-@Getter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AdvertListRequest {
 
     Long id;

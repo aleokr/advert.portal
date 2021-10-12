@@ -104,11 +104,8 @@ public class CompanyServiceImpl implements CompanyService {
             offset = 0L;
         }
 
-        CompanyListRequest request = CompanyListRequest.builder()
-                .name(companyListRequest.getName())
-                .limit(limit != null ? limit : companyListRequest.getLimit())
-                .offset(offset != null ? offset : companyListRequest.getOffset())
-                .build();
+        CompanyListRequest request = new CompanyListRequest(companyListRequest.getName(), limit != null ? limit : companyListRequest.getLimit(),
+                offset != null ? offset : companyListRequest.getOffset());
         return ResponseEntity.ok().body(companyMapper.getCompaniesList(request));
     }
 
