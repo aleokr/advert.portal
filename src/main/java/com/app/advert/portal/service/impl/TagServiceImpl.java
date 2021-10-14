@@ -39,4 +39,9 @@ public class TagServiceImpl implements TagService {
 
         return ResponseEntity.ok().build();
     }
+
+    @Override
+    public ResponseEntity<?> getTagsList(Integer limit, Integer offset) {
+        return ResponseEntity.ok().body(tagMapper.getTagsList(limit, offset));
+    }
 }

@@ -1,5 +1,6 @@
 package com.app.advert.portal.controller;
 
+import com.app.advert.portal.dto.CompanyListRequest;
 import com.app.advert.portal.dto.ResourceTagRequestDto;
 import com.app.advert.portal.dto.TagRequestDto;
 import com.app.advert.portal.service.TagService;
@@ -10,10 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/tags")
@@ -44,5 +42,20 @@ public class TagController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
+    }
+
+    @Operation(tags = {"Tag"}, description = "Return tags list")
+    @GetMapping("/list")
+    public ResponseEntity<?> getCompaniesList(
+            @RequestParam(required = false) Integer offset,
+            @RequestParam(required = false) Integer limit
+    ) {
+        try {
+            log.info("TagController: Return tags list");
+            return tagService.getTagsList(limit, offset);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e);
+        }
+
     }
 }

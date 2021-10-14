@@ -10,4 +10,6 @@ public interface TagService {
     ResponseEntity<?> saveTag(String name);
 
     ResponseEntity<?> saveResourceTag(ResourceTagRequestDto request);
+
+    ResponseEntity<?> getTagsList(Integer limit, Integer offset);
 }

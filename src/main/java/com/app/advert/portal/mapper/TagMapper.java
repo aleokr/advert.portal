@@ -3,6 +3,8 @@ package com.app.advert.portal.mapper;
 import com.app.advert.portal.model.Tag;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 
 @Mapper
 public interface TagMapper {
@@ -22,4 +24,14 @@ public interface TagMapper {
 
     @Insert("INSERT INTO RESOURCE_TAG (tag_id, resource_id) values (#{tagId}, #{resourceId})")
     void saveResourceTag(Long resourceId, Long tagId);
+
+    @Select("<script>" +
+            "SELECT id, name from TAGS " +
+            "ORDER BY name ASC " +
+            "<if test = 'limit != null'> LIMIT #{limit}</if> " +
+            "<if test = 'offset != null'> OFFSET #{offset}</if> " +
+            "</script>")
+    @Results(value = {
+            @Result(property = "id", column = "id")})
+    List<Tag> getTagsList(Integer limit, Integer offset);
 }
