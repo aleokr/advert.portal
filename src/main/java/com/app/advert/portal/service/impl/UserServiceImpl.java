@@ -33,11 +33,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<?> getById(Long id) {
-        User user = userMapper.getById(SecurityUtils.getLoggedUserId());
-        if (user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.COMPANY_USER.name())) && !user.getId().equals(id)) {
-            return ResponseEntity.badRequest().body("No access to resource");
-        }
-        return ResponseEntity.ok().body(userMapper.getById(id));
+        User user = userMapper.getById(id);
+        return getUserStatistics(user);
     }
 
     @Override
@@ -115,6 +112,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> getLoggedUserInfo() {
         User user = userMapper.getById(SecurityUtils.getLoggedUserId());
+        return getUserStatistics(user);
+    }
+
+    private ResponseEntity<?> getUserStatistics(User user) {
         Integer advertsCount = advertMapper.getAdvertsCountByUser(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
         Integer responsesCount = applicationMapper.getResponsesCountByUser(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
         Integer applicationsCount = applicationMapper.getApplicationsCountByUser(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());

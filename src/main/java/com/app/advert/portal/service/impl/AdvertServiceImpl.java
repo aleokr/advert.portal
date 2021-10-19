@@ -28,16 +28,12 @@ public class AdvertServiceImpl implements AdvertService {
 
     @Override
     public ResponseEntity<?> getById(Long id) {
-        Advert advert = advertMapper.getById(id);
-        AdvertResponse advertResponse = AdvertResponse.builder()
-                .id(advert.getId())
-                .title(advert.getTitle())
-                .shortDescription(advert.getShortDescription())
-                .longDescription(advert.getLongDescription())
-                .userId(advert.getUserId())
-                .applicationExists(applicationService.checkIfApplicationExists(id, SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId()))
-                .build();
-        return ResponseEntity.ok().body(advertResponse);
+        AdvertResponse advert = advertMapper.getAdvertInfoById(id);
+        advert.setApplicationExists(applicationService.checkIfApplicationExists(id, SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId()));
+        advert.setCanEdit(advert.getOwnerId().equals(SecurityUtils.getLoggedUserId()) || advert.getOwnerId().equals(SecurityUtils.getLoggedCompanyId()));
+        advert.setCanApplicate(!advert.getApplicationExists() && !advert.getCanEdit()
+                && ((advert.getAdvertType().equals(AdvertType.COMPANY) && !SecurityUtils.isCompanyUser()) || (advert.getAdvertType().equals(AdvertType.INDIVIDUAL) && SecurityUtils.isCompanyUser())));
+        return ResponseEntity.ok().body(advert);
     }
 
     @Override
@@ -62,7 +58,7 @@ public class AdvertServiceImpl implements AdvertService {
 
         Advert advert = advertMapper.getById(advertDto.getId());
         advert.setLongDescription(advertDto.getLongDescription());
-        advert.setShortDescription(advert.getShortDescription());
+        advert.setShortDescription(advertDto.getShortDescription());
         advert.setTitle(advertDto.getTitle());
         advertMapper.updateAdvert(advert);
 

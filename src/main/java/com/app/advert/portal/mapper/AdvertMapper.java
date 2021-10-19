@@ -14,7 +14,7 @@ public interface AdvertMapper {
     @Select(
             "<script>" +
                     "SELECT a.id as id, a.title as title, a.short_description as shortDescription, null as longDescription, " +
-                    "a.user_id as userId, null as applicationExists, c.name as advertCategory, t.name as advertType, a.created_at as createdAt,  " +
+                    "a.user_id as ownerId, c.name as advertCategory, t.name as advertType, DATE_FORMAT(a.created_at, '%Y-%m-%d') as createdAt,  " +
                     "<choose>" +
                     "  <when test = 'type != null and type.name() == \"INDIVIDUAL\" '> concat(u.name, ' ', u.surname) as addedBy </when>" +
                     "  <otherwise> com.name as addedBy </otherwise>" +
@@ -78,4 +78,24 @@ public interface AdvertMapper {
             "<if test = 'userId != null'> and u.id = #{userId} </if> " +
             "</script>")
     Integer getAdvertsCountByUser(Long companyId, Long userId);
+
+    @Select("<script>" +
+            "SELECT a.id as id, a.title as title, a.short_description as shortDescription, a.long_description as longDescription, " +
+            "CASE " +
+            "   WHEN t.name LIKE 'COMPANY' THEN com.id  " +
+            "   ELSE a.user_id " +
+            "END as ownerId, " +
+            "c.name as advertCategory, t.name as advertType, DATE_FORMAT(a.created_at, '%Y-%m-%d') as createdAt,  " +
+            "CASE " +
+            "   WHEN t.name LIKE 'COMPANY' THEN com.name  " +
+            "   ELSE  concat(u.name, ' ', u.surname) " +
+            "END as addedBy " +
+            "FROM ADVERTS a " +
+            "LEFT JOIN USERS u ON u.id = a.user_id " +
+            "LEFT JOIN ADVERT_CATEGORY c on c.id = a.category_id " +
+            "LEFT JOIN ADVERT_TYPE t on t.id = a.type_id " +
+            "LEFT JOIN COMPANIES com ON com.id = u.company_id " +
+            "WHERE a.id = #{id} " +
+            "</script>")
+    AdvertResponse getAdvertInfoById(Long id);
 }

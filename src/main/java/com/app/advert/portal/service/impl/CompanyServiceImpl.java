@@ -27,10 +27,6 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public ResponseEntity<?> getById(Long id) {
-        User user = userMapper.getById(SecurityUtils.getLoggedUserId());
-        if (user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.INDIVIDUAL_USER.name())) && !user.getCompanyId().equals(id) || !user.getActive()) {
-            return ResponseEntity.badRequest().body("No access to resource");
-        }
         return ResponseEntity.ok().body(companyMapper.getById(id));
     }
 

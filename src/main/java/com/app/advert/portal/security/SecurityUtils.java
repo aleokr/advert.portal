@@ -53,4 +53,14 @@ public final class SecurityUtils {
         }
         return false;
     }
+
+    public static boolean isCompanyUser() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+
+        if (authentication != null && authentication.getPrincipal() != null && !authentication.getPrincipal().equals("anonymousUser")) {
+            return ((UserPrincipal) authentication.getPrincipal()).getAuthorities().stream().anyMatch(e-> e.getAuthority().equals("COMPANY_ADMIN") || e.getAuthority().equals("COMPANY_USER"));
+        }
+        return false;
+    }
 }

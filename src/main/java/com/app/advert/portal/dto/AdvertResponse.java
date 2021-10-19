@@ -5,9 +5,7 @@ import com.app.advert.portal.enums.AdvertType;
 import lombok.*;
 
 
-@Value
-@Builder
-@Getter
+@Data
 @AllArgsConstructor
 public class AdvertResponse {
 
@@ -19,7 +17,7 @@ public class AdvertResponse {
 
     String longDescription;
 
-    Long userId;
+    Long ownerId;
 
     Boolean applicationExists;
 
@@ -31,4 +29,19 @@ public class AdvertResponse {
 
     String addedBy;
 
+    Boolean canEdit;
+
+    Boolean canApplicate;
+
+    public AdvertResponse(Long id, String title, String shortDescription, String longDescription, Long ownerId, AdvertCategory advertCategory, AdvertType advertType, String createdAt, String addedBy) {
+        this.id = id;
+        this.title = title;
+        this.shortDescription = shortDescription;
+        this.longDescription = longDescription;
+        this.ownerId = ownerId;
+        this.advertCategory = advertCategory;
+        this.advertType = advertType;
+        this.createdAt = createdAt;
+        this.addedBy = addedBy;
+    }
 }

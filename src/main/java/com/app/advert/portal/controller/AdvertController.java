@@ -85,7 +85,7 @@ public class AdvertController {
         }
     }
 
-    @Operation(tags = {"Advert"}, description = "Archived advert")
+    @Operation(tags = {"Advert"}, description = "Delete advert")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAdvert(@PathVariable Long id) {
         try {

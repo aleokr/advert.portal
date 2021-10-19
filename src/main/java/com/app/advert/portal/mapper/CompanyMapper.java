@@ -11,8 +11,12 @@ import java.util.List;
 @Mapper
 public interface CompanyMapper {
 
-    @Select("SELECT id, name, description FROM COMPANIES WHERE id = #{id}")
-    Company getById(Long id);
+    @Select("SELECT id, name, description, null, null from COMPANIES where id=#{id}")
+    @Results(value = {
+            @Result(property = "id", column = "id"),
+            @Result(property = "members", javaType = List.class, column = "id", many = @Many(select = "getCompanyUsers"))
+    })
+    CompanyResponse getById(Long id);
 
     @Select("SELECT id, name, description FROM COMPANIES WHERE name = #{name}")
     Company getCompanyByName(String name);
