@@ -1,15 +1,11 @@
 package com.app.advert.portal.dto;
 
 import com.app.advert.portal.enums.AdvertCategory;
+import com.app.advert.portal.enums.AdvertType;
 import com.app.advert.portal.service.ApplicationService;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Value;
+import lombok.*;
 
-@Value
-@Builder
-@Getter
+@Data
 @AllArgsConstructor
 public class ApplicationResponse {
 
@@ -26,6 +22,8 @@ public class ApplicationResponse {
     Long companyId;
 
     AdvertCategory advertCategory;
+
+    AdvertType advertType;
 
     String createdAt;
 }

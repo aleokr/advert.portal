@@ -13,25 +13,26 @@ import java.util.List;
 public interface AdvertMapper {
     @Select(
             "<script>" +
-            "SELECT a.id as id, a.title as title, a.short_description as shortDescription, null as longDescription, " +
-            "a.user_id as userId, null as applicationExists, c.name as advertCategory, t.name as advertType, a.created_at as createdAt,  " +
-            "<choose>" +
-            "  <when test = 'type != null and type.name() == \"INDIVIDUAL\" '> concat(u.name, ' ', u.surname) as addedBy </when>" +
-            "  <otherwise> com.name as addedBy </otherwise>" +
-            "</choose>" +
-            "FROM ADVERTS a " +
-            "LEFT JOIN USERS u ON u.id = a.user_id " +
-            "LEFT JOIN ADVERT_CATEGORY c on c.id = a.category_id " +
-            "LEFT JOIN ADVERT_TYPE t on t.id = a.type_id " +
-            "<if test = 'type == null or type.name() == \"COMPANY\" '> LEFT JOIN COMPANIES com ON com.id = u.company_id </if> " +
-            "WHERE 1 = 1 " +
-            "<if test = 'type != null'> and t.name = #{type}</if> " +
-            "<if test = 'id != null'> and a.id = #{id}</if> " +
-            "<if test = 'companyId != null'> and u.company_id = #{companyId} </if> " +
-            "<if test = 'userId != null'> and a.user_id = #{userId} </if> " +
-            "<if test = 'limit != null'> LIMIT #{limit}</if> " +
-            "<if test = 'offset != null'> OFFSET #{offset}</if> " +
-            "</script>")
+                    "SELECT a.id as id, a.title as title, a.short_description as shortDescription, null as longDescription, " +
+                    "a.user_id as ownerId, c.name as advertCategory, t.name as advertType, DATE_FORMAT(a.created_at, '%Y-%m-%d') as createdAt,  " +
+                    "<choose>" +
+                    "  <when test = 'type != null and type.name() == \"INDIVIDUAL\" '> concat(u.name, ' ', u.surname) as addedBy </when>" +
+                    "  <otherwise> com.name as addedBy </otherwise>" +
+                    "</choose>" +
+                    "FROM ADVERTS a " +
+                    "LEFT JOIN USERS u ON u.id = a.user_id " +
+                    "LEFT JOIN ADVERT_CATEGORY c on c.id = a.category_id " +
+                    "LEFT JOIN ADVERT_TYPE t on t.id = a.type_id " +
+                    "<if test = 'type == null or type.name() == \"COMPANY\" '> LEFT JOIN COMPANIES com ON com.id = u.company_id </if> " +
+                    "WHERE 1 = 1 " +
+                    "<if test = 'type != null'> and t.name = #{type}</if> " +
+                    "<if test = 'id != null'> and a.id = #{id}</if> " +
+                    "<if test = 'companyId != null'> and u.company_id = #{companyId} </if> " +
+                    "<if test = 'userId != null'> and a.user_id = #{userId} </if> " +
+                    "ORDER BY createdAt DESC" +
+                    "<if test = 'limit != null'> LIMIT #{limit}</if> " +
+                    "<if test = 'offset != null'> OFFSET #{offset}</if> " +
+                    "</script>")
     List<AdvertResponse> getAdvertList(AdvertListRequest request);
 
     @Select("SELECT id, title, short_description, long_description, user_id FROM ADVERTS WHERE id = #{id}")
@@ -67,4 +68,34 @@ public interface AdvertMapper {
 
     @Select("SELECT name from ADVERT_CATEGORY ORDER BY name ASC")
     List<AdvertCategory> getAdvertCategories();
+
+    @Select("<script>" +
+            "SELECT  count(*) " +
+            "FROM ADVERTS a " +
+            "LEFT JOIN USERS u ON u.id = a.user_id " +
+            "WHERE 1 = 1 " +
+            "<if test = 'companyId != null'> and u.company_id = #{companyId} </if> " +
+            "<if test = 'userId != null'> and u.id = #{userId} </if> " +
+            "</script>")
+    Integer getAdvertsCountByUser(Long companyId, Long userId);
+
+    @Select("<script>" +
+            "SELECT a.id as id, a.title as title, a.short_description as shortDescription, a.long_description as longDescription, " +
+            "CASE " +
+            "   WHEN t.name LIKE 'COMPANY' THEN com.id  " +
+            "   ELSE a.user_id " +
+            "END as ownerId, " +
+            "c.name as advertCategory, t.name as advertType, DATE_FORMAT(a.created_at, '%Y-%m-%d') as createdAt,  " +
+            "CASE " +
+            "   WHEN t.name LIKE 'COMPANY' THEN com.name  " +
+            "   ELSE  concat(u.name, ' ', u.surname) " +
+            "END as addedBy " +
+            "FROM ADVERTS a " +
+            "LEFT JOIN USERS u ON u.id = a.user_id " +
+            "LEFT JOIN ADVERT_CATEGORY c on c.id = a.category_id " +
+            "LEFT JOIN ADVERT_TYPE t on t.id = a.type_id " +
+            "LEFT JOIN COMPANIES com ON com.id = u.company_id " +
+            "WHERE a.id = #{id} " +
+            "</script>")
+    AdvertResponse getAdvertInfoById(Long id);
 }

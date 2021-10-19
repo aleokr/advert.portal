@@ -11,8 +11,12 @@ import java.util.List;
 @Mapper
 public interface CompanyMapper {
 
-    @Select("SELECT id, name, description FROM COMPANIES WHERE id = #{id}")
-    Company getById(Long id);
+    @Select("SELECT id, name, description, null, null from COMPANIES where id=#{id}")
+    @Results(value = {
+            @Result(property = "id", column = "id"),
+            @Result(property = "members", javaType = List.class, column = "id", many = @Many(select = "getCompanyUsers"))
+    })
+    CompanyResponse getById(Long id);
 
     @Select("SELECT id, name, description FROM COMPANIES WHERE name = #{name}")
     Company getCompanyByName(String name);
@@ -41,12 +45,12 @@ public interface CompanyMapper {
     })
     CompanyResponse getLoggedUserCompany(Long id);
 
-    @Select("SELECT id, name, surname, email from USERS where company_id=#{id} and active = true")
+    @Select("SELECT id, name, surname, email, login from USERS where company_id=#{id} and active = true")
     @Results(value = {
             @Result(property = "id", column = "id")
     })
     List<UserResponse> getCompanyUsers(Long id);
 
-    @Select("SELECT id, name, surname, email from USERS where company_id=#{id} and active = false")
+    @Select("SELECT id, name, surname, email, login from USERS where company_id=#{id} and active = false")
     List<UserResponse> getRequestToJoin(Long id);
 }

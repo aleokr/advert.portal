@@ -5,12 +5,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CompanyListRequest {
+public class TagRequestDto {
 
-    String name;
-
-    Long offset;
-
-    Long limit;
-
+    private String name;
 }

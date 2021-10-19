@@ -27,10 +27,6 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public ResponseEntity<?> getById(Long id) {
-        User user = userMapper.getById(SecurityUtils.getLoggedUserId());
-        if (user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.INDIVIDUAL_USER.name())) && !user.getCompanyId().equals(id) || !user.getActive()) {
-            return ResponseEntity.badRequest().body("No access to resource");
-        }
         return ResponseEntity.ok().body(companyMapper.getById(id));
     }
 
@@ -60,7 +56,7 @@ public class CompanyServiceImpl implements CompanyService {
     public ResponseEntity<?> updateCompany(CompanyRequestDto companyDto) {
         User user = userMapper.getById(SecurityUtils.getLoggedUserId());
 
-        if (!user.getCompanyId().equals(companyDto.getId()) || user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.COMPANY_USER.name()))) {
+        if (!user.getCompanyId().equals(companyDto.getId()) || user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.COMPANY_ADMIN.name()))) {
             return ResponseEntity.badRequest().body("No access to resource");
         }
         Company companyByName = companyMapper.getCompanyByName(companyDto.getName());
@@ -104,11 +100,8 @@ public class CompanyServiceImpl implements CompanyService {
             offset = 0L;
         }
 
-        CompanyListRequest request = CompanyListRequest.builder()
-                .name(companyListRequest.getName())
-                .limit(limit != null ? limit : companyListRequest.getLimit())
-                .offset(offset != null ? offset : companyListRequest.getOffset())
-                .build();
+        CompanyListRequest request = new CompanyListRequest(companyListRequest.getName(), limit != null ? limit : companyListRequest.getLimit(),
+                offset != null ? offset : companyListRequest.getOffset());
         return ResponseEntity.ok().body(companyMapper.getCompaniesList(request));
     }
 

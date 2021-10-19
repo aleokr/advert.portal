@@ -2,7 +2,10 @@ package com.app.advert.portal.service.impl;
 
 import com.app.advert.portal.dto.UserListRequest;
 import com.app.advert.portal.dto.UserRequestDto;
+import com.app.advert.portal.dto.UserResponse;
 import com.app.advert.portal.enums.UserRole;
+import com.app.advert.portal.mapper.AdvertMapper;
+import com.app.advert.portal.mapper.ApplicationMapper;
 import com.app.advert.portal.mapper.UserMapper;
 import com.app.advert.portal.model.User;
 import com.app.advert.portal.security.SecurityUtils;
@@ -22,15 +25,16 @@ public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
 
+    private final AdvertMapper advertMapper;
+
+    private final ApplicationMapper applicationMapper;
+
     private final PasswordEncoder passwordEncoder;
 
     @Override
     public ResponseEntity<?> getById(Long id) {
-        User user = userMapper.getById(SecurityUtils.getLoggedUserId());
-        if (user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.COMPANY_USER.name())) && !user.getId().equals(id)) {
-            return ResponseEntity.badRequest().body("No access to resource");
-        }
-        return ResponseEntity.ok().body(userMapper.getById(id));
+        User user = userMapper.getById(id);
+        return getUserStatistics(user);
     }
 
     @Override
@@ -44,6 +48,9 @@ public class UserServiceImpl implements UserService {
         User user = getByUsername(userDto.getLogin());
         if (user != null) {
             return ResponseEntity.unprocessableEntity().body("User with login " + user.getLogin() + " already exists");
+        }
+        if (userDto.getPassword() == null) {
+            return ResponseEntity.unprocessableEntity().body("No password ");
         }
 
         User userToSave = new User(null, userDto.getName(), userDto.getSurname(), userDto.getEmail(),
@@ -60,7 +67,7 @@ public class UserServiceImpl implements UserService {
             return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
         }
 
-        User user = new User(userDto.getId(), userDto.getName(), userDto.getSurname(), userDto.getEmail());
+        User user = new User(userDto.getId(), userDto.getName(), userDto.getSurname(), userDto.getEmail(), userDto.getPassword() != null ? passwordEncoder.encode(userDto.getPassword()) : null);
         userMapper.updateUser(user);
 
         return ResponseEntity.ok().body(userMapper.getById(user.getId()));
@@ -68,7 +75,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<?> deleteUser(Long userId) {
-        if (!userId.equals(SecurityUtils.getLoggedUserId())) {
+        User user = userMapper.getById(userId);
+        if (!user.getId().equals(SecurityUtils.getLoggedUserId()) && (!SecurityUtils.isUserCompanyAdmin() && user.getCompanyId().equals(SecurityUtils.getLoggedCompanyId()))) {
             return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
         }
 
@@ -103,6 +111,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<?> getLoggedUserInfo() {
-        return ResponseEntity.ok().body(userMapper.getById(SecurityUtils.getLoggedUserId()));
+        User user = userMapper.getById(SecurityUtils.getLoggedUserId());
+        return getUserStatistics(user);
+    }
+
+    private ResponseEntity<?> getUserStatistics(User user) {
+        Integer advertsCount = advertMapper.getAdvertsCountByUser(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
+        Integer responsesCount = applicationMapper.getResponsesCountByUser(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
+        Integer applicationsCount = applicationMapper.getApplicationsCountByUser(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
+
+        UserResponse userResponse = new UserResponse(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getLogin(), user.getCompanyId(), user.getActive(), user.getType(), advertsCount, responsesCount, applicationsCount);
+        return ResponseEntity.ok().body(userResponse);
     }
 }

@@ -5,9 +5,9 @@ import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 
-@Value
-@Builder
-@Getter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserRequestDto {
 
     Long id;
@@ -24,7 +24,6 @@ public class UserRequestDto {
     @NotEmpty
     String login;
 
-    @NotEmpty
     String password;
 
     UserRole userRole;

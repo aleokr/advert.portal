@@ -37,7 +37,7 @@ public class UserManagementController {
 
     @DeleteMapping("/{id}")
     @Operation(tags = {"User management"}, description = "Delete user")
-    @PreAuthorize("hasAuthority('USER_WRITE')")
+    @PreAuthorize("hasAnyAuthority('USER_WRITE', 'COMPANY_ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable("id") Long userId) {
         try {
             log.info("UserManagementController: Delete user: " + userId);
@@ -70,13 +70,7 @@ public class UserManagementController {
             @RequestParam(required = false) Long limit
     ) {
         try {
-            UserListRequest userListRequest = UserListRequest.builder()
-                    .active(active)
-                    .companyId(companyId)
-                    .offset(offset)
-                    .limit(limit)
-                    .build();
-
+            UserListRequest userListRequest = new UserListRequest(companyId, offset, limit, active);
             log.info("UserManagementController: List of users");
             return userService.getUsers(userListRequest);
         } catch (Exception e) {

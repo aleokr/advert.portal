@@ -1,10 +1,10 @@
 package com.app.advert.portal.dto;
 
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
 
-@Builder
-@Value
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserListRequest {
 
     Long companyId;

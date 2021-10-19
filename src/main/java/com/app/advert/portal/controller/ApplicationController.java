@@ -27,12 +27,7 @@ public class ApplicationController {
             @RequestParam(required = false) Long offset,
             @RequestParam(required = false) Long limit) {
         try {
-            ApplicationListRequest request = ApplicationListRequest.builder()
-                    .userId(userId)
-                    .companyId(companyId)
-                    .offset(offset)
-                    .limit(limit)
-                    .build();
+            ApplicationListRequest request = new ApplicationListRequest(userId, companyId, limit, offset);
             log.info("ApplicationController: Return user applications");
             return applicationService.getUserApplications(request);
         } catch (Exception e) {
@@ -48,12 +43,7 @@ public class ApplicationController {
             @RequestParam(required = false) Long offset,
             @RequestParam(required = false) Long limit) {
         try {
-            ApplicationListRequest request = ApplicationListRequest.builder()
-                    .userId(userId)
-                    .companyId(companyId)
-                    .offset(offset)
-                    .limit(limit)
-                    .build();
+            ApplicationListRequest request =  new ApplicationListRequest(userId, companyId, limit, offset);
             log.info("ApplicationController: Return responses to user adverts");
             return applicationService.getResponsesToUserAdverts(request);
         } catch (Exception e) {

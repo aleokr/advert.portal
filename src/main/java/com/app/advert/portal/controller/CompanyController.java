@@ -42,11 +42,7 @@ public class CompanyController {
             @RequestParam(required = false) Long limit
     ) {
         try {
-            CompanyListRequest companyListRequest = CompanyListRequest.builder()
-                    .name(name)
-                    .offset(offset)
-                    .limit(limit)
-                    .build();
+            CompanyListRequest companyListRequest = new CompanyListRequest(name, offset, limit);
             log.info("CompanyController: Return companies list");
             return companyService.companiesList(companyListRequest);
         } catch (Exception e) {
