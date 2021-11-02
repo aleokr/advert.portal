@@ -29,11 +29,11 @@ public class AdvertController {
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long companyId,
-            @RequestParam(required = false) Long offset,
-            @RequestParam(required = false) Long limit,
+            @RequestParam(required = false) Integer offset,
+            @RequestParam(required = false) Integer limit,
             @RequestParam(required = false) AdvertType type) {
         try {
-            AdvertListRequest advertListRequest = new AdvertListRequest(id, userId, companyId, offset, limit, type, false);
+            AdvertListRequest advertListRequest = new AdvertListRequest(id, userId, companyId, offset, limit, type);
             log.info("AdvertController: Get adverts list");
             return advertService.getAdverts(advertListRequest);
         } catch (Exception e) {

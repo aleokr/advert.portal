@@ -24,8 +24,8 @@ public class ApplicationController {
     public ResponseEntity<?> getUserApplications(
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long companyId,
-            @RequestParam(required = false) Long offset,
-            @RequestParam(required = false) Long limit) {
+            @RequestParam(required = false) Integer offset,
+            @RequestParam(required = false) Integer limit) {
         try {
             ApplicationListRequest request = new ApplicationListRequest(userId, companyId, limit, offset);
             log.info("ApplicationController: Return user applications");
@@ -40,8 +40,8 @@ public class ApplicationController {
     public ResponseEntity<?> getResponsesToUserAdverts(
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long companyId,
-            @RequestParam(required = false) Long offset,
-            @RequestParam(required = false) Long limit) {
+            @RequestParam(required = false) Integer offset,
+            @RequestParam(required = false) Integer limit) {
         try {
             ApplicationListRequest request =  new ApplicationListRequest(userId, companyId, limit, offset);
             log.info("ApplicationController: Return responses to user adverts");

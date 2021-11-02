@@ -1,8 +1,6 @@
 package com.app.advert.portal.service.impl;
 
-import com.app.advert.portal.dto.AdvertRequestDto;
-import com.app.advert.portal.dto.AdvertListRequest;
-import com.app.advert.portal.dto.AdvertResponse;
+import com.app.advert.portal.dto.*;
 import com.app.advert.portal.enums.AdvertType;
 import com.app.advert.portal.mapper.AdvertMapper;
 import com.app.advert.portal.model.Advert;
@@ -38,7 +36,14 @@ public class AdvertServiceImpl implements AdvertService {
 
     @Override
     public ResponseEntity<?> getAdverts(AdvertListRequest request) {
-        return ResponseEntity.ok().body(advertMapper.getAdvertList(request));
+        AdvertListResponse response = new AdvertListResponse();
+
+        Integer totalCount = advertMapper.getAdvertsCountByUser(request);
+        PagingResponse pagingResponse = new PagingResponse(request.getOffset() / request.getLimit(), (totalCount % request.getLimit() == 0) ? totalCount / request.getLimit() : totalCount / request.getLimit() + 1, totalCount);
+
+        response.setAdverts(advertMapper.getAdvertList(request));
+        response.setPaging(pagingResponse);
+        return ResponseEntity.ok().body(response);
     }
 
     @Override

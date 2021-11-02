@@ -1,5 +1,6 @@
 package com.app.advert.portal.mapper;
 
+import com.app.advert.portal.dto.AdvertListRequest;
 import com.app.advert.portal.dto.ApplicationListRequest;
 import com.app.advert.portal.dto.ApplicationResponse;
 import com.app.advert.portal.model.Application;
@@ -74,7 +75,7 @@ public interface ApplicationMapper {
             "<if test = 'companyId != null'> and a.company_id = #{companyId} </if> " +
             "<if test = 'userId != null'> and a.user_id = #{userId} </if> " +
             "</script>")
-    Integer getResponsesCountByUser(Long companyId, Long userId);
+    Integer getApplicationsCountByUser(Long companyId, Long userId);
 
     @Select("<script>" +
             "SELECT  count(*) " +
@@ -93,5 +94,5 @@ public interface ApplicationMapper {
             "<if test = 'userId != null'> and ad.user_id = #{userId} </if> " +
             "<if test = 'companyId != null'> and ur.company_id = #{companyId} </if> " +
             "</script>")
-    Integer getApplicationsCountByUser(Long companyId, Long userId);
+    Integer getResponsesCountByUser(Long companyId, Long userId);
 }

@@ -6,6 +6,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AdvertListRequest {
 
     Long id;
@@ -14,11 +15,9 @@ public class AdvertListRequest {
 
     Long companyId;
 
-    Long offset;
+    Integer offset;
 
-    Long limit;
+    Integer limit;
 
     AdvertType type;
-
-    boolean count;
 }

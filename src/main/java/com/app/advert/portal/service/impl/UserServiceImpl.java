@@ -1,5 +1,6 @@
 package com.app.advert.portal.service.impl;
 
+import com.app.advert.portal.dto.AdvertListRequest;
 import com.app.advert.portal.dto.UserListRequest;
 import com.app.advert.portal.dto.UserRequestDto;
 import com.app.advert.portal.dto.UserResponse;
@@ -116,7 +117,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private ResponseEntity<?> getUserStatistics(User user) {
-        Integer advertsCount = advertMapper.getAdvertsCountByUser(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
+        Integer advertsCount = advertMapper.getAdvertsCountByUser(AdvertListRequest.builder().companyId(SecurityUtils.getLoggedCompanyId()).userId(SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId()).build());
         Integer responsesCount = applicationMapper.getResponsesCountByUser(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
         Integer applicationsCount = applicationMapper.getApplicationsCountByUser(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
 

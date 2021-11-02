@@ -73,11 +73,15 @@ public interface AdvertMapper {
             "SELECT  count(*) " +
             "FROM ADVERTS a " +
             "LEFT JOIN USERS u ON u.id = a.user_id " +
+            "LEFT JOIN ADVERT_CATEGORY c on c.id = a.category_id " +
+            "LEFT JOIN ADVERT_TYPE t on t.id = a.type_id " +
             "WHERE 1 = 1 " +
+            "<if test = 'type != null'> and t.name = #{type}</if> " +
+            "<if test = 'id != null'> and a.id = #{id}</if> " +
             "<if test = 'companyId != null'> and u.company_id = #{companyId} </if> " +
-            "<if test = 'userId != null'> and u.id = #{userId} </if> " +
+            "<if test = 'userId != null'> and a.user_id = #{userId} </if> " +
             "</script>")
-    Integer getAdvertsCountByUser(Long companyId, Long userId);
+    Integer getAdvertsCountByUser(AdvertListRequest request);
 
     @Select("<script>" +
             "SELECT a.id as id, a.title as title, a.short_description as shortDescription, a.long_description as longDescription, " +
