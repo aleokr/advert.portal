@@ -2,8 +2,11 @@ package com.app.advert.portal.service.impl;
 
 import com.app.advert.portal.dto.*;
 import com.app.advert.portal.enums.AdvertType;
+import com.app.advert.portal.enums.TagType;
 import com.app.advert.portal.mapper.AdvertMapper;
+import com.app.advert.portal.mapper.TagMapper;
 import com.app.advert.portal.model.Advert;
+import com.app.advert.portal.model.Tag;
 import com.app.advert.portal.model.User;
 import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.AdvertService;
@@ -14,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Service
 @Transactional
@@ -22,15 +27,20 @@ public class AdvertServiceImpl implements AdvertService {
 
     private final AdvertMapper advertMapper;
 
+    private final TagMapper tagMapper;
+
     private final ApplicationService applicationService;
 
     @Override
     public ResponseEntity<?> getById(Long id) {
         AdvertResponse advert = advertMapper.getAdvertInfoById(id);
+
         advert.setApplicationExists(applicationService.checkIfApplicationExists(id, SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId()));
         advert.setCanEdit(advert.getOwnerId().equals(SecurityUtils.getLoggedUserId()) || advert.getOwnerId().equals(SecurityUtils.getLoggedCompanyId()));
         advert.setCanApplicate(!advert.getApplicationExists() && !advert.getCanEdit()
                 && ((advert.getAdvertType().equals(AdvertType.COMPANY) && !SecurityUtils.isCompanyUser()) || (advert.getAdvertType().equals(AdvertType.INDIVIDUAL) && SecurityUtils.isCompanyUser())));
+
+        advert.setTags(tagMapper.getTagsByResourceIdAndType(id, TagType.ADVERT));
         return ResponseEntity.ok().body(advert);
     }
 
@@ -41,7 +51,12 @@ public class AdvertServiceImpl implements AdvertService {
         Integer totalCount = advertMapper.getAdvertsCountByUser(request);
         PagingResponse pagingResponse = new PagingResponse(request.getOffset() / request.getLimit(), (totalCount % request.getLimit() == 0) ? totalCount / request.getLimit() : totalCount / request.getLimit() + 1, totalCount);
 
-        response.setAdverts(advertMapper.getAdvertList(request));
+        if(SecurityUtils.getLoggedCompanyId() != null || SecurityUtils.getLoggedUserId() != null){
+            List<Long> tagIds = tagMapper.getTagIdsByResourceIdAndType(SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId() != null ? TagType.COMPANY : TagType.USER);
+            response.setAdverts(advertMapper.getAdvertListByTags(request, tagIds));
+        }else{
+            response.setAdverts(advertMapper.getAdvertList(request));
+        }
         response.setPaging(pagingResponse);
         return ResponseEntity.ok().body(response);
     }
@@ -51,7 +66,11 @@ public class AdvertServiceImpl implements AdvertService {
         Advert advert = new Advert(null, advertRequestDto.getTitle(), advertRequestDto.getShortDescription(),
                 advertRequestDto.getLongDescription(), SecurityUtils.getLoggedUserId(), advertRequestDto.getCategory(), SecurityUtils.getLoggedCompanyId() != null ? AdvertType.COMPANY : AdvertType.INDIVIDUAL);
         advertMapper.saveAdvert(advert);
-        return ResponseEntity.ok().body(advertMapper.getById(advertMapper.lastAddAdvertId()));
+        advert = advertMapper.getById(advertMapper.lastAddAdvertId());
+        for (Long tagId : advertRequestDto.getTagIds()){
+            tagMapper.saveResourceTag(advert.getId(), tagId, TagType.ADVERT);
+        }
+        return ResponseEntity.ok().body(advert);
     }
 
     @Override

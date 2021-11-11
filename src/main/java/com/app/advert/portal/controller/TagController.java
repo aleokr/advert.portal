@@ -1,6 +1,5 @@
 package com.app.advert.portal.controller;
 
-import com.app.advert.portal.dto.CompanyListRequest;
 import com.app.advert.portal.dto.ResourceTagRequestDto;
 import com.app.advert.portal.dto.TagRequestDto;
 import com.app.advert.portal.service.TagService;
@@ -46,13 +45,27 @@ public class TagController {
 
     @Operation(tags = {"Tag"}, description = "Return tags list")
     @GetMapping("/list")
-    public ResponseEntity<?> getCompaniesList(
+    public ResponseEntity<?> getTagsList(
             @RequestParam(required = false) Integer offset,
             @RequestParam(required = false) Integer limit
     ) {
         try {
             log.info("TagController: Return tags list");
             return tagService.getTagsList(limit, offset);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e);
+        }
+    }
+
+    @Operation(tags = {"Tag"}, description = "Return available tags list")
+    @GetMapping("/availableTags")
+    public ResponseEntity<?> getAvailableTagList(
+            @RequestParam(required = false) Integer offset,
+            @RequestParam(required = false) Integer limit
+    ) {
+        try {
+            log.info("TagController: Return available tags list");
+            return tagService.getAvailableTagsList();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }

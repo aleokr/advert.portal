@@ -4,9 +4,11 @@ import com.app.advert.portal.dto.AdvertListRequest;
 import com.app.advert.portal.dto.UserListRequest;
 import com.app.advert.portal.dto.UserRequestDto;
 import com.app.advert.portal.dto.UserResponse;
+import com.app.advert.portal.enums.TagType;
 import com.app.advert.portal.enums.UserRole;
 import com.app.advert.portal.mapper.AdvertMapper;
 import com.app.advert.portal.mapper.ApplicationMapper;
+import com.app.advert.portal.mapper.TagMapper;
 import com.app.advert.portal.mapper.UserMapper;
 import com.app.advert.portal.model.User;
 import com.app.advert.portal.security.SecurityUtils;
@@ -29,6 +31,8 @@ public class UserServiceImpl implements UserService {
     private final AdvertMapper advertMapper;
 
     private final ApplicationMapper applicationMapper;
+
+    private final TagMapper tagMapper;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -121,7 +125,9 @@ public class UserServiceImpl implements UserService {
         Integer responsesCount = applicationMapper.getResponsesCountByUser(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
         Integer applicationsCount = applicationMapper.getApplicationsCountByUser(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
 
-        UserResponse userResponse = new UserResponse(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getLogin(), user.getCompanyId(), user.getActive(), user.getType(), advertsCount, responsesCount, applicationsCount);
+        UserResponse userResponse = new UserResponse(user.getId(), user.getName(), user.getSurname(), user.getEmail(),
+                user.getLogin(), user.getCompanyId(), user.getActive(), user.getType(), advertsCount, responsesCount, applicationsCount,
+                tagMapper.getTagsByResourceIdAndType(SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId() != null ? TagType.COMPANY : TagType.USER));
         return ResponseEntity.ok().body(userResponse);
     }
 }

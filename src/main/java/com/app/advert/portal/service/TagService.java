@@ -12,4 +12,6 @@ public interface TagService {
     ResponseEntity<?> saveResourceTag(ResourceTagRequestDto request);
 
     ResponseEntity<?> getTagsList(Integer limit, Integer offset);
+
+    ResponseEntity<?> getAvailableTagsList();
 }

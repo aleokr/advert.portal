@@ -48,6 +48,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/v1/auth",
                 "/api/v1/auth/refreshToken",
                 "/api/v1/adverts/getAdverts",
+                "/api/v1/tags/list",
                 "/api/v1/adverts/{[0-9]+}",
                 "/management/api/v1/users/addUser",
                 "/api/v1/users/roles",
