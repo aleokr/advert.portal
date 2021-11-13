@@ -20,6 +20,8 @@ public class AdvertResponse {
 
     String longDescription;
 
+    boolean archived;
+
     Long ownerId;
 
     Boolean applicationExists;
@@ -40,11 +42,12 @@ public class AdvertResponse {
 
     List<Tag> tags;
 
-    public AdvertResponse(Long id, String title, String shortDescription, String longDescription, Long ownerId, AdvertCategory advertCategory, AdvertType advertType, String createdAt, String addedBy) {
+    public AdvertResponse(Long id, String title, String shortDescription, String longDescription, boolean archived, Long ownerId, AdvertCategory advertCategory, AdvertType advertType, String createdAt, String addedBy) {
         this.id = id;
         this.title = title;
         this.shortDescription = shortDescription;
         this.longDescription = longDescription;
+        this.archived = archived;
         this.ownerId = ownerId;
         this.advertCategory = advertCategory;
         this.advertType = advertType;
@@ -52,11 +55,12 @@ public class AdvertResponse {
         this.addedBy = addedBy;
     }
 
-    public AdvertResponse(Long id, String title, String shortDescription, String longDescription, Long ownerId, AdvertCategory advertCategory, AdvertType advertType, String createdAt, String addedBy, Long count) {
+    public AdvertResponse(Long id, String title, String shortDescription, String longDescription, boolean archived, Long ownerId, AdvertCategory advertCategory, AdvertType advertType, String createdAt, String addedBy, Long count) {
         this.id = id;
         this.title = title;
         this.shortDescription = shortDescription;
         this.longDescription = longDescription;
+        this.archived = archived;
         this.ownerId = ownerId;
         this.advertCategory = advertCategory;
         this.advertType = advertType;

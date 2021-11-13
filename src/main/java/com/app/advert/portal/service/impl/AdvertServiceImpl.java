@@ -48,10 +48,14 @@ public class AdvertServiceImpl implements AdvertService {
     public ResponseEntity<?> getAdverts(AdvertListRequest request) {
         AdvertListResponse response = new AdvertListResponse();
 
+        if(request.getType() == null){
+            request.setCompanyId(SecurityUtils.getLoggedCompanyId());
+            request.setUserId(SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
+        }
         Integer totalCount = advertMapper.getAdvertsCountByUser(request);
         PagingResponse pagingResponse = new PagingResponse(request.getOffset() / request.getLimit(), (totalCount % request.getLimit() == 0) ? totalCount / request.getLimit() : totalCount / request.getLimit() + 1, totalCount);
 
-        if(SecurityUtils.getLoggedCompanyId() != null || SecurityUtils.getLoggedUserId() != null){
+        if((SecurityUtils.getLoggedCompanyId() != null || SecurityUtils.getLoggedUserId() != null) && request.getType() != null){
             List<Long> tagIds = tagMapper.getTagIdsByResourceIdAndType(SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId() != null ? TagType.COMPANY : TagType.USER);
             response.setAdverts(advertMapper.getAdvertListByTags(request, tagIds));
         }else{

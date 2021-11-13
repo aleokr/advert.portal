@@ -28,6 +28,7 @@ dependencies {
 	implementation 'org.liquibase:liquibase-core'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.4'
 	implementation group: 'org.springframework.boot', name:  'spring-boot-starter-validation'
+	implementation group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.11.163'
 	runtime 'mysql:mysql-connector-java:8.0.25'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
