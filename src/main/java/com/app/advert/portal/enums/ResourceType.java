@@ -1,5 +1,5 @@
 package com.app.advert.portal.enums;
 
-public enum TagType {
+public enum ResourceType {
     USER, ADVERT, COMPANY
 }

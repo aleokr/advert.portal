@@ -84,7 +84,7 @@ public interface AdvertMapper {
     Integer getAdvertsCountByUser(AdvertListRequest request);
 
     @Select("<script>" +
-            "SELECT a.id as id, a.title as title, a.short_description as shortDescription, a.long_description as longDescription, " +
+            "SELECT a.id as id, a.title as title, a.short_description as shortDescription, a.long_description as longDescription, a.archived,  " +
             "CASE " +
             "   WHEN t.name LIKE 'COMPANY' THEN com.id  " +
             "   ELSE a.user_id " +

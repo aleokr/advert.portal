@@ -1,6 +1,6 @@
 package com.app.advert.portal.dto;
 
-import com.app.advert.portal.enums.TagType;
+import com.app.advert.portal.enums.ResourceType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,5 +16,5 @@ public class ResourceTagRequestDto {
 
     Integer resourceId;
 
-    TagType type;
+    ResourceType type;
 }

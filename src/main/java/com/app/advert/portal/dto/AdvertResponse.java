@@ -12,35 +12,37 @@ import java.util.List;
 @AllArgsConstructor
 public class AdvertResponse {
 
-    Long id;
+    private Long id;
 
-    String title;
+    private String title;
 
-    String shortDescription;
+    private String shortDescription;
 
-    String longDescription;
+    private String longDescription;
 
-    boolean archived;
+    private boolean archived;
 
-    Long ownerId;
+    private Long ownerId;
 
-    Boolean applicationExists;
+    private Boolean applicationExists;
 
-    AdvertCategory advertCategory;
+    private AdvertCategory advertCategory;
 
-    AdvertType advertType;
+    private AdvertType advertType;
 
-    String createdAt;
+    private String createdAt;
 
-    String addedBy;
+    private String addedBy;
 
-    Long count;
+    private Long count;
 
-    Boolean canEdit;
+    private Boolean canEdit;
 
-    Boolean canApplicate;
+    private Boolean canApplicate;
 
-    List<Tag> tags;
+    private List<Tag> tags;
+
+    private List<FileResponse> files;
 
     public AdvertResponse(Long id, String title, String shortDescription, String longDescription, boolean archived, Long ownerId, AdvertCategory advertCategory, AdvertType advertType, String createdAt, String addedBy) {
         this.id = id;

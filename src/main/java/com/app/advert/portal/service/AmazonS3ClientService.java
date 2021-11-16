@@ -33,9 +33,13 @@ public class AmazonS3ClientService {
     }
 
     public String addFile(String bucketName, String fileName, MultipartFile file, String contentType) throws IOException {
+        createBucket(bucketName);
+
         String fileKey = generateFileKey(fileName, bucketName);
+
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(contentType);
+
         s3Client.putObject(bucketName, fileKey, file.getInputStream(), objectMetadata);
         return fileKey;
     }

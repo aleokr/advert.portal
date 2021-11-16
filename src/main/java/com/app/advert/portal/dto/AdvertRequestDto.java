@@ -25,4 +25,7 @@ public class AdvertRequestDto {
 
     List<Long> tagIds;
 
+    FileDto attachment;
+
+    FileDto image;
 }

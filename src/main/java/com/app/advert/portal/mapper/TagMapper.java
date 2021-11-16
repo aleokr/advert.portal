@@ -1,7 +1,7 @@
 package com.app.advert.portal.mapper;
 
 import com.app.advert.portal.dto.TagResponse;
-import com.app.advert.portal.enums.TagType;
+import com.app.advert.portal.enums.ResourceType;
 import com.app.advert.portal.model.Tag;
 import org.apache.ibatis.annotations.*;
 
@@ -25,10 +25,10 @@ public interface TagMapper {
     Tag getTagById(Long id);
 
     @Insert("INSERT INTO RESOURCE_TAG (tag_id, resource_id, resource_type) values (#{tagId}, #{resourceId}, #{type})")
-    void saveResourceTag(Long resourceId, Long tagId, TagType type);
+    void saveResourceTag(Long resourceId, Long tagId, ResourceType type);
 
     @Select("SELECT EXISTS(SELECT * FROM RESOURCE_TAG WHERE resource_id = #{resourceId} and tag_id = #{tagId} and resource_type = #{type})")
-    boolean checkIfResourceTagExists(Long resourceId, Long tagId, TagType type);
+    boolean checkIfResourceTagExists(Long resourceId, Long tagId, ResourceType type);
 
     @Select("<script>" +
             "SELECT id, name from TAGS " +
@@ -42,14 +42,14 @@ public interface TagMapper {
 
     @Select("SELECT tag_id FROM RESOURCE_TAG " +
             "WHERE resource_id = #{resourceId} and resource_type = #{type} ")
-    List<Long> getTagIdsByResourceIdAndType(Long resourceId, TagType type);
+    List<Long> getTagIdsByResourceIdAndType(Long resourceId, ResourceType type);
 
     @Select("SELECT  t.id, t.name  FROM TAGS t " +
             "LEFT JOIN RESOURCE_TAG r on r.tag_id = t.id " +
             "WHERE r.resource_id = #{resourceId} and r.resource_type = #{type} ")
     @Results(value = {
             @Result(property = "id", column = "id")})
-    List<Tag> getTagsByResourceIdAndType(Long resourceId, TagType type);
+    List<Tag> getTagsByResourceIdAndType(Long resourceId, ResourceType type);
 
     @Select("SELECT id, name from TAGS t " +
             "WHERE id NOT IN (SELECT tag_id  FROM RESOURCE_TAG " +
@@ -57,5 +57,5 @@ public interface TagMapper {
             "ORDER BY name ASC ")
     @Results(value = {
             @Result(property = "id", column = "id")})
-    List<TagResponse> getAvailableTagsList(Long resourceId, TagType type);
+    List<TagResponse> getAvailableTagsList(Long resourceId, ResourceType type);
 }

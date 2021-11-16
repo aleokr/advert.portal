@@ -1,17 +1,14 @@
 package com.app.advert.portal.service.impl;
 
-import com.app.advert.portal.dto.AdvertListRequest;
-import com.app.advert.portal.dto.UserListRequest;
-import com.app.advert.portal.dto.UserRequestDto;
-import com.app.advert.portal.dto.UserResponse;
-import com.app.advert.portal.enums.TagType;
+import com.app.advert.portal.dto.*;
+import com.app.advert.portal.enums.FileType;
+import com.app.advert.portal.enums.ResourceType;
 import com.app.advert.portal.enums.UserRole;
-import com.app.advert.portal.mapper.AdvertMapper;
-import com.app.advert.portal.mapper.ApplicationMapper;
-import com.app.advert.portal.mapper.TagMapper;
-import com.app.advert.portal.mapper.UserMapper;
+import com.app.advert.portal.mapper.*;
+import com.app.advert.portal.model.File;
 import com.app.advert.portal.model.User;
 import com.app.advert.portal.security.SecurityUtils;
+import com.app.advert.portal.service.FileService;
 import com.app.advert.portal.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.util.List;
 
 
 @Service
@@ -36,10 +36,14 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final FileMapper fileMapper;
+
+    private final FileService fileService;
+
     @Override
     public ResponseEntity<?> getById(Long id) {
         User user = userMapper.getById(id);
-        return getUserStatistics(user);
+        return getAdditionalUserData(user);
     }
 
     @Override
@@ -48,7 +52,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> saveUser(UserRequestDto userDto) {
+    public ResponseEntity<?> saveUser(UserRequestDto userDto) throws IOException {
 
         User user = getByUsername(userDto.getLogin());
         if (user != null) {
@@ -62,6 +66,16 @@ public class UserServiceImpl implements UserService {
                 userDto.getLogin(), passwordEncoder.encode(userDto.getPassword()), userDto.getCompanyId(), userDto.getUserRole(), null, userDto.getUserRole().equals(UserRole.INDIVIDUAL_USER) || userDto.getUserRole().equals(UserRole.COMPANY_ADMIN));
         userMapper.saveUser(userToSave);
         userMapper.addRoleToUser(userDto.getUserRole().name(), userToSave.getLogin());
+
+        //dodanie plików ogłoszenia
+        if(userDto.getImage() != null) {
+            fileService.saveFile(userDto.getImage() , FileType.IMAGE);
+        }
+        if(userDto.getAttachments() != null && !userDto.getAttachments().isEmpty()) {
+            for(FileDto fileDto : userDto.getAttachments()){
+                fileService.saveFile(fileDto, FileType.ATTACHMENT);
+            }
+        }
 
         return ResponseEntity.ok().body(getByUsername(userToSave.getLogin()));
     }
@@ -83,6 +97,12 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.getById(userId);
         if (!user.getId().equals(SecurityUtils.getLoggedUserId()) && (!SecurityUtils.isUserCompanyAdmin() && user.getCompanyId().equals(SecurityUtils.getLoggedCompanyId()))) {
             return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
+        }
+
+        //usunięcie plików przypisanych do użytkownika
+        List<File> files = fileMapper.getFilesByResourceId(user.getId(), ResourceType.USER);
+        for (File file : files) {
+            fileService.deleteFile(null, file);
         }
 
         userMapper.deleteUserRoles(userId);
@@ -117,17 +137,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> getLoggedUserInfo() {
         User user = userMapper.getById(SecurityUtils.getLoggedUserId());
-        return getUserStatistics(user);
+        return getAdditionalUserData(user);
     }
 
-    private ResponseEntity<?> getUserStatistics(User user) {
+    private ResponseEntity<?> getAdditionalUserData(User user) {
         Integer advertsCount = advertMapper.getAdvertsCountByUser(AdvertListRequest.builder().companyId(SecurityUtils.getLoggedCompanyId()).userId(SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId()).build());
         Integer responsesCount = applicationMapper.getResponsesCountByUser(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
         Integer applicationsCount = applicationMapper.getApplicationsCountByUser(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
 
         UserResponse userResponse = new UserResponse(user.getId(), user.getName(), user.getSurname(), user.getEmail(),
                 user.getLogin(), user.getCompanyId(), user.getActive(), user.getType(), advertsCount, responsesCount, applicationsCount,
-                tagMapper.getTagsByResourceIdAndType(SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId() != null ? TagType.COMPANY : TagType.USER));
+                tagMapper.getTagsByResourceIdAndType(SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId() != null ? ResourceType.COMPANY : ResourceType.USER), null);
+
+        userResponse.setFiles(fileService.getFilesDataByResourceId(user.getId(), ResourceType.USER));
         return ResponseEntity.ok().body(userResponse);
     }
 }

@@ -2,21 +2,25 @@ package com.app.advert.portal.service.impl;
 
 import com.app.advert.portal.dto.*;
 import com.app.advert.portal.enums.AdvertType;
-import com.app.advert.portal.enums.TagType;
+import com.app.advert.portal.enums.FileType;
+import com.app.advert.portal.enums.ResourceType;
 import com.app.advert.portal.mapper.AdvertMapper;
+import com.app.advert.portal.mapper.FileMapper;
 import com.app.advert.portal.mapper.TagMapper;
 import com.app.advert.portal.model.Advert;
-import com.app.advert.portal.model.Tag;
+import com.app.advert.portal.model.File;
 import com.app.advert.portal.model.User;
 import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.AdvertService;
 import com.app.advert.portal.service.ApplicationService;
+import com.app.advert.portal.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -31,6 +35,10 @@ public class AdvertServiceImpl implements AdvertService {
 
     private final ApplicationService applicationService;
 
+    private final FileMapper fileMapper;
+
+    private final FileService fileService;
+
     @Override
     public ResponseEntity<?> getById(Long id) {
         AdvertResponse advert = advertMapper.getAdvertInfoById(id);
@@ -40,7 +48,9 @@ public class AdvertServiceImpl implements AdvertService {
         advert.setCanApplicate(!advert.getApplicationExists() && !advert.getCanEdit()
                 && ((advert.getAdvertType().equals(AdvertType.COMPANY) && !SecurityUtils.isCompanyUser()) || (advert.getAdvertType().equals(AdvertType.INDIVIDUAL) && SecurityUtils.isCompanyUser())));
 
-        advert.setTags(tagMapper.getTagsByResourceIdAndType(id, TagType.ADVERT));
+        advert.setTags(tagMapper.getTagsByResourceIdAndType(id, ResourceType.ADVERT));
+
+        advert.setFiles(fileService.getFilesDataByResourceId(advert.getId(), ResourceType.ADVERT));
         return ResponseEntity.ok().body(advert);
     }
 
@@ -56,7 +66,7 @@ public class AdvertServiceImpl implements AdvertService {
         PagingResponse pagingResponse = new PagingResponse(request.getOffset() / request.getLimit(), (totalCount % request.getLimit() == 0) ? totalCount / request.getLimit() : totalCount / request.getLimit() + 1, totalCount);
 
         if((SecurityUtils.getLoggedCompanyId() != null || SecurityUtils.getLoggedUserId() != null) && request.getType() != null){
-            List<Long> tagIds = tagMapper.getTagIdsByResourceIdAndType(SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId() != null ? TagType.COMPANY : TagType.USER);
+            List<Long> tagIds = tagMapper.getTagIdsByResourceIdAndType(SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId() != null ? ResourceType.COMPANY : ResourceType.USER);
             response.setAdverts(advertMapper.getAdvertListByTags(request, tagIds));
         }else{
             response.setAdverts(advertMapper.getAdvertList(request));
@@ -66,14 +76,28 @@ public class AdvertServiceImpl implements AdvertService {
     }
 
     @Override
-    public ResponseEntity<?> saveAdvert(AdvertRequestDto advertRequestDto) {
+    public ResponseEntity<?> saveAdvert(AdvertRequestDto advertRequestDto) throws IOException {
         Advert advert = new Advert(null, advertRequestDto.getTitle(), advertRequestDto.getShortDescription(),
                 advertRequestDto.getLongDescription(), SecurityUtils.getLoggedUserId(), advertRequestDto.getCategory(), SecurityUtils.getLoggedCompanyId() != null ? AdvertType.COMPANY : AdvertType.INDIVIDUAL);
+
+        //dodanie ogłoszenia
         advertMapper.saveAdvert(advert);
+
         advert = advertMapper.getById(advertMapper.lastAddAdvertId());
+
+        //zapisanie tagów ogłoszenia
         for (Long tagId : advertRequestDto.getTagIds()){
-            tagMapper.saveResourceTag(advert.getId(), tagId, TagType.ADVERT);
+            tagMapper.saveResourceTag(advert.getId(), tagId, ResourceType.ADVERT);
         }
+
+        //dodanie plików ogłoszenia
+        if(advertRequestDto.getImage() != null) {
+            fileService.saveFile(advertRequestDto.getImage() , FileType.IMAGE);
+        }
+        if(advertRequestDto.getAttachment() != null) {
+            fileService.saveFile(advertRequestDto.getAttachment(), FileType.ATTACHMENT);
+        }
+
         return ResponseEntity.ok().body(advert);
     }
 
@@ -97,6 +121,12 @@ public class AdvertServiceImpl implements AdvertService {
     public ResponseEntity<?> deleteAdvert(Long advertId) {
         if (noAccessToAdvert(advertId)) {
             return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
+        }
+
+        //usunięcie plików przypisanych do ogłoszenia
+        List<File> files = fileMapper.getFilesByResourceId(advertId, ResourceType.ADVERT);
+        for (File file : files) {
+            fileService.deleteFile(null, file);
         }
 
         advertMapper.deleteAdvertById(advertId);

@@ -42,4 +42,6 @@ public class UserResponse {
     private Integer applicationsCount;
 
     private List<Tag> tags;
+
+    private List<FileResponse> files;
 }

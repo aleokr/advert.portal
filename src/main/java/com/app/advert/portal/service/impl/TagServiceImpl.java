@@ -1,7 +1,7 @@
 package com.app.advert.portal.service.impl;
 
 import com.app.advert.portal.dto.ResourceTagRequestDto;
-import com.app.advert.portal.enums.TagType;
+import com.app.advert.portal.enums.ResourceType;
 import com.app.advert.portal.mapper.TagMapper;
 import com.app.advert.portal.model.Tag;
 import com.app.advert.portal.security.SecurityUtils;
@@ -36,23 +36,23 @@ public class TagServiceImpl implements TagService {
 
         List<Long> tagIds = new ArrayList<>();
         tagIds.add(tag.getId());
-        saveResourceTag(new ResourceTagRequestDto(tagIds, null, TagType.USER));
+        saveResourceTag(new ResourceTagRequestDto(tagIds, null, ResourceType.USER));
 
         return ResponseEntity.ok().body(tagMapper.getTagByName(name.toLowerCase()));
     }
 
     @Override
     public ResponseEntity<?> saveResourceTag(ResourceTagRequestDto request) {
-        Long resourceId = request.getType().equals(TagType.USER) ? (SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId()) : request.getResourceId();
-        TagType tagType = request.getType().equals(TagType.USER) ? (SecurityUtils.getLoggedCompanyId() != null ? TagType.COMPANY : TagType.USER) : request.getType();
+        Long resourceId = request.getType().equals(ResourceType.USER) ? (SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId()) : request.getResourceId();
+        ResourceType resourceType = request.getType().equals(ResourceType.USER) ? (SecurityUtils.getLoggedCompanyId() != null ? ResourceType.COMPANY : ResourceType.USER) : request.getType();
 
         for (Long tagId : request.getTagIds()) {
             if (tagMapper.getTagById(tagId) == null) {
                 log.warn("Tag with id: " + tagId + " doesn't exist ");
                 break;
             }
-            if (!tagMapper.checkIfResourceTagExists(resourceId, tagId, tagType)) {
-                tagMapper.saveResourceTag(resourceId, tagId, tagType);
+            if (!tagMapper.checkIfResourceTagExists(resourceId, tagId, resourceType)) {
+                tagMapper.saveResourceTag(resourceId, tagId, resourceType);
             }
         }
 
@@ -67,6 +67,6 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public ResponseEntity<?> getAvailableTagsList() {
-        return ResponseEntity.ok().body(tagMapper.getAvailableTagsList(SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId() != null ? TagType.COMPANY : TagType.USER));
+        return ResponseEntity.ok().body(tagMapper.getAvailableTagsList(SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId() != null ? ResourceType.COMPANY : ResourceType.USER));
     }
 }

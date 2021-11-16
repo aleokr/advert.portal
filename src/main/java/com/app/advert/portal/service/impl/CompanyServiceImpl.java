@@ -3,17 +3,26 @@ package com.app.advert.portal.service.impl;
 import com.app.advert.portal.dto.CompanyListRequest;
 import com.app.advert.portal.dto.CompanyRequestDto;
 import com.app.advert.portal.dto.CompanyResponse;
+import com.app.advert.portal.dto.FileDto;
+import com.app.advert.portal.enums.FileType;
+import com.app.advert.portal.enums.ResourceType;
 import com.app.advert.portal.enums.UserRole;
 import com.app.advert.portal.mapper.CompanyMapper;
+import com.app.advert.portal.mapper.FileMapper;
 import com.app.advert.portal.mapper.UserMapper;
 import com.app.advert.portal.model.Company;
+import com.app.advert.portal.model.File;
 import com.app.advert.portal.model.User;
 import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.CompanyService;
+import com.app.advert.portal.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.util.List;
 
 
 @Service
@@ -25,13 +34,20 @@ public class CompanyServiceImpl implements CompanyService {
 
     private final UserMapper userMapper;
 
+    private final FileMapper fileMapper;
+
+    private final FileService fileService;
+
     @Override
     public ResponseEntity<?> getById(Long id) {
-        return ResponseEntity.ok().body(companyMapper.getById(id));
+        CompanyResponse companyResponse = companyMapper.getById(id);
+
+        companyResponse.setFiles(fileService.getFilesDataByResourceId(id, ResourceType.COMPANY));
+        return ResponseEntity.ok().body(companyResponse);
     }
 
     @Override
-    public ResponseEntity<?> saveCompany(CompanyRequestDto companyDto) {
+    public ResponseEntity<?> saveCompany(CompanyRequestDto companyDto) throws IOException {
         User user = userMapper.getById(SecurityUtils.getLoggedUserId());
 
         if (user.getCompanyId() != null || user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.COMPANY_ADMIN.name()))) {
@@ -48,6 +64,16 @@ public class CompanyServiceImpl implements CompanyService {
         company = companyMapper.getCompanyByName(company.getName());
 
         userMapper.addCompanyToUser(user.getId(), company.getId());
+
+        //dodanie plików ogłoszenia
+        if(companyDto.getImage() != null) {
+            fileService.saveFile(companyDto.getImage() , FileType.IMAGE);
+        }
+        if(companyDto.getAttachments() != null && !companyDto.getAttachments().isEmpty()) {
+            for(FileDto fileDto : companyDto.getAttachments()){
+                fileService.saveFile(fileDto, FileType.ATTACHMENT);
+            }
+        }
 
         return ResponseEntity.ok().body(company);
     }
@@ -80,6 +106,11 @@ public class CompanyServiceImpl implements CompanyService {
 
         if (user.getCompanyId() != companyId || user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.COMPANY_USER.name()))) {
             return ResponseEntity.badRequest().body("No access to resource");
+        }
+        //usunięcie plików przypisanych do firmy
+        List<File> files = fileMapper.getFilesByResourceId(companyId, ResourceType.COMPANY);
+        for (File file : files) {
+            fileService.deleteFile(null, file);
         }
 
         userMapper.deleteCompanyFromUsers(companyId);
@@ -115,6 +146,8 @@ public class CompanyServiceImpl implements CompanyService {
         if (SecurityUtils.isUserCompanyAdmin()) {
             company.setRequestToJoin(companyMapper.getRequestToJoin(SecurityUtils.getLoggedCompanyId()));
         }
+
+        company.setFiles(fileService.getFilesDataByResourceId(company.getId(), ResourceType.COMPANY));
         return ResponseEntity.ok().body(company);
     }
 }

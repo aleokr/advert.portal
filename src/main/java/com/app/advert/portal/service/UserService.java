@@ -6,6 +6,8 @@ import com.app.advert.portal.model.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 
 @Service
 public interface UserService {
@@ -14,7 +16,7 @@ public interface UserService {
 
     User getByUsername(String username);
 
-    ResponseEntity<?> saveUser(UserRequestDto userDto);
+    ResponseEntity<?> saveUser(UserRequestDto userDto) throws IOException;
 
     ResponseEntity<?> updateUser(UserRequestDto userDto);
 

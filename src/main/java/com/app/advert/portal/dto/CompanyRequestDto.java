@@ -3,6 +3,7 @@ package com.app.advert.portal.dto;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,4 +17,8 @@ public class CompanyRequestDto {
 
     @NotEmpty
     String description;
+
+    List<FileDto> attachments;
+
+    FileDto image;
 }
