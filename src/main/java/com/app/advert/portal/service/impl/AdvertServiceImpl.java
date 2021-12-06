@@ -5,6 +5,7 @@ import com.app.advert.portal.enums.AdvertType;
 import com.app.advert.portal.enums.FileType;
 import com.app.advert.portal.enums.ResourceType;
 import com.app.advert.portal.mapper.AdvertMapper;
+import com.app.advert.portal.mapper.ApplicationMapper;
 import com.app.advert.portal.mapper.FileMapper;
 import com.app.advert.portal.mapper.TagMapper;
 import com.app.advert.portal.model.Advert;
@@ -32,6 +33,8 @@ public class AdvertServiceImpl implements AdvertService {
     private final AdvertMapper advertMapper;
 
     private final TagMapper tagMapper;
+
+    private final ApplicationMapper applicationMapper;
 
     private final ApplicationService applicationService;
 
@@ -128,6 +131,7 @@ public class AdvertServiceImpl implements AdvertService {
         for (File file : files) {
             fileService.deleteFile(null, file);
         }
+        applicationMapper.deleteApplicationByAdvertId(advertId);
 
         advertMapper.deleteAdvertById(advertId);
         return ResponseEntity.ok().build();

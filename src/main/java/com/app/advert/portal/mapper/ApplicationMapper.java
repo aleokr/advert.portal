@@ -1,6 +1,5 @@
 package com.app.advert.portal.mapper;
 
-import com.app.advert.portal.dto.AdvertListRequest;
 import com.app.advert.portal.dto.ApplicationListRequest;
 import com.app.advert.portal.dto.ApplicationResponse;
 import com.app.advert.portal.model.Application;
@@ -95,4 +94,7 @@ public interface ApplicationMapper {
             "<if test = 'companyId != null'> and ur.company_id = #{companyId} </if> " +
             "</script>")
     Integer getResponsesCountByUser(Long companyId, Long userId);
+
+    @Delete("DELETE FROM APPLICATIONS WHERE advert_id = #{advertId}")
+    void deleteApplicationByAdvertId(Long advertId);
 }
