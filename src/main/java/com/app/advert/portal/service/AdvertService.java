@@ -5,6 +5,8 @@ import com.app.advert.portal.dto.AdvertListRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 
 @Service
 public interface AdvertService {
@@ -13,7 +15,7 @@ public interface AdvertService {
 
     ResponseEntity<?> getAdverts(AdvertListRequest request);
 
-    ResponseEntity<?> saveAdvert(AdvertRequestDto advertRequestDto);
+    ResponseEntity<?> saveAdvert(AdvertRequestDto advertRequestDto) throws IOException;
 
     ResponseEntity<?> updateAdvert(AdvertRequestDto advertRequestDto);
 

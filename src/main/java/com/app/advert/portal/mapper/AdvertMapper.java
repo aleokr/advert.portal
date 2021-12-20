@@ -13,7 +13,7 @@ import java.util.List;
 public interface AdvertMapper {
     @Select(
             "<script>" +
-                    "SELECT a.id as id, a.title as title, a.short_description as shortDescription, null as longDescription, " +
+                    "SELECT a.id as id, a.title as title, a.short_description as shortDescription, null as longDescription, a.archived as archived, " +
                     "a.user_id as ownerId, c.name as advertCategory, t.name as advertType, DATE_FORMAT(a.created_at, '%Y-%m-%d') as createdAt,  " +
                     "<choose>" +
                     "  <when test = 'type != null and type.name() == \"INDIVIDUAL\" '> concat(u.name, ' ', u.surname) as addedBy </when>" +
@@ -25,11 +25,11 @@ public interface AdvertMapper {
                     "LEFT JOIN ADVERT_TYPE t on t.id = a.type_id " +
                     "<if test = 'type == null or type.name() == \"COMPANY\" '> LEFT JOIN COMPANIES com ON com.id = u.company_id </if> " +
                     "WHERE 1 = 1 " +
-                    "<if test = 'type != null'> and t.name = #{type}</if> " +
+                    "<if test = 'type != null'> and t.name = #{type} and a.archived = false </if> " +
                     "<if test = 'id != null'> and a.id = #{id}</if> " +
                     "<if test = 'companyId != null'> and u.company_id = #{companyId} </if> " +
                     "<if test = 'userId != null'> and a.user_id = #{userId} </if> " +
-                    "ORDER BY createdAt DESC" +
+                    "ORDER BY a.created_at DESC" +
                     "<if test = 'limit != null'> LIMIT #{limit}</if> " +
                     "<if test = 'offset != null'> OFFSET #{offset}</if> " +
                     "</script>")
@@ -76,7 +76,7 @@ public interface AdvertMapper {
             "LEFT JOIN ADVERT_CATEGORY c on c.id = a.category_id " +
             "LEFT JOIN ADVERT_TYPE t on t.id = a.type_id " +
             "WHERE 1 = 1 " +
-            "<if test = 'type != null'> and t.name = #{type}</if> " +
+            "<if test = 'type != null'> and t.name = #{type} and a.archived = false </if> " +
             "<if test = 'id != null'> and a.id = #{id}</if> " +
             "<if test = 'companyId != null'> and u.company_id = #{companyId} </if> " +
             "<if test = 'userId != null'> and a.user_id = #{userId} </if> " +
@@ -84,7 +84,7 @@ public interface AdvertMapper {
     Integer getAdvertsCountByUser(AdvertListRequest request);
 
     @Select("<script>" +
-            "SELECT a.id as id, a.title as title, a.short_description as shortDescription, a.long_description as longDescription, " +
+            "SELECT a.id as id, a.title as title, a.short_description as shortDescription, a.long_description as longDescription, a.archived,  " +
             "CASE " +
             "   WHEN t.name LIKE 'COMPANY' THEN com.id  " +
             "   ELSE a.user_id " +
@@ -102,4 +102,39 @@ public interface AdvertMapper {
             "WHERE a.id = #{id} " +
             "</script>")
     AdvertResponse getAdvertInfoById(Long id);
+
+    @Select(
+            "<script>" +
+                    "SELECT a.id as id, a.title as title, a.short_description as shortDescription, null as longDescription, a.archived,  " +
+                    "a.user_id as ownerId, c.name as advertCategory, t.name as advertType, DATE_FORMAT(a.created_at, '%Y-%m-%d') as createdAt,  " +
+                    "<choose>" +
+                    "  <when test = 'request.type != null and request.type.name() == \"INDIVIDUAL\" '> concat(u.name, ' ', u.surname) as addedBy, </when>" +
+                    "  <otherwise> com.name as addedBy, </otherwise>" +
+                    "</choose>" +
+                    "<choose>" +
+                    "  <when test = 'tagIds==null || tagIds.isEmpty()'> 0 as count </when>" +
+                    "  <otherwise> " +
+                    "    (select count(*) from RESOURCE_TAG where tag_id in" +
+                    "    <foreach item='item' index='index' collection='tagIds'" +
+                    "       open='(' separator=',' close=')'>" +
+                    "       #{item}" +
+                    "    </foreach>" +
+                    "    and resource_id = a.id and resource_type = \"ADVERT\") as count " +
+                    "  </otherwise>" +
+                    "</choose>" +
+                    "FROM ADVERTS a " +
+                    "LEFT JOIN USERS u ON u.id = a.user_id " +
+                    "LEFT JOIN ADVERT_CATEGORY c on c.id = a.category_id " +
+                    "LEFT JOIN ADVERT_TYPE t on t.id = a.type_id " +
+                    "<if test = 'request.type == null or request.type.name() == \"COMPANY\" '> LEFT JOIN COMPANIES com ON com.id = u.company_id </if> " +
+                    "WHERE a.archived = false  " +
+                    "<if test = 'request.type != null'> and t.name = #{request.type}</if> " +
+                    "<if test = 'request.id != null'> and a.id = #{request.id}</if> " +
+                    "<if test = 'request.companyId != null'> and u.company_id = #{request.companyId} </if> " +
+                    "<if test = 'request.userId != null'> and a.user_id = #{request.userId} </if> " +
+                    "ORDER BY count DESC, createdAt DESC" +
+                    "<if test = 'request.limit != null'> LIMIT #{request.limit}</if> " +
+                    "<if test = 'request.offset != null'> OFFSET #{request.offset}</if> " +
+                    "</script>")
+    List<AdvertResponse> getAdvertListByTags(AdvertListRequest request, @Param("tagIds") List<Long> tagIds);
 }

@@ -21,4 +21,5 @@ public class CompanyResponse {
 
     private List<UserResponse> requestToJoin;
 
+    private List<FileResponse> files;
 }

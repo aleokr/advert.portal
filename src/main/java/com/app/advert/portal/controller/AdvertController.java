@@ -75,7 +75,7 @@ public class AdvertController {
     }
 
     @Operation(tags = {"Advert"}, description = "Archived advert")
-    @PutMapping("/archived/{id}")
+    @PutMapping("/archive/{id}")
     public ResponseEntity<?> archivedAdvert(@PathVariable Long id) {
         try {
             log.debug("AdvertController: Archived advert: " + id);

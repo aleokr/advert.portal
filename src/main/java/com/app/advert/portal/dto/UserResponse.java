@@ -1,8 +1,11 @@
 package com.app.advert.portal.dto;
 
 import com.app.advert.portal.enums.UserRole;
+import com.app.advert.portal.model.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -37,4 +40,8 @@ public class UserResponse {
     private Integer responsesCount;
 
     private Integer applicationsCount;
+
+    private List<Tag> tags;
+
+    private List<FileResponse> files;
 }

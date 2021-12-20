@@ -2,46 +2,72 @@ package com.app.advert.portal.dto;
 
 import com.app.advert.portal.enums.AdvertCategory;
 import com.app.advert.portal.enums.AdvertType;
+import com.app.advert.portal.model.Tag;
 import lombok.*;
+
+import java.util.List;
 
 
 @Data
 @AllArgsConstructor
 public class AdvertResponse {
 
-    Long id;
+    private Long id;
 
-    String title;
+    private String title;
 
-    String shortDescription;
+    private String shortDescription;
 
-    String longDescription;
+    private String longDescription;
 
-    Long ownerId;
+    private boolean archived;
 
-    Boolean applicationExists;
+    private Long ownerId;
 
-    AdvertCategory advertCategory;
+    private Boolean applicationExists;
 
-    AdvertType advertType;
+    private AdvertCategory advertCategory;
 
-    String createdAt;
+    private AdvertType advertType;
 
-    String addedBy;
+    private String createdAt;
 
-    Boolean canEdit;
+    private String addedBy;
 
-    Boolean canApplicate;
+    private Long count;
 
-    public AdvertResponse(Long id, String title, String shortDescription, String longDescription, Long ownerId, AdvertCategory advertCategory, AdvertType advertType, String createdAt, String addedBy) {
+    private Boolean canEdit;
+
+    private Boolean canApplicate;
+
+    private List<Tag> tags;
+
+    private List<FileResponse> files;
+
+    public AdvertResponse(Long id, String title, String shortDescription, String longDescription, boolean archived, Long ownerId, AdvertCategory advertCategory, AdvertType advertType, String createdAt, String addedBy) {
         this.id = id;
         this.title = title;
         this.shortDescription = shortDescription;
         this.longDescription = longDescription;
+        this.archived = archived;
         this.ownerId = ownerId;
         this.advertCategory = advertCategory;
         this.advertType = advertType;
         this.createdAt = createdAt;
         this.addedBy = addedBy;
+    }
+
+    public AdvertResponse(Long id, String title, String shortDescription, String longDescription, boolean archived, Long ownerId, AdvertCategory advertCategory, AdvertType advertType, String createdAt, String addedBy, Long count) {
+        this.id = id;
+        this.title = title;
+        this.shortDescription = shortDescription;
+        this.longDescription = longDescription;
+        this.archived = archived;
+        this.ownerId = ownerId;
+        this.advertCategory = advertCategory;
+        this.advertType = advertType;
+        this.createdAt = createdAt;
+        this.addedBy = addedBy;
+        this.count = count;
     }
 }

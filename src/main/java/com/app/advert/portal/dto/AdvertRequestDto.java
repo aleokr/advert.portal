@@ -4,6 +4,7 @@ import com.app.advert.portal.enums.AdvertCategory;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -22,4 +23,9 @@ public class AdvertRequestDto {
 
     AdvertCategory category;
 
+    List<Long> tagIds;
+
+    FileDto attachment;
+
+    FileDto image;
 }
