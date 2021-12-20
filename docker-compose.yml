@@ -1,5 +1,8 @@
 version: "3.3"
 services:
+  ############################
+  # Application
+  ############################
   advert_portal:
     build:
       context: ./
@@ -12,7 +15,9 @@ services:
       DB_URL: db
     depends_on:
       - db
-############################
+  ############################
+  # Database
+  ############################
   db:
     image: mysql:8.0.26
     ports:
@@ -23,7 +28,9 @@ services:
       - /home/ola/mysql:/var/lib/mysql
 
 
-############################
+  ############################
+  # Amazon AWS S3
+  ############################
   s3:
     image: quay.io/minio/minio
     ports:
@@ -34,3 +41,16 @@ services:
       MINIO_ROOT_USER: minio_root_user
       MINIO_ROOT_PASSWORD: minio_root_password
     command: minio server /data
+
+
+  ############################
+  # Elasticsearch
+  ############################
+  es:
+      image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
+      environment:
+        - "discovery.type=single-node"
+      volumes:
+        - /home/ola/elasticsearch/data
+      ports:
+        - "9200:9200"
