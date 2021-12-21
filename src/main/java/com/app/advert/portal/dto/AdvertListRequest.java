@@ -20,4 +20,6 @@ public class AdvertListRequest {
     Integer limit;
 
     AdvertType type;
+
+    String searchText;
 }

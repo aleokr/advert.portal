@@ -15,7 +15,7 @@ public class Advert {
 
     @Id
     @Field(type = FieldType.Keyword)
-    private String id;
+    private Long id;
 
     @Field(type = FieldType.Text)
     private String name;

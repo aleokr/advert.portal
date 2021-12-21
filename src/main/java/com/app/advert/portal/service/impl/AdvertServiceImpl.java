@@ -1,6 +1,7 @@
 package com.app.advert.portal.service.impl;
 
 import com.app.advert.portal.dto.*;
+import com.app.advert.portal.elasticsearch.service.ElasticAdvertService;
 import com.app.advert.portal.enums.AdvertType;
 import com.app.advert.portal.enums.FileType;
 import com.app.advert.portal.enums.ResourceType;
@@ -42,6 +43,7 @@ public class AdvertServiceImpl implements AdvertService {
 
     private final FileService fileService;
 
+    private final ElasticAdvertService elasticAdvertService;
     @Override
     public ResponseEntity<?> getById(Long id) {
         AdvertResponse advert = advertMapper.getAdvertInfoById(id);
@@ -58,9 +60,12 @@ public class AdvertServiceImpl implements AdvertService {
     }
 
     @Override
-    public ResponseEntity<?> getAdverts(AdvertListRequest request) {
+    public ResponseEntity<?> getAdverts(AdvertListRequest request) throws IOException {
         AdvertListResponse response = new AdvertListResponse();
 
+        if(request.getSearchText() != null) {
+            List<Long> advertIds = elasticAdvertService.getAdvertsWithText(request.getSearchText(), request.getOffset(), request.getLimit());
+        }
         if(request.getType() == null){
             request.setCompanyId(SecurityUtils.getLoggedCompanyId());
             request.setUserId(SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
