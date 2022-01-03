@@ -1,5 +1,6 @@
 package com.app.advert.portal.elasticsearch.controller;
 
+import com.app.advert.portal.dto.AdvertListElasticResponse;
 import com.app.advert.portal.elasticsearch.document.Advert;
 import com.app.advert.portal.elasticsearch.service.ElasticAdvertService;
 import lombok.RequiredArgsConstructor;
@@ -18,16 +19,5 @@ public class ElasticController {
     @PostMapping
     public void save(@RequestBody Advert advert){
         advertService.save(advert);
-    }
-
-
-    @GetMapping("/{id}")
-    public Advert get(@PathVariable String id){
-        return advertService.findAdvertById(id);
-    }
-
-    @GetMapping("/advert")
-    public List<Long> getAdvert() throws IOException {
-        return advertService.getAdvertsWithText("some fruit", 1, 0);
     }
 }

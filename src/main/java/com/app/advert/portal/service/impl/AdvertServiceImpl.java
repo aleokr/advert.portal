@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -62,49 +63,74 @@ public class AdvertServiceImpl implements AdvertService {
     @Override
     public ResponseEntity<?> getAdverts(AdvertListRequest request) throws IOException {
         AdvertListResponse response = new AdvertListResponse();
+        Integer totalCount = null;
+        List<Long> advertIds = null;
 
-        if(request.getSearchText() != null) {
-            List<Long> advertIds = elasticAdvertService.getAdvertsWithText(request.getSearchText(), request.getOffset(), request.getLimit());
+        //wyszukiwanie pełnotekstowe
+        if (request.getSearchText() != null) {
+
+            AdvertListElasticResponse elasticResponse = elasticAdvertService.getAdvertsWithText(request.getSearchText(), request.getType().name(), request.getLimit(), request.getOffset());
+            totalCount = (int) elasticResponse.getTotalCount();
+            advertIds = elasticResponse.getAdvertIds();
+
+            if(advertIds.isEmpty()){
+                PagingResponse pagingResponse = new PagingResponse(request.getOffset() / request.getLimit(), (totalCount % request.getLimit() == 0) ? totalCount / request.getLimit() : totalCount / request.getLimit() + 1, totalCount);
+                response.setPaging(pagingResponse);
+                response.setAdverts(new ArrayList<>());
+                return ResponseEntity.ok().body(response);
+            }
+
+        } else {
+            if (request.getType() == null) {
+                request.setCompanyId(SecurityUtils.getLoggedCompanyId());
+                request.setUserId(SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
+            }
+            totalCount = advertMapper.getAdvertsCountByUser(request);
         }
-        if(request.getType() == null){
-            request.setCompanyId(SecurityUtils.getLoggedCompanyId());
-            request.setUserId(SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
-        }
-        Integer totalCount = advertMapper.getAdvertsCountByUser(request);
+
         PagingResponse pagingResponse = new PagingResponse(request.getOffset() / request.getLimit(), (totalCount % request.getLimit() == 0) ? totalCount / request.getLimit() : totalCount / request.getLimit() + 1, totalCount);
 
-        if((SecurityUtils.getLoggedCompanyId() != null || SecurityUtils.getLoggedUserId() != null) && request.getType() != null){
+        if ((SecurityUtils.getLoggedCompanyId() != null || SecurityUtils.getLoggedUserId() != null) && request.getType() != null && request.getSearchText() == null) {
             List<Long> tagIds = tagMapper.getTagIdsByResourceIdAndType(SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId() != null ? ResourceType.COMPANY : ResourceType.USER);
             response.setAdverts(advertMapper.getAdvertListByTags(request, tagIds));
-        }else{
-            response.setAdverts(advertMapper.getAdvertList(request));
+        } else {
+            response.setAdverts(advertMapper.getAdvertList(request, advertIds));
         }
+
         response.setPaging(pagingResponse);
         return ResponseEntity.ok().body(response);
     }
 
     @Override
     public ResponseEntity<?> saveAdvert(AdvertRequestDto advertRequestDto) throws IOException {
+        AdvertType advertType = SecurityUtils.getLoggedCompanyId() != null ? AdvertType.COMPANY : AdvertType.INDIVIDUAL;
         Advert advert = new Advert(null, advertRequestDto.getTitle(), advertRequestDto.getShortDescription(),
-                advertRequestDto.getLongDescription(), SecurityUtils.getLoggedUserId(), advertRequestDto.getCategory(), SecurityUtils.getLoggedCompanyId() != null ? AdvertType.COMPANY : AdvertType.INDIVIDUAL);
+                advertRequestDto.getLongDescription(), SecurityUtils.getLoggedUserId(), advertRequestDto.getCategory(), advertType);
 
         //dodanie ogłoszenia
         advertMapper.saveAdvert(advert);
 
         advert = advertMapper.getById(advertMapper.lastAddAdvertId());
 
-        //zapisanie tagów ogłoszenia
-        for (Long tagId : advertRequestDto.getTagIds()){
-            tagMapper.saveResourceTag(advert.getId(), tagId, ResourceType.ADVERT);
+        if (advertRequestDto.getTagIds() != null && !advertRequestDto.getTagIds().isEmpty()) {
+            //zapisanie tagów ogłoszenia
+            for (Long tagId : advertRequestDto.getTagIds()) {
+                tagMapper.saveResourceTag(advert.getId(), tagId, ResourceType.ADVERT);
+            }
         }
 
+
         //dodanie plików ogłoszenia
-        if(advertRequestDto.getImage() != null) {
-            fileService.saveFile(advertRequestDto.getImage() , FileType.IMAGE);
+        if (advertRequestDto.getImage() != null) {
+            fileService.saveFile(advertRequestDto.getImage(), FileType.IMAGE);
         }
-        if(advertRequestDto.getAttachment() != null) {
+        if (advertRequestDto.getAttachment() != null) {
             fileService.saveFile(advertRequestDto.getAttachment(), FileType.ATTACHMENT);
         }
+
+        //dodawanie ogłoszenia do elasticsearch
+        com.app.advert.portal.elasticsearch.document.Advert elasticAdvert = new com.app.advert.portal.elasticsearch.document.Advert(advert.getId(), advert.getTitle(), advert.getLongDescription(), advertType.name());
+        elasticAdvertService.save(elasticAdvert);
 
         return ResponseEntity.ok().body(advert);
     }

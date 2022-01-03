@@ -9,17 +9,18 @@ import lombok.*;
 @Builder
 public class AdvertListRequest {
 
-    Long id;
+    private Long id;
 
-    Long userId;
+    private Long userId;
 
-    Long companyId;
+    private Long companyId;
 
-    Integer offset;
+    private Integer offset;
 
-    Integer limit;
+    private Integer limit;
 
-    AdvertType type;
+    private AdvertType type;
 
-    String searchText;
+    private String searchText;
+
 }
