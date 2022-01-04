@@ -32,6 +32,10 @@ public class ElasticAdvertService {
         advertRepository.save(advert);
     }
 
+    public void delete(Advert advert) {
+        advertRepository.delete(advert);
+    }
+
     public Advert findAdvertById(Integer id) {
         return advertRepository.findById(id).orElse(null);
     }

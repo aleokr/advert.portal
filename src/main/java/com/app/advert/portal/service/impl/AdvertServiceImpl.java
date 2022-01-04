@@ -142,11 +142,17 @@ public class AdvertServiceImpl implements AdvertService {
             return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
         }
 
+        AdvertType advertType = SecurityUtils.getLoggedCompanyId() != null ? AdvertType.COMPANY : AdvertType.INDIVIDUAL;
+
         Advert advert = advertMapper.getById(advertDto.getId());
         advert.setLongDescription(advertDto.getLongDescription());
         advert.setShortDescription(advertDto.getShortDescription());
         advert.setTitle(advertDto.getTitle());
         advertMapper.updateAdvert(advert);
+
+        //aktualizacja ogłoszenia w elasticsearch (nadpisanie)
+        com.app.advert.portal.elasticsearch.document.Advert elasticAdvert = new com.app.advert.portal.elasticsearch.document.Advert(advert.getId(), advert.getTitle(), advert.getLongDescription(), advertType.name());
+        elasticAdvertService.save(elasticAdvert);
 
         return ResponseEntity.ok().body(advertMapper.getById(advert.getId()));
     }
@@ -162,7 +168,12 @@ public class AdvertServiceImpl implements AdvertService {
         for (File file : files) {
             fileService.deleteFile(null, file);
         }
+
+        //usunięcie aplikacji
         applicationMapper.deleteApplicationByAdvertId(advertId);
+
+        //usunięcie ogłoszenia z elasticsearch
+        deleteFileFromElasticsearch(advertId);
 
         advertMapper.deleteAdvertById(advertId);
         return ResponseEntity.ok().build();
@@ -176,6 +187,9 @@ public class AdvertServiceImpl implements AdvertService {
 
         advertMapper.archivedAdvert(advertId);
 
+        //usunięcie ogłoszenia z elasticsearch
+        deleteFileFromElasticsearch(advertId);
+
         return ResponseEntity.ok().body(advertMapper.getById(advertId));
     }
 
@@ -184,6 +198,14 @@ public class AdvertServiceImpl implements AdvertService {
         return ResponseEntity.ok().body(advertMapper.getAdvertCategories());
     }
 
+
+    private void deleteFileFromElasticsearch(Long advertId) {
+        AdvertType advertType = SecurityUtils.getLoggedCompanyId() != null ? AdvertType.COMPANY : AdvertType.INDIVIDUAL;
+
+        Advert advert = advertMapper.getById(advertId);
+        com.app.advert.portal.elasticsearch.document.Advert elasticAdvert = new com.app.advert.portal.elasticsearch.document.Advert(advert.getId(), advert.getTitle(), advert.getLongDescription(), advertType.name());
+        elasticAdvertService.delete(elasticAdvert);
+    }
 
     private boolean noAccessToAdvert(Long advertId) {
         if (advertId == null) return true;
