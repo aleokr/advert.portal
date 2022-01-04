@@ -200,10 +200,7 @@ public class AdvertServiceImpl implements AdvertService {
 
 
     private void deleteFileFromElasticsearch(Long advertId) {
-        AdvertType advertType = SecurityUtils.getLoggedCompanyId() != null ? AdvertType.COMPANY : AdvertType.INDIVIDUAL;
-
-        Advert advert = advertMapper.getById(advertId);
-        com.app.advert.portal.elasticsearch.document.Advert elasticAdvert = new com.app.advert.portal.elasticsearch.document.Advert(advert.getId(), advert.getTitle(), advert.getLongDescription(), advertType.name());
+        com.app.advert.portal.elasticsearch.document.Advert elasticAdvert = elasticAdvertService.findAdvertById(advertId.intValue());
         elasticAdvertService.delete(elasticAdvert);
     }
 
