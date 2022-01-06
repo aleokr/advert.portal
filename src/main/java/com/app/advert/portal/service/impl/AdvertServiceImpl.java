@@ -119,7 +119,6 @@ public class AdvertServiceImpl implements AdvertService {
             }
         }
 
-
         //dodanie plików ogłoszenia
         if (advertRequestDto.getImage() != null) {
             fileService.saveFile(advertRequestDto.getImage(), FileType.IMAGE);

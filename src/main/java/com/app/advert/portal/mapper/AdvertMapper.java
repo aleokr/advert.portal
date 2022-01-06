@@ -41,7 +41,10 @@ public interface AdvertMapper {
                     "</script>")
     List<AdvertResponse> getAdvertList(AdvertListRequest request, @Param("advertIds") List<Long> advertIds);
 
-    @Select("SELECT id, title, short_description, long_description, user_id FROM ADVERTS WHERE id = #{id}")
+    @Select("SELECT a.id, a.title, a.short_description, a.long_description, a.user_id, null as advertCategory, t.name as advertType" +
+            "FROM ADVERTS a" +
+            "LEFT JOIN ADVERT_TYPE t on t.id = a.type_id +" +
+            "WHERE id = #{id}")
     @Results(value = {
             @Result(property = "shortDescription", column = "short_description"),
             @Result(property = "longDescription", column = "long_description"),

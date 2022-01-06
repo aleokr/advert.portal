@@ -15,18 +15,24 @@ import org.springframework.data.elasticsearch.annotations.Setting;
 public class File {
 
     @Id
-    @Field(type = FieldType.Text)
-    private String id;
+    @Field(type = FieldType.Keyword)
+    private Long id;
 
     @Field(type = FieldType.Text)
     private String name;
 
     @Field(type = FieldType.Keyword)
-    private String resourceId;
+    private Long resourceId;
 
     @Field(type = FieldType.Text)
     private String resourceType;
 
     @Field(type = FieldType.Text)
+    private String advertType;
+
+    @Field(type = FieldType.Text)
     private String data;
+
+    @Field(type = FieldType.Object)
+    private Attachment attachment;
 }
