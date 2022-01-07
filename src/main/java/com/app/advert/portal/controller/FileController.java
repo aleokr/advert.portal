@@ -1,6 +1,7 @@
 package com.app.advert.portal.controller;
 
 import com.app.advert.portal.dto.FileDto;
+import com.app.advert.portal.enums.FileType;
 import com.app.advert.portal.service.FileService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +25,7 @@ public class FileController {
     public ResponseEntity<?> saveFile(FileDto fileDto) {
         try {
             log.info("FileController: Save new file");
-            return fileService.saveFile(fileDto, null);
+            return fileService.saveFile(fileDto);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }

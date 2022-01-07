@@ -17,9 +17,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,7 +58,7 @@ public class ElasticAdvertService {
 
         SearchResponse searchResponse = elasticClient.search(searchRequest, RequestOptions.DEFAULT);
 
-        List<Long> advertIds = new ArrayList<>();
+        Set<Long> advertIds = new HashSet<>();
         for (SearchHit hit : searchResponse.getHits()) {
             advertIds.add(Long.valueOf(hit.getId()));
         }

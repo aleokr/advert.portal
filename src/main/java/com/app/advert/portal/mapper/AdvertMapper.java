@@ -41,14 +41,15 @@ public interface AdvertMapper {
                     "</script>")
     List<AdvertResponse> getAdvertList(AdvertListRequest request, @Param("advertIds") List<Long> advertIds);
 
-    @Select("SELECT a.id, a.title, a.short_description, a.long_description, a.user_id, null as advertCategory, t.name as advertType" +
-            "FROM ADVERTS a" +
-            "LEFT JOIN ADVERT_TYPE t on t.id = a.type_id +" +
-            "WHERE id = #{id}")
+    @Select("SELECT a.id, a.title, a.short_description, a.long_description, a.user_id, null as advertCategory, t.name " +
+            "FROM ADVERTS a " +
+            "LEFT JOIN ADVERT_TYPE t on t.id = a.type_id " +
+            "WHERE a.id = #{id}")
     @Results(value = {
             @Result(property = "shortDescription", column = "short_description"),
             @Result(property = "longDescription", column = "long_description"),
-            @Result(property = "userId", column = "user_id")})
+            @Result(property = "userId", column = "user_id"),
+            @Result(property = "type", column = "name")})
     Advert getById(Long id);
 
     @Insert("INSERT INTO ADVERTS(title, short_description, long_description, user_id, category_id, type_id, created_at) " +

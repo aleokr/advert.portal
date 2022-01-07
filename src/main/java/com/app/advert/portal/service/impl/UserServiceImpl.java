@@ -69,11 +69,11 @@ public class UserServiceImpl implements UserService {
 
         //dodanie plików ogłoszenia
         if(userDto.getImage() != null) {
-            fileService.saveFile(userDto.getImage() , FileType.IMAGE);
+            fileService.saveFile(userDto.getImage());
         }
         if(userDto.getAttachments() != null && !userDto.getAttachments().isEmpty()) {
             for(FileDto fileDto : userDto.getAttachments()){
-                fileService.saveFile(fileDto, FileType.ATTACHMENT);
+                fileService.saveFile(fileDto);
             }
         }
 

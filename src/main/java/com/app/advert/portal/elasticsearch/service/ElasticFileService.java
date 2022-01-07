@@ -26,10 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +46,8 @@ public class ElasticFileService {
 
         boolQueryBuilder
                 .filter(QueryBuilders.multiMatchQuery(file.getAttachment().getContent(), "attachment.content"))
-                .filter(QueryBuilders.multiMatchQuery(advertType.name(), "advertType"));
+                .filter(QueryBuilders.multiMatchQuery(advertType.name(), "advertType"))
+                .filter(QueryBuilders.multiMatchQuery(ResourceType.ADVERT.name(), "resourceType"));
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(boolQueryBuilder);
@@ -60,9 +58,9 @@ public class ElasticFileService {
 
         SearchResponse searchResponse = elasticClient.search(searchRequest, RequestOptions.DEFAULT);
 
-        List<Long> advertIds = new ArrayList<>();
+        Set<Long> advertIds = new HashSet<>();
         for (SearchHit hit : searchResponse.getHits()) {
-            advertIds.add(Long.valueOf(hit.getId()));
+            advertIds.add(Long.valueOf(hit.getSourceAsMap().get("resourceId").toString()));
         }
 
         AdvertListElasticResponse elasticResponse = new AdvertListElasticResponse();

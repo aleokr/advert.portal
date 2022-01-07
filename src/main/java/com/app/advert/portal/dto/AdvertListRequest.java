@@ -23,4 +23,6 @@ public class AdvertListRequest {
 
     private String searchText;
 
+    private boolean similarFiles;
+
 }

@@ -67,11 +67,11 @@ public class CompanyServiceImpl implements CompanyService {
 
         //dodanie plików ogłoszenia
         if(companyDto.getImage() != null) {
-            fileService.saveFile(companyDto.getImage() , FileType.IMAGE);
+            fileService.saveFile(companyDto.getImage());
         }
         if(companyDto.getAttachments() != null && !companyDto.getAttachments().isEmpty()) {
             for(FileDto fileDto : companyDto.getAttachments()){
-                fileService.saveFile(fileDto, FileType.ATTACHMENT);
+                fileService.saveFile(fileDto);
             }
         }
 

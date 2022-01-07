@@ -43,7 +43,7 @@ public interface FileMapper {
     Long lastAddFileId();
 
 
-    @Select("SELECT name, null, file_type, s3_key, content_type from FILES where resource_id=#{resourceId} and resource_type=#{resourceType}")
+    @Select("SELECT id, name, null, file_type, s3_key, content_type from FILES where resource_id=#{resourceId} and resource_type=#{resourceType}")
     @Results(value = {
             @Result(property = "id", column = "id"),
             @Result(property = "fileName", column = "name"),

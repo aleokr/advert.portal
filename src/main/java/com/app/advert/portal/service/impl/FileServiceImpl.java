@@ -38,7 +38,7 @@ public class FileServiceImpl implements FileService {
 
 
     @Override
-    public ResponseEntity<?> saveFile(FileDto fileDto, FileType fileType) throws IOException {
+    public ResponseEntity<?> saveFile(FileDto fileDto) throws IOException {
         String bucketName = getBucketName(fileDto.getResourceType());
 
         String s3Key = s3ClientService.addFile(bucketName, fileDto.getFileName(), fileDto.getFile(), fileDto.getContentType());
@@ -47,12 +47,12 @@ public class FileServiceImpl implements FileService {
         if (s3Key != null) {
             Long resourceId = fileDto.getResourceType().equals(ResourceType.ADVERT) ? fileDto.getResourceId() : (SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId());
             ResourceType resourceType = fileDto.getResourceType().equals(ResourceType.ADVERT) ? fileDto.getResourceType() : (SecurityUtils.getLoggedCompanyId() != null ? ResourceType.COMPANY : ResourceType.USER);
-            File file = new File(fileDto.getFileName(), s3Key, fileDto.getContentType(), fileDto.getType(), resourceId, resourceType, fileType);
+            File file = new File(fileDto.getFileName(), s3Key, fileDto.getContentType(), fileDto.getType(), resourceId, resourceType, fileDto.getType());
             fileMapper.saveFile(file);
 
             Long fileId = fileMapper.lastAddFileId();
             //zapis w elasticserach - zapisujemy tylko pliki .pdf
-            if(fileType.equals(FileType.ATTACHMENT)){
+            if(fileDto.getType().equals(FileType.ATTACHMENT)){
                 AdvertType advertType = null;
 
                 if(resourceType.equals(ResourceType.ADVERT)){

@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FileResponse {
 
+    Long id;
+
     String fileName;
 
     String filePath;
