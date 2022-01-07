@@ -13,7 +13,7 @@ public interface AdvertService {
 
     ResponseEntity<?> getById(Long id);
 
-    ResponseEntity<?> getAdverts(AdvertListRequest request);
+    ResponseEntity<?> getAdverts(AdvertListRequest request) throws IOException;
 
     ResponseEntity<?> saveAdvert(AdvertRequestDto advertRequestDto) throws IOException;
 

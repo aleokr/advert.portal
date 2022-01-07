@@ -31,9 +31,11 @@ public class AdvertController {
             @RequestParam(required = false) Long companyId,
             @RequestParam(required = false) Integer offset,
             @RequestParam(required = false) Integer limit,
-            @RequestParam(required = false) AdvertType type) {
+            @RequestParam(required = false) AdvertType type,
+            @RequestParam(required = false) String searchText,
+            @RequestParam(required = false) boolean similarFiles) {
         try {
-            AdvertListRequest advertListRequest = new AdvertListRequest(id, userId, companyId, offset, limit, type);
+            AdvertListRequest advertListRequest = new AdvertListRequest(id, userId, companyId, offset, limit, type, searchText, similarFiles);
             log.info("AdvertController: Get adverts list");
             return advertService.getAdverts(advertListRequest);
         } catch (Exception e) {

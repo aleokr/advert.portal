@@ -52,7 +52,8 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/v1/adverts/{[0-9]+}",
                 "/management/api/v1/users/addUser",
                 "/api/v1/users/roles",
-                "/api/v1/companies/list").permitAll();
+                "/api/v1/companies/list",
+                "/elastic/**").permitAll();
 
         http.authorizeRequests().antMatchers(
                 "/swagger-resources",
