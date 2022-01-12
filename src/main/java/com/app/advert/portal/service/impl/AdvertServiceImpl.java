@@ -138,14 +138,6 @@ public class AdvertServiceImpl implements AdvertService {
             }
         }
 
-        //dodanie plików ogłoszenia
-        if (advertRequestDto.getImage() != null) {
-            fileService.saveFile(advertRequestDto.getImage());
-        }
-        if (advertRequestDto.getAttachment() != null) {
-            fileService.saveFile(advertRequestDto.getAttachment());
-        }
-
         //dodawanie ogłoszenia do elasticsearch
         com.app.advert.portal.elasticsearch.document.Advert elasticAdvert = new com.app.advert.portal.elasticsearch.document.Advert(advert.getId(), advert.getTitle(), advert.getLongDescription(), advertType.name());
         elasticAdvertService.save(elasticAdvert);

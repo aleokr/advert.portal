@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> saveUser(UserRequestDto userDto) throws IOException {
+    public ResponseEntity<?> saveUser(UserRequestDto userDto) {
 
         User user = getByUsername(userDto.getLogin());
         if (user != null) {
@@ -66,16 +66,6 @@ public class UserServiceImpl implements UserService {
                 userDto.getLogin(), passwordEncoder.encode(userDto.getPassword()), userDto.getCompanyId(), userDto.getUserRole(), null, userDto.getUserRole().equals(UserRole.INDIVIDUAL_USER) || userDto.getUserRole().equals(UserRole.COMPANY_ADMIN));
         userMapper.saveUser(userToSave);
         userMapper.addRoleToUser(userDto.getUserRole().name(), userToSave.getLogin());
-
-        //dodanie plików ogłoszenia
-        if(userDto.getImage() != null) {
-            fileService.saveFile(userDto.getImage());
-        }
-        if(userDto.getAttachments() != null && !userDto.getAttachments().isEmpty()) {
-            for(FileDto fileDto : userDto.getAttachments()){
-                fileService.saveFile(fileDto);
-            }
-        }
 
         return ResponseEntity.ok().body(getByUsername(userToSave.getLogin()));
     }

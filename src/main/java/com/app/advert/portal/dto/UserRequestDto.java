@@ -30,8 +30,4 @@ public class UserRequestDto {
     UserRole userRole;
 
     Long companyId;
-
-    List<FileDto> attachments;
-
-    FileDto image;
 }
