@@ -38,7 +38,7 @@ public interface CompanyMapper {
             "</script>")
     List<CompanyResponse> getCompaniesList(CompanyListRequest companyListRequest);
 
-    @Select("SELECT id, name, description, null, null, null from COMPANIES where id=#{id}")
+    @Select("SELECT id, name, description, null, null, null, null, null from COMPANIES where id=#{id}")
     @Results(value = {
             @Result(property = "id", column = "id"),
             @Result(property = "members", javaType = List.class, column = "id", many = @Many(select = "getCompanyUsers"))

@@ -39,30 +39,39 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public ResponseEntity<?> saveFile(FileDto fileDto) throws IOException {
-        String bucketName = getBucketName(fileDto.getResourceType());
+        Long id = fileMapper.checkIfResourceFileExists(fileDto.getType(), fileDto.getResourceId());
+        //jeśli istnieje to aktualizujemy
+        if (id != null) {
+            fileDto.setId(id);
+            updateFile(fileDto);
+        } else {
+            String bucketName = getBucketName(fileDto.getResourceType());
 
-        String s3Key = s3ClientService.addFile(bucketName, fileDto.getFileName(), fileDto.getFile(), fileDto.getContentType());
+            String s3Key = s3ClientService.addFile(bucketName, fileDto.getFileName(), fileDto.getFile(), fileDto.getContentType());
 
-        //zapis w minio
-        if (s3Key != null) {
-            Long resourceId = fileDto.getResourceType().equals(ResourceType.ADVERT) ? fileDto.getResourceId() : (SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId());
-            ResourceType resourceType = fileDto.getResourceType().equals(ResourceType.ADVERT) ? fileDto.getResourceType() : (SecurityUtils.getLoggedCompanyId() != null ? ResourceType.COMPANY : ResourceType.USER);
-            File file = new File(fileDto.getFileName(), s3Key, fileDto.getContentType(), fileDto.getType(), resourceId, resourceType, fileDto.getType());
-            fileMapper.saveFile(file);
+            //zapis w minio
+            if (s3Key != null) {
+                Long resourceId = fileDto.getResourceId();
+                ResourceType resourceType = fileDto.getResourceType();
+                File file = new File(fileDto.getFileName(), s3Key, fileDto.getContentType(), fileDto.getType(), resourceId, resourceType, fileDto.getType());
+                fileMapper.saveFile(file);
 
-            Long fileId = fileMapper.lastAddFileId();
-            //zapis w elasticserach - zapisujemy tylko pliki .pdf
-            if(fileDto.getType().equals(FileType.ATTACHMENT)){
-                AdvertType advertType = null;
+                Long fileId = fileMapper.lastAddFileId();
+                //zapis w elasticserach - zapisujemy tylko pliki .pdf
+                if (fileDto.getType().equals(FileType.ATTACHMENT)) {
+                    AdvertType advertType = null;
 
-                if(resourceType.equals(ResourceType.ADVERT)){
-                    advertType = advertMapper.getById(resourceId).getType();
+                    if (resourceType.equals(ResourceType.ADVERT)) {
+                        advertType = advertMapper.getById(resourceId).getType();
+                    }
+                    fileDto.setId(fileId);
+                    elasticFileService.saveFile(encodeFileToElasticFile(fileDto), advertType);
                 }
-                fileDto.setId(fileId);
-                elasticFileService.saveFile(encodeFileToElasticFile(fileDto), advertType);
+
+                return ResponseEntity.ok().body(fileMapper.getFileById(fileMapper.lastAddFileId()));
             }
 
-            return ResponseEntity.ok().body(fileMapper.getFileById(fileMapper.lastAddFileId()));
+            return ResponseEntity.ok().body(null);
         }
 
         return ResponseEntity.ok().body(null);
@@ -73,7 +82,7 @@ public class FileServiceImpl implements FileService {
         File file = fileMapper.getFileById(fileDto.getId());
         String s3Key = null;
         //zmiana pliku
-        if(fileDto.getFile() != null) {
+        if (fileDto.getFile() != null) {
             String bucketName = getBucketName(file.getResourceType());
             s3ClientService.deleteFile(bucketName, file.getS3Key());
             s3Key = s3ClientService.addFile(bucketName, fileDto.getFileName(), fileDto.getFile(), fileDto.getContentType());
@@ -83,15 +92,16 @@ public class FileServiceImpl implements FileService {
         updatedFile.setId(file.getId());
         updatedFile.setS3Key(s3Key != null ? s3Key : file.getS3Key());
         updatedFile.setName(fileDto.getFileName() != null ? fileDto.getFileName() : file.getName());
+        updatedFile.setFileType(fileDto.getType());
         updatedFile.setContentType(file.getContentType() != null ? fileDto.getContentType() : file.getContentType());
 
         fileMapper.updateFile(updatedFile);
 
         //zapis w elasticserach - zapisujemy tylko pliki pdf
-        if(updatedFile.getFileType().equals(FileType.ATTACHMENT)){
+        if (updatedFile.getFileType().equals(FileType.ATTACHMENT)) {
             AdvertType advertType = null;
 
-            if(fileDto.getResourceType().equals(ResourceType.ADVERT)){
+            if (fileDto.getResourceType().equals(ResourceType.ADVERT)) {
                 advertType = advertMapper.getById(fileDto.getResourceId()).getType();
             }
             fileDto.setId(updatedFile.getId());
@@ -103,7 +113,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public ResponseEntity<?> deleteFile(Long id, File file) {
-        if(file == null){
+        if (file == null) {
             file = fileMapper.getFileById(id);
         }
         s3ClientService.deleteFile(getBucketName(file.getResourceType()), file.getS3Key());
@@ -112,10 +122,10 @@ public class FileServiceImpl implements FileService {
     }
 
 
-    public List<FileResponse> getFilesDataByResourceId(Long resourceId, ResourceType resourceType){
+    public List<FileResponse> getFilesDataByResourceId(Long resourceId, ResourceType resourceType) {
         List<FileResponse> files = fileMapper.getFilesDataByResourceId(resourceId, resourceType);
 
-        for(FileResponse file : files) {
+        for (FileResponse file : files) {
             String path = s3ClientService.getFilePresignedFileUrl(getBucketName(resourceType), file.getS3Key());
             file.setFilePath(path);
         }

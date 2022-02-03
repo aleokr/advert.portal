@@ -42,7 +42,7 @@ public class AdvertResponse {
 
     private List<Tag> tags;
 
-    private List<FileResponse> files;
+    private String mainFilePath;
 
     public AdvertResponse(Long id, String title, String shortDescription, String longDescription, boolean archived, Long ownerId, AdvertCategory advertCategory, AdvertType advertType, String createdAt, String addedBy) {
         this.id = id;

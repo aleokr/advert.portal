@@ -43,5 +43,7 @@ public class UserResponse {
 
     private List<Tag> tags;
 
-    private List<FileResponse> files;
+    private String imagePath;
+
+    private String mainFilePath;
 }

@@ -18,7 +18,4 @@ public class CompanyRequestDto {
     @NotEmpty
     String description;
 
-    List<FileDto> attachments;
-
-    FileDto image;
 }

@@ -3,7 +3,7 @@ package com.app.advert.portal.service.impl;
 import com.app.advert.portal.dto.CompanyListRequest;
 import com.app.advert.portal.dto.CompanyRequestDto;
 import com.app.advert.portal.dto.CompanyResponse;
-import com.app.advert.portal.dto.FileDto;
+import com.app.advert.portal.dto.FileResponse;
 import com.app.advert.portal.enums.FileType;
 import com.app.advert.portal.enums.ResourceType;
 import com.app.advert.portal.enums.UserRole;
@@ -42,7 +42,14 @@ public class CompanyServiceImpl implements CompanyService {
     public ResponseEntity<?> getById(Long id) {
         CompanyResponse companyResponse = companyMapper.getById(id);
 
-        companyResponse.setFiles(fileService.getFilesDataByResourceId(id, ResourceType.COMPANY));
+        List<FileResponse> files = fileService.getFilesDataByResourceId(id, ResourceType.COMPANY);
+        for (FileResponse fileResponse : files) {
+            if (fileResponse.getFileType().equals(FileType.ATTACHMENT)) {
+                companyResponse.setMainFilePath(fileResponse.getFilePath());
+            } else {
+                companyResponse.setImagePath(fileResponse.getFilePath());
+            }
+        }
         return ResponseEntity.ok().body(companyResponse);
     }
 
@@ -64,16 +71,6 @@ public class CompanyServiceImpl implements CompanyService {
         company = companyMapper.getCompanyByName(company.getName());
 
         userMapper.addCompanyToUser(user.getId(), company.getId());
-
-        //dodanie plików ogłoszenia
-        if(companyDto.getImage() != null) {
-            fileService.saveFile(companyDto.getImage());
-        }
-        if(companyDto.getAttachments() != null && !companyDto.getAttachments().isEmpty()) {
-            for(FileDto fileDto : companyDto.getAttachments()){
-                fileService.saveFile(fileDto);
-            }
-        }
 
         return ResponseEntity.ok().body(company);
     }
@@ -142,12 +139,18 @@ public class CompanyServiceImpl implements CompanyService {
             return ResponseEntity.badRequest().body("No company id!");
         }
         CompanyResponse company = companyMapper.getLoggedUserCompany(SecurityUtils.getLoggedCompanyId());
-
+        List<FileResponse> files = fileService.getFilesDataByResourceId(company.getId(), ResourceType.COMPANY);
+        for (FileResponse fileResponse : files) {
+            if (fileResponse.getFileType().equals(FileType.ATTACHMENT)) {
+                company.setMainFilePath(fileResponse.getFilePath());
+            } else {
+                company.setImagePath(fileResponse.getFilePath());
+            }
+        }
         if (SecurityUtils.isUserCompanyAdmin()) {
             company.setRequestToJoin(companyMapper.getRequestToJoin(SecurityUtils.getLoggedCompanyId()));
         }
 
-        company.setFiles(fileService.getFilesDataByResourceId(company.getId(), ResourceType.COMPANY));
         return ResponseEntity.ok().body(company);
     }
 }

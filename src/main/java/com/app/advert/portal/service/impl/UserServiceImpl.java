@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> saveUser(UserRequestDto userDto) throws IOException {
+    public ResponseEntity<?> saveUser(UserRequestDto userDto) {
 
         User user = getByUsername(userDto.getLogin());
         if (user != null) {
@@ -66,16 +66,6 @@ public class UserServiceImpl implements UserService {
                 userDto.getLogin(), passwordEncoder.encode(userDto.getPassword()), userDto.getCompanyId(), userDto.getUserRole(), null, userDto.getUserRole().equals(UserRole.INDIVIDUAL_USER) || userDto.getUserRole().equals(UserRole.COMPANY_ADMIN));
         userMapper.saveUser(userToSave);
         userMapper.addRoleToUser(userDto.getUserRole().name(), userToSave.getLogin());
-
-        //dodanie plików ogłoszenia
-        if(userDto.getImage() != null) {
-            fileService.saveFile(userDto.getImage());
-        }
-        if(userDto.getAttachments() != null && !userDto.getAttachments().isEmpty()) {
-            for(FileDto fileDto : userDto.getAttachments()){
-                fileService.saveFile(fileDto);
-            }
-        }
 
         return ResponseEntity.ok().body(getByUsername(userToSave.getLogin()));
     }
@@ -147,9 +137,16 @@ public class UserServiceImpl implements UserService {
 
         UserResponse userResponse = new UserResponse(user.getId(), user.getName(), user.getSurname(), user.getEmail(),
                 user.getLogin(), user.getCompanyId(), user.getActive(), user.getType(), advertsCount, responsesCount, applicationsCount,
-                tagMapper.getTagsByResourceIdAndType(SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId() != null ? ResourceType.COMPANY : ResourceType.USER), null);
+                tagMapper.getTagsByResourceIdAndType(SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId() != null ? ResourceType.COMPANY : ResourceType.USER), null, null);
 
-        userResponse.setFiles(fileService.getFilesDataByResourceId(user.getId(), ResourceType.USER));
+        List<FileResponse> files = fileService.getFilesDataByResourceId(user.getId(), ResourceType.USER);
+        for (FileResponse fileResponse : files) {
+            if (fileResponse.getFileType().equals(FileType.ATTACHMENT)) {
+                userResponse.setMainFilePath(fileResponse.getFilePath());
+            } else {
+                userResponse.setImagePath(fileResponse.getFilePath());
+            }
+        }
         return ResponseEntity.ok().body(userResponse);
     }
 }

@@ -24,10 +24,10 @@ public interface TagMapper {
             @Result(property = "id", column = "id")})
     Tag getTagById(Long id);
 
-    @Insert("INSERT INTO RESOURCE_TAG (tag_id, resource_id, resource_type) values (#{tagId}, #{resourceId}, #{type})")
+    @Insert("INSERT INTO RESOURCE_TAGS (tag_id, resource_id, resource_type) values (#{tagId}, #{resourceId}, #{type})")
     void saveResourceTag(Long resourceId, Long tagId, ResourceType type);
 
-    @Select("SELECT EXISTS(SELECT * FROM RESOURCE_TAG WHERE resource_id = #{resourceId} and tag_id = #{tagId} and resource_type = #{type})")
+    @Select("SELECT EXISTS(SELECT * FROM RESOURCE_TAGS WHERE resource_id = #{resourceId} and tag_id = #{tagId} and resource_type = #{type})")
     boolean checkIfResourceTagExists(Long resourceId, Long tagId, ResourceType type);
 
     @Select("<script>" +
@@ -40,19 +40,19 @@ public interface TagMapper {
             @Result(property = "id", column = "id")})
     List<TagResponse> getTagsList(Integer limit, Integer offset);
 
-    @Select("SELECT tag_id FROM RESOURCE_TAG " +
+    @Select("SELECT tag_id FROM RESOURCE_TAGS " +
             "WHERE resource_id = #{resourceId} and resource_type = #{type} ")
     List<Long> getTagIdsByResourceIdAndType(Long resourceId, ResourceType type);
 
     @Select("SELECT  t.id, t.name  FROM TAGS t " +
-            "LEFT JOIN RESOURCE_TAG r on r.tag_id = t.id " +
+            "LEFT JOIN RESOURCE_TAGS r on r.tag_id = t.id " +
             "WHERE r.resource_id = #{resourceId} and r.resource_type = #{type} ")
     @Results(value = {
             @Result(property = "id", column = "id")})
     List<Tag> getTagsByResourceIdAndType(Long resourceId, ResourceType type);
 
     @Select("SELECT id, name from TAGS t " +
-            "WHERE id NOT IN (SELECT tag_id  FROM RESOURCE_TAG " +
+            "WHERE id NOT IN (SELECT tag_id  FROM RESOURCE_TAGS " +
             "WHERE resource_id = #{resourceId} and resource_type = #{type})" +
             "ORDER BY name ASC ")
     @Results(value = {

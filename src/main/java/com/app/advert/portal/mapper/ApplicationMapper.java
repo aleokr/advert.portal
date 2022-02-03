@@ -16,7 +16,7 @@ public interface ApplicationMapper {
             "FROM APPLICATIONS a " +
             "LEFT JOIN USERS u ON u.id = a.user_id " +
             "LEFT JOIN ADVERTS ad ON ad.id = a.advert_id " +
-            "LEFT JOIN ADVERT_CATEGORY ac on ac.id = ad.category_id " +
+            "LEFT JOIN ADVERT_CATEGORIES ac on ac.id = ad.category_id " +
             "WHERE 1 = 1 " +
             "<if test = 'companyId != null'> and a.company_id = #{companyId} </if> " +
             "<if test = 'userId != null'> and a.user_id = #{userId} </if> " +
@@ -36,8 +36,8 @@ public interface ApplicationMapper {
             "ac.name as advertCategory, at.name as advertType, DATE_FORMAT(a.created_at, '%Y-%m-%d') as createdAt " +
             "FROM APPLICATIONS a " +
             "LEFT JOIN ADVERTS ad ON ad.id = a.advert_id " +
-            "LEFT JOIN ADVERT_CATEGORY ac on ac.id = ad.category_id " +
-            "LEFT JOIN ADVERT_TYPE at on at.id = ad.type_id " +
+            "LEFT JOIN ADVERT_CATEGORIES ac on ac.id = ad.category_id " +
+            "LEFT JOIN ADVERT_TYPES at on at.id = ad.type_id " +
             "<choose>" +
             "  <when test='companyId != null'> " +
             "   LEFT JOIN USERS u on u.id = a.user_id" +

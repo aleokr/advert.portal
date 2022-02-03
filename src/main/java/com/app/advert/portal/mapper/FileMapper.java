@@ -1,6 +1,7 @@
 package com.app.advert.portal.mapper;
 
 import com.app.advert.portal.dto.FileResponse;
+import com.app.advert.portal.enums.FileType;
 import com.app.advert.portal.enums.ResourceType;
 import com.app.advert.portal.model.File;
 import org.apache.ibatis.annotations.*;
@@ -51,4 +52,7 @@ public interface FileMapper {
             @Result(property = "contentType", column = "content_type"),
             @Result(property = "fileType", column = "file_type")})
     List<FileResponse> getFilesDataByResourceId(Long resourceId, ResourceType resourceType);
+
+    @Select("SELECT id from FILES where resource_id=#{resourceId} and file_type=#{fileType}")
+    Long checkIfResourceFileExists(FileType fileType, Long resourceId);
 }

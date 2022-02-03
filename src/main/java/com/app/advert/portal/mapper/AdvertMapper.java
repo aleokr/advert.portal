@@ -21,8 +21,8 @@ public interface AdvertMapper {
                     "</choose>" +
                     "FROM ADVERTS a " +
                     "LEFT JOIN USERS u ON u.id = a.user_id " +
-                    "LEFT JOIN ADVERT_CATEGORY c on c.id = a.category_id " +
-                    "LEFT JOIN ADVERT_TYPE t on t.id = a.type_id " +
+                    "LEFT JOIN ADVERT_CATEGORIES c on c.id = a.category_id " +
+                    "LEFT JOIN ADVERT_TYPES t on t.id = a.type_id " +
                     "<if test = 'request.type == null or request.type.name() == \"COMPANY\" '> LEFT JOIN COMPANIES com ON com.id = u.company_id </if> " +
                     "WHERE 1 = 1 " +
                     "<if test = 'request.type != null'> and t.name = #{request.type} and a.archived = false </if> " +
@@ -43,7 +43,7 @@ public interface AdvertMapper {
 
     @Select("SELECT a.id, a.title, a.short_description, a.long_description, a.user_id, null as advertCategory, t.name " +
             "FROM ADVERTS a " +
-            "LEFT JOIN ADVERT_TYPE t on t.id = a.type_id " +
+            "LEFT JOIN ADVERT_TYPES t on t.id = a.type_id " +
             "WHERE a.id = #{id}")
     @Results(value = {
             @Result(property = "shortDescription", column = "short_description"),
@@ -54,8 +54,8 @@ public interface AdvertMapper {
 
     @Insert("INSERT INTO ADVERTS(title, short_description, long_description, user_id, category_id, type_id, created_at) " +
             "values (#{title}, #{shortDescription}, #{longDescription}, #{userId}," +
-            "(SELECT id FROM ADVERT_CATEGORY WHERE name = #{category})," +
-            "(SELECT id FROM ADVERT_TYPE WHERE name = #{type}), now()) ")
+            "(SELECT id FROM ADVERT_CATEGORIES WHERE name = #{category})," +
+            "(SELECT id FROM ADVERT_TYPES WHERE name = #{type}), now()) ")
     void saveAdvert(Advert advert);
 
     @Update("UPDATE ADVERTS SET title = #{title}, short_description = #{shortDescription}, long_description = #{longDescription} where id = #{id}")
@@ -76,15 +76,15 @@ public interface AdvertMapper {
             @Result(property = "companyId", column = "company_id")})
     User getUserByAdvertId(Long advertId);
 
-    @Select("SELECT name from ADVERT_CATEGORY ORDER BY name ASC")
+    @Select("SELECT name from ADVERT_CATEGORIES ORDER BY name ASC")
     List<AdvertCategory> getAdvertCategories();
 
     @Select("<script>" +
             "SELECT  count(*) " +
             "FROM ADVERTS a " +
             "LEFT JOIN USERS u ON u.id = a.user_id " +
-            "LEFT JOIN ADVERT_CATEGORY c on c.id = a.category_id " +
-            "LEFT JOIN ADVERT_TYPE t on t.id = a.type_id " +
+            "LEFT JOIN ADVERT_CATEGORIES c on c.id = a.category_id " +
+            "LEFT JOIN ADVERT_TYPES t on t.id = a.type_id " +
             "WHERE 1 = 1 " +
             "<if test = 'type != null'> and t.name = #{type} and a.archived = false </if> " +
             "<if test = 'id != null'> and a.id = #{id}</if> " +
@@ -106,8 +106,8 @@ public interface AdvertMapper {
             "END as addedBy " +
             "FROM ADVERTS a " +
             "LEFT JOIN USERS u ON u.id = a.user_id " +
-            "LEFT JOIN ADVERT_CATEGORY c on c.id = a.category_id " +
-            "LEFT JOIN ADVERT_TYPE t on t.id = a.type_id " +
+            "LEFT JOIN ADVERT_CATEGORIES c on c.id = a.category_id " +
+            "LEFT JOIN ADVERT_TYPES t on t.id = a.type_id " +
             "LEFT JOIN COMPANIES com ON com.id = u.company_id " +
             "WHERE a.id = #{id} " +
             "</script>")
@@ -124,7 +124,7 @@ public interface AdvertMapper {
                     "<choose>" +
                     "  <when test = 'tagIds == null || tagIds.isEmpty()'> 0 as count </when>" +
                     "  <otherwise> " +
-                    "    (select count(*) from RESOURCE_TAG where tag_id in" +
+                    "    (select count(*) from RESOURCE_TAGS where tag_id in" +
                     "    <foreach item='item' index='index' collection='tagIds'" +
                     "       open='(' separator=',' close=')'>" +
                     "       #{item}" +
@@ -134,8 +134,8 @@ public interface AdvertMapper {
                     "</choose>" +
                     "FROM ADVERTS a " +
                     "LEFT JOIN USERS u ON u.id = a.user_id " +
-                    "LEFT JOIN ADVERT_CATEGORY c on c.id = a.category_id " +
-                    "LEFT JOIN ADVERT_TYPE t on t.id = a.type_id " +
+                    "LEFT JOIN ADVERT_CATEGORIES c on c.id = a.category_id " +
+                    "LEFT JOIN ADVERT_TYPES t on t.id = a.type_id " +
                     "<if test = 'request.type == null or request.type.name() == \"COMPANY\" '> LEFT JOIN COMPANIES com ON com.id = u.company_id </if> " +
                     "WHERE a.archived = false  " +
                     "<if test = 'request.type != null'> and t.name = #{request.type}</if> " +
