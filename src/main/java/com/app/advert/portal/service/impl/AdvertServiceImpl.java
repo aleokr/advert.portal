@@ -61,7 +61,12 @@ public class AdvertServiceImpl implements AdvertService {
 
         advert.setTags(tagMapper.getTagsByResourceIdAndType(id, ResourceType.ADVERT));
 
-        advert.setFiles(fileService.getFilesDataByResourceId(advert.getId(), ResourceType.ADVERT));
+        List<FileResponse> files = fileService.getFilesDataByResourceId(advert.getId(), ResourceType.ADVERT);
+        for (FileResponse fileResponse : files) {
+            if (fileResponse.getFileType().equals(FileType.ATTACHMENT)) {
+                advert.setMainFilePath(fileResponse.getFilePath());
+            }
+        }
         return ResponseEntity.ok().body(advert);
     }
 

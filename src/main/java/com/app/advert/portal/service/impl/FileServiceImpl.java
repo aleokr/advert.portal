@@ -39,30 +39,39 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public ResponseEntity<?> saveFile(FileDto fileDto) throws IOException {
-        String bucketName = getBucketName(fileDto.getResourceType());
+        Long id = fileMapper.checkIfResourceFileExists(fileDto.getType(), fileDto.getResourceId());
+        //jeśli istnieje to aktualizujemy
+        if (id != null) {
+            fileDto.setId(id);
+            updateFile(fileDto);
+        } else {
+            String bucketName = getBucketName(fileDto.getResourceType());
 
-        String s3Key = s3ClientService.addFile(bucketName, fileDto.getFileName(), fileDto.getFile(), fileDto.getContentType());
+            String s3Key = s3ClientService.addFile(bucketName, fileDto.getFileName(), fileDto.getFile(), fileDto.getContentType());
 
-        //zapis w minio
-        if (s3Key != null) {
-            Long resourceId = fileDto.getResourceId();
-            ResourceType resourceType = fileDto.getResourceType();
-            File file = new File(fileDto.getFileName(), s3Key, fileDto.getContentType(), fileDto.getType(), resourceId, resourceType, fileDto.getType());
-            fileMapper.saveFile(file);
+            //zapis w minio
+            if (s3Key != null) {
+                Long resourceId = fileDto.getResourceId();
+                ResourceType resourceType = fileDto.getResourceType();
+                File file = new File(fileDto.getFileName(), s3Key, fileDto.getContentType(), fileDto.getType(), resourceId, resourceType, fileDto.getType());
+                fileMapper.saveFile(file);
 
-            Long fileId = fileMapper.lastAddFileId();
-            //zapis w elasticserach - zapisujemy tylko pliki .pdf
-            if (fileDto.getType().equals(FileType.ATTACHMENT)) {
-                AdvertType advertType = null;
+                Long fileId = fileMapper.lastAddFileId();
+                //zapis w elasticserach - zapisujemy tylko pliki .pdf
+                if (fileDto.getType().equals(FileType.ATTACHMENT)) {
+                    AdvertType advertType = null;
 
-                if (resourceType.equals(ResourceType.ADVERT)) {
-                    advertType = advertMapper.getById(resourceId).getType();
+                    if (resourceType.equals(ResourceType.ADVERT)) {
+                        advertType = advertMapper.getById(resourceId).getType();
+                    }
+                    fileDto.setId(fileId);
+                    elasticFileService.saveFile(encodeFileToElasticFile(fileDto), advertType);
                 }
-                fileDto.setId(fileId);
-                elasticFileService.saveFile(encodeFileToElasticFile(fileDto), advertType);
+
+                return ResponseEntity.ok().body(fileMapper.getFileById(fileMapper.lastAddFileId()));
             }
 
-            return ResponseEntity.ok().body(fileMapper.getFileById(fileMapper.lastAddFileId()));
+            return ResponseEntity.ok().body(null);
         }
 
         return ResponseEntity.ok().body(null);
@@ -83,6 +92,7 @@ public class FileServiceImpl implements FileService {
         updatedFile.setId(file.getId());
         updatedFile.setS3Key(s3Key != null ? s3Key : file.getS3Key());
         updatedFile.setName(fileDto.getFileName() != null ? fileDto.getFileName() : file.getName());
+        updatedFile.setFileType(fileDto.getType());
         updatedFile.setContentType(file.getContentType() != null ? fileDto.getContentType() : file.getContentType());
 
         fileMapper.updateFile(updatedFile);
