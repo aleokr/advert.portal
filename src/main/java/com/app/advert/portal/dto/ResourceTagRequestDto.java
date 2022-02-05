@@ -12,9 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 public class ResourceTagRequestDto {
 
-    List<Long> tagIds;
+    private List<Long> tagIds;
 
-    Integer resourceId;
+    private Integer resourceId;
 
-    ResourceType type;
+    private ResourceType type;
 }

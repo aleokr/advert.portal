@@ -7,10 +7,10 @@ import lombok.*;
 @AllArgsConstructor
 public class CompanyListRequest {
 
-    String name;
+    private String name;
 
-    Long offset;
+    private Long offset;
 
-    Long limit;
+    private Long limit;
 
 }

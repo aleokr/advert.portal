@@ -126,7 +126,7 @@ public class FileServiceImpl implements FileService {
         List<FileResponse> files = fileMapper.getFilesDataByResourceId(resourceId, resourceType);
 
         for (FileResponse file : files) {
-            String path = s3ClientService.getFilePresignedFileUrl(getBucketName(resourceType), file.getS3Key());
+            String path = s3ClientService.getFileAssignedFileUrl(getBucketName(resourceType), file.getS3Key());
             file.setFilePath(path);
         }
         return files;

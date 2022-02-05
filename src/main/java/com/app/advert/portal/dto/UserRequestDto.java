@@ -11,23 +11,23 @@ import java.util.List;
 @AllArgsConstructor
 public class UserRequestDto {
 
-    Long id;
+    private Long id;
 
     @NotEmpty
-    String name;
+    private String name;
 
     @NotEmpty
-    String surname;
+    private String surname;
 
     @NotEmpty
-    String email;
+    private String email;
 
     @NotEmpty
-    String login;
+    private String login;
 
-    String password;
+    private String password;
 
-    UserRole userRole;
+    private UserRole userRole;
 
-    Long companyId;
+    private Long companyId;
 }

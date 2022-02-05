@@ -22,6 +22,8 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -109,18 +111,14 @@ public class ElasticFileService {
     }
 
     private void putAttachmentPipeline() throws IOException {
-        String source =
-                "{" +
-                        "\"description\":\"Extract attachment information\"," +
-                        "\"processors\": [" +
-                                            "{" +
-                                                "\"attachment\":" +
-                                                                "{" +
-                                                                    "\"field\":\"data\"" +
-                                                                "}" +
-                                            "}" +
-                                        "]" +
-                        "}";
+
+        JSONArray array = new JSONArray();
+        array.put(new JSONObject().put("attachment", new JSONObject().put("field", "data")));
+        String source = new JSONObject()
+                .put("description", "Extract attachment information")
+                .put("processors", array)
+                .toString();
+
         PutPipelineRequest request = new PutPipelineRequest(
                 ATTACHMENT_PIPELINE_NAME,
                 new BytesArray(source.getBytes(StandardCharsets.UTF_8)),

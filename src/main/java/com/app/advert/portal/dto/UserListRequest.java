@@ -7,11 +7,11 @@ import lombok.*;
 @AllArgsConstructor
 public class UserListRequest {
 
-    Long companyId;
+    private Long companyId;
 
-    Long offset;
+    private Long offset;
 
-    Long limit;
+    private Long limit;
 
-    Boolean active;
+    private Boolean active;
 }

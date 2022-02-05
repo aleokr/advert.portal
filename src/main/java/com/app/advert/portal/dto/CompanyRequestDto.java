@@ -10,12 +10,12 @@ import java.util.List;
 @AllArgsConstructor
 public class CompanyRequestDto {
 
-    Long id;
+    private Long id;
 
     @NotEmpty
-    String name;
+    private String name;
 
     @NotEmpty
-    String description;
+    private String description;
 
 }

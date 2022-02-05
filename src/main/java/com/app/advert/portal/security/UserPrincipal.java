@@ -22,13 +22,6 @@ public class UserPrincipal implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrincipal(String username, String password, Long userId) {
-        this.username = username;
-        this.password = password;
-        this.userId = userId;
-        this.authorities = new ArrayList<>();
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;

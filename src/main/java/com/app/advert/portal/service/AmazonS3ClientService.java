@@ -48,7 +48,7 @@ public class AmazonS3ClientService {
         return s3Client.getUrl(bucketName, fileKey).toString();
     }
 
-    public String getFilePresignedFileUrl(String bucketName, String fileKey) {
+    public String getFileAssignedFileUrl(String bucketName, String fileKey) {
         return s3Client.generatePresignedUrl(bucketName, fileKey, new Date(System.currentTimeMillis() + 3600000)).toString();
     }
 

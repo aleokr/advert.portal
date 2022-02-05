@@ -10,15 +10,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FileResponse {
 
-    Long id;
+    private Long id;
 
-    String fileName;
+    private String fileName;
 
-    String filePath;
+    private String filePath;
 
-    FileType fileType;
+    private FileType fileType;
 
-    String s3Key;
+    private String s3Key;
 
-    String contentType;
+    private String contentType;
 }
