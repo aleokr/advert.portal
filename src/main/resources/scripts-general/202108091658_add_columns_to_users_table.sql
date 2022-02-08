@@ -1,5 +1,4 @@
 --liquibase formatted sql
 --changeset aokrutny:090820211659
 
-ALTER TABLE USERS ADD COLUMN user_type ENUM ('COMPANY_USER', 'INDIVIDUAL_USER');
 ALTER TABLE USERS ADD COLUMN company_id INTEGER;
