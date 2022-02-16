@@ -12,7 +12,7 @@ public interface ApplicationMapper {
     @Select("<script>" +
             "SELECT a.advert_id  as advertId, ad.title as advertTitle, ad.short_description as advertShortDescription, a.user_id as userId, CONCAT(u.name, ' ', u.surname) as addedBy, " +
             "null as companyId, " +
-            "ac.name as advertCategory, null as advertType, DATE_FORMAT(a.created_at, '%Y-%m-%d') as createdAt " +
+            "ac.name as advertCategory, null as advertType, substring(a.created_at, 1, 10) as createdAt " +
             "FROM APPLICATIONS a " +
             "LEFT JOIN USERS u ON u.id = a.user_id " +
             "LEFT JOIN ADVERTS ad ON ad.id = a.advert_id " +
@@ -33,7 +33,7 @@ public interface ApplicationMapper {
             " </when>" +
             "  <otherwise> null as userId, c.name as addedBy, c.id as companyId, </otherwise>" +
             "</choose> " +
-            "ac.name as advertCategory, at.name as advertType, DATE_FORMAT(a.created_at, '%Y-%m-%d') as createdAt " +
+            "ac.name as advertCategory, at.name as advertType, substring(a.created_at, 1, 10) as createdAt " +
             "FROM APPLICATIONS a " +
             "LEFT JOIN ADVERTS ad ON ad.id = a.advert_id " +
             "LEFT JOIN ADVERT_CATEGORIES ac on ac.id = ad.category_id " +

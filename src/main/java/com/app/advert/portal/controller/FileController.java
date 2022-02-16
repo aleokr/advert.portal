@@ -1,7 +1,6 @@
 package com.app.advert.portal.controller;
 
 import com.app.advert.portal.dto.FileDto;
-import com.app.advert.portal.enums.FileType;
 import com.app.advert.portal.service.FileService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,9 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.websocket.server.PathParam;
 
 @RestController
 @RequestMapping("/api/v1/files")
@@ -28,7 +24,7 @@ public class FileController {
     public ResponseEntity<?> saveFile(FileDto fileDto) {
         try {
             log.info("FileController: Save new file");
-            return fileService.saveFile(fileDto);
+            return ResponseEntity.ok().body(fileService.saveFile(fileDto));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
@@ -39,7 +35,7 @@ public class FileController {
     public ResponseEntity<?> updateFile(FileDto fileDto) {
         try {
             log.info("FileController: Update file");
-            return fileService.updateFile(fileDto);
+            return ResponseEntity.ok().body(fileService.updateFile(fileDto));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
@@ -50,7 +46,8 @@ public class FileController {
     public ResponseEntity<?> deleteFile(@PathVariable Long id) {
         try {
             log.info("FileController: Delete file");
-            return fileService.deleteFile(id, null);
+            fileService.deleteFile(id, null);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }

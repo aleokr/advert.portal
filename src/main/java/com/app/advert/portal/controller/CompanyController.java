@@ -1,6 +1,7 @@
 package com.app.advert.portal.controller;
 
 import com.app.advert.portal.dto.CompanyListRequest;
+import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.CompanyService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +28,7 @@ public class CompanyController {
     public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
             log.info("CompanyController: Get company by id: " + id);
-            return companyService.getById(id);
+            return ResponseEntity.ok().body(companyService.getById(id));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }
@@ -44,7 +45,7 @@ public class CompanyController {
         try {
             CompanyListRequest companyListRequest = new CompanyListRequest(name, offset, limit);
             log.info("CompanyController: Return companies list");
-            return companyService.companiesList(companyListRequest);
+            return ResponseEntity.ok().body(companyService.companiesList(companyListRequest));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }
@@ -56,7 +57,10 @@ public class CompanyController {
     public ResponseEntity<?> getLoggedUserCompany() {
         try {
             log.info("CompanyController: Get logged user company");
-            return companyService.getLoggedUserCompany();
+            if (SecurityUtils.getLoggedCompanyId() == null) {
+                return ResponseEntity.badRequest().body("No company id!");
+            }
+            return ResponseEntity.ok().body(companyService.getLoggedUserCompany(SecurityUtils.getLoggedCompanyId(), SecurityUtils.isUserCompanyAdmin()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }

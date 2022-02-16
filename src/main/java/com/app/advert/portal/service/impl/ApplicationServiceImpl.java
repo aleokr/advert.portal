@@ -8,7 +8,6 @@ import com.app.advert.portal.model.Application;
 import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.ApplicationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,41 +19,41 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final ApplicationMapper applicationMapper;
 
     @Override
-    public ResponseEntity<?> getUserApplications(ApplicationListRequest request) {
+    public ApplicationListResponse getUserApplications(ApplicationListRequest request, Long companyId, Long userId) {
         ApplicationListResponse response = new ApplicationListResponse();
 
-        Integer totalCount = applicationMapper.getApplicationsCountByUser(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
+        Integer totalCount = applicationMapper.getApplicationsCountByUser(companyId, companyId != null ? null : userId);
         PagingResponse pagingResponse = new PagingResponse(request.getOffset()/request.getLimit(), (totalCount % request.getLimit() == 0) ? totalCount / request.getLimit() : totalCount / request.getLimit() + 1, totalCount);
 
-        response.setApplications(applicationMapper.getUserApplications(request, SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId()));
+        response.setApplications(applicationMapper.getUserApplications(request, companyId != null ? null : userId, companyId));
         response.setPaging(pagingResponse);
-        return ResponseEntity.ok().body(response);
+        return response;
     }
 
     @Override
-    public ResponseEntity<?> getResponsesToUserAdverts(ApplicationListRequest request) {
+    public ApplicationListResponse getResponsesToUserAdverts(ApplicationListRequest request, Long companyId, Long userId) {
         ApplicationListResponse response = new ApplicationListResponse();
 
-        Integer totalCount = applicationMapper.getResponsesCountByUser(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
+        Integer totalCount = applicationMapper.getResponsesCountByUser(companyId, companyId != null ? null : userId);
         PagingResponse pagingResponse = new PagingResponse(request.getOffset()/request.getLimit(), (totalCount % request.getLimit() == 0) ? totalCount / request.getLimit() : totalCount / request.getLimit() + 1, totalCount);
 
-        response.setApplications(applicationMapper.getResponsesToUserAdverts(request, SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId()));
+        response.setApplications(applicationMapper.getResponsesToUserAdverts(request, SecurityUtils.getLoggedCompanyId() != null ? null : userId, companyId));
         response.setPaging(pagingResponse);
-        return ResponseEntity.ok().body(response);
+        return response;
     }
 
     @Override
-    public ResponseEntity<?> saveResponseToAdvert(Long advertId) {
-        if (applicationMapper.checkApplicationExists(advertId, SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId())) {
-            return ResponseEntity.badRequest().body("Application already exists!");
+    public Application saveResponseToAdvert(Long advertId, Long companyId, Long userId) {
+        if (applicationMapper.checkApplicationExists(advertId, companyId != null ? null : userId, companyId)) {
+            return null;
         }
-        Application application = new Application(null, advertId, SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId());
+        Application application = new Application(null, advertId, userId, companyId);
         applicationMapper.saveAdvert(application);
-        return ResponseEntity.ok().build();
+        return application;
     }
 
     @Override
     public Boolean checkIfApplicationExists(Long advertId, Long companyId, Long userId) {
-        return applicationMapper.checkApplicationExists(advertId, companyId, userId);
+        return applicationMapper.checkApplicationExists(advertId, userId, companyId);
     }
 }

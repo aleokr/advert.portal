@@ -7,10 +7,6 @@ import lombok.*;
 @AllArgsConstructor
 public class ApplicationListRequest {
 
-    private Long userId;
-
-    private Long companyId;
-
     private Integer limit;
 
     private Integer offset;

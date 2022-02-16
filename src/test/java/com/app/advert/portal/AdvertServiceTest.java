@@ -8,26 +8,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-//@SqlGroup({
+@SqlGroup({
 //        @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:/scripts/advert/advert-insert.sql"),
-//        @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:/scripts/advert/advert-clear.sql")
-//})
+        @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:/scripts/clean.sql")
+})
 @ActiveProfiles("test")
 @SpringBootTest
 public class AdvertServiceTest {
     @Autowired
     AdvertService advertService;
 
-    @Test
-    public void testAdd() throws IOException {
-        AdvertRequestDto advertRequestDto = new AdvertRequestDto(1L, "tytuł", "short", "long", AdvertCategory.ADMINISTRATION, null);
-        advertService.saveAdvert(advertRequestDto);
-        assertEquals(42, Integer.sum(19, 23));
-    }
 
 }

@@ -27,6 +27,13 @@ public interface UserMapper {
             @Result(property = "roles", javaType = List.class, column = "id", many = @Many(select = "getRolesAndPermissionsByUserId"))})
     User getByUsername(String username);
 
+    @Select("SELECT id, name, surname, email, login, password, company_id, active from USERS where id=#{id}")
+    @Results(value = {
+            @Result(property = "id", column = "id"),
+            @Result(property = "companyId", column = "company_id"),
+            @Result(property = "roles", javaType = List.class, column = "id", many = @Many(select = "getRolesAndPermissionsByUserId"))})
+    User getBasicUserDataById(Long id);
+
     @Select("SELECT r.id, r.name FROM ROLES r JOIN USER_ROLES ur ON ur.role_id = r.id WHERE ur.user_id=#{id}")
     @Results(value = {
             @Result(property = "permissions", javaType = List.class, column = "id", many = @Many(select = "getPermissionByRoleId"))})

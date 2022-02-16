@@ -1,6 +1,8 @@
 package com.app.advert.portal.controller;
 
 import com.app.advert.portal.dto.ApplicationListRequest;
+import com.app.advert.portal.model.Application;
+import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.ApplicationService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,14 +24,12 @@ public class ApplicationController {
     @Operation(tags = {"Application"}, description = "Return user applications")
     @GetMapping("/userApplications")
     public ResponseEntity<?> getUserApplications(
-            @RequestParam(required = false) Long userId,
-            @RequestParam(required = false) Long companyId,
             @RequestParam(required = false) Integer offset,
             @RequestParam(required = false) Integer limit) {
         try {
-            ApplicationListRequest request = new ApplicationListRequest(userId, companyId, limit, offset);
+            ApplicationListRequest request = new ApplicationListRequest(limit, offset);
             log.info("ApplicationController: Return user applications");
-            return applicationService.getUserApplications(request);
+            return ResponseEntity.ok().body(applicationService.getUserApplications(request, SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedUserId()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
@@ -38,14 +38,12 @@ public class ApplicationController {
     @Operation(tags = {"Application"}, description = "Return responses to user adverts")
     @GetMapping("/userResponses")
     public ResponseEntity<?> getResponsesToUserAdverts(
-            @RequestParam(required = false) Long userId,
-            @RequestParam(required = false) Long companyId,
             @RequestParam(required = false) Integer offset,
             @RequestParam(required = false) Integer limit) {
         try {
-            ApplicationListRequest request =  new ApplicationListRequest(userId, companyId, limit, offset);
+            ApplicationListRequest request =  new ApplicationListRequest(limit, offset);
             log.info("ApplicationController: Return responses to user adverts");
-            return applicationService.getResponsesToUserAdverts(request);
+            return ResponseEntity.ok().body(applicationService.getResponsesToUserAdverts(request, SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedUserId()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
@@ -56,7 +54,11 @@ public class ApplicationController {
     public ResponseEntity<?> saveResponseToAdvert(@PathVariable Long advertId) {
         try {
             log.info("ApplicationController: Save response to advert");
-            return applicationService.saveResponseToAdvert(advertId);
+            Application application = applicationService.saveResponseToAdvert(advertId, SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedUserId());
+            if(application == null) {
+                return ResponseEntity.badRequest().body("Application already exists!");
+            }
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }

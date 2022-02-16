@@ -3,6 +3,7 @@ package com.app.advert.portal.service.impl;
 import com.app.advert.portal.dto.*;
 import com.app.advert.portal.elasticsearch.service.ElasticAdvertService;
 import com.app.advert.portal.elasticsearch.service.ElasticFileService;
+import com.app.advert.portal.enums.AdvertCategory;
 import com.app.advert.portal.enums.AdvertType;
 import com.app.advert.portal.enums.FileType;
 import com.app.advert.portal.enums.ResourceType;
@@ -18,8 +19,6 @@ import com.app.advert.portal.service.AdvertService;
 import com.app.advert.portal.service.ApplicationService;
 import com.app.advert.portal.service.FileService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,11 +50,11 @@ public class AdvertServiceImpl implements AdvertService {
     private final ElasticFileService elasticFileService;
 
     @Override
-    public ResponseEntity<?> getById(Long id) {
+    public AdvertResponse getById(Long id, Long companyId, Long userId) {
         AdvertResponse advert = advertMapper.getAdvertInfoById(id);
 
-        advert.setApplicationExists(applicationService.checkIfApplicationExists(id, SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId()));
-        advert.setCanEdit(advert.getOwnerId().equals(SecurityUtils.getLoggedUserId()) || advert.getOwnerId().equals(SecurityUtils.getLoggedCompanyId()));
+        advert.setApplicationExists(applicationService.checkIfApplicationExists(id, companyId != null ? null : userId, companyId));
+        advert.setCanEdit(advert.getOwnerId().equals(userId) || advert.getOwnerId().equals(companyId));
         advert.setCanApplicate(!advert.getApplicationExists() && !advert.getCanEdit()
                 && ((advert.getAdvertType().equals(AdvertType.COMPANY) && !SecurityUtils.isCompanyUser()) || (advert.getAdvertType().equals(AdvertType.INDIVIDUAL) && SecurityUtils.isCompanyUser())));
 
@@ -67,11 +66,11 @@ public class AdvertServiceImpl implements AdvertService {
                 advert.setMainFilePath(fileResponse.getFilePath());
             }
         }
-        return ResponseEntity.ok().body(advert);
+        return advert;
     }
 
     @Override
-    public ResponseEntity<?> getAdverts(AdvertListRequest request) throws IOException {
+    public AdvertListResponse getAdverts(AdvertListRequest request, Long companyId, Long userId) throws IOException {
         AdvertListResponse response = new AdvertListResponse();
         Integer totalCount = null;
         List<Long> advertIds = null;
@@ -82,7 +81,7 @@ public class AdvertServiceImpl implements AdvertService {
             AdvertListElasticResponse elasticResponse;
             //wyszukiwanie na podstawie podobieństw plików "głównych"
             if (request.isSimilarFiles()) {
-                List<FileResponse> files = fileService.getFilesDataByResourceId(SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId() != null ? ResourceType.COMPANY : ResourceType.USER);
+                List<FileResponse> files = fileService.getFilesDataByResourceId(companyId != null ? companyId : userId, companyId != null ? ResourceType.COMPANY : ResourceType.USER);
                 FileResponse attachmentFile = files.stream().filter(file -> file.getFileType().equals(FileType.ATTACHMENT)).findFirst().orElse(null);
                 if (attachmentFile != null) {
                     elasticResponse = elasticFileService.findSimilarFile(elasticFileService.getFileById(attachmentFile.getId()), request.getType(), request.getOffset(), request.getLimit());
@@ -100,13 +99,13 @@ public class AdvertServiceImpl implements AdvertService {
                 PagingResponse pagingResponse = new PagingResponse(request.getOffset() / request.getLimit(), (totalCount % request.getLimit() == 0) ? totalCount / request.getLimit() : totalCount / request.getLimit() + 1, totalCount);
                 response.setPaging(pagingResponse);
                 response.setAdverts(new ArrayList<>());
-                return ResponseEntity.ok().body(response);
+                return response;
             }
 
         } else {
             if (request.getType() == null) {
-                request.setCompanyId(SecurityUtils.getLoggedCompanyId());
-                request.setUserId(SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
+                request.setCompanyId(companyId);
+                request.setUserId(companyId != null ? null : userId);
             }
             totalCount = advertMapper.getAdvertsCountByUser(request);
         }
@@ -114,22 +113,22 @@ public class AdvertServiceImpl implements AdvertService {
         PagingResponse pagingResponse = new PagingResponse(request.getOffset() / request.getLimit(), (totalCount % request.getLimit() == 0) ? totalCount / request.getLimit() : totalCount / request.getLimit() + 1, totalCount);
 
         //gdy użytkownik jest zalogowany wyszukiwanie odbywa się po tagach, chyba, że użytkownik wyszukuje pełnotekstowo lub na podstawie podobieństwa plików
-        if ((SecurityUtils.getLoggedCompanyId() != null || SecurityUtils.getLoggedUserId() != null) && request.getType() != null && request.getSearchText() == null && !request.isSimilarFiles()) {
-            List<Long> tagIds = tagMapper.getTagIdsByResourceIdAndType(SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId() != null ? ResourceType.COMPANY : ResourceType.USER);
+        if ((companyId != null || userId != null) && request.getType() != null && request.getSearchText() == null && !request.isSimilarFiles()) {
+            List<Long> tagIds = tagMapper.getTagIdsByResourceIdAndType(companyId != null ? companyId : userId, companyId != null ? ResourceType.COMPANY : ResourceType.USER);
             response.setAdverts(advertMapper.getAdvertListByTags(request, tagIds));
         } else {
             response.setAdverts(advertMapper.getAdvertList(request, advertIds));
         }
 
         response.setPaging(pagingResponse);
-        return ResponseEntity.ok().body(response);
+        return response;
     }
 
     @Override
-    public ResponseEntity<?> saveAdvert(AdvertRequestDto advertRequestDto) throws IOException {
-        AdvertType advertType = SecurityUtils.getLoggedCompanyId() != null ? AdvertType.COMPANY : AdvertType.INDIVIDUAL;
+    public Advert saveAdvert(AdvertRequestDto advertRequestDto, Long companyId, Long userId) {
+        AdvertType advertType = companyId != null ? AdvertType.COMPANY : AdvertType.INDIVIDUAL;
         Advert advert = new Advert(null, advertRequestDto.getTitle(), advertRequestDto.getShortDescription(),
-                advertRequestDto.getLongDescription(), SecurityUtils.getLoggedUserId(), advertRequestDto.getCategory(), advertType);
+                advertRequestDto.getLongDescription(), userId, advertRequestDto.getCategory(), advertType);
 
         //dodanie ogłoszenia
         advertMapper.saveAdvert(advert);
@@ -147,17 +146,17 @@ public class AdvertServiceImpl implements AdvertService {
         com.app.advert.portal.elasticsearch.document.Advert elasticAdvert = new com.app.advert.portal.elasticsearch.document.Advert(advert.getId(), advert.getTitle(), advert.getLongDescription(), advertType.name());
         elasticAdvertService.save(elasticAdvert);
 
-        return ResponseEntity.ok().body(advert);
+        return advert;
     }
 
     @Override
-    public ResponseEntity<?> updateAdvert(AdvertRequestDto advertDto) {
+    public Advert updateAdvert(AdvertRequestDto advertDto, Long companyId, Long userId) {
 
-        if (noAccessToAdvert(advertDto.getId())) {
-            return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
+        if (noAccessToAdvert(advertDto.getId(), companyId, userId)) {
+            return null;
         }
 
-        AdvertType advertType = SecurityUtils.getLoggedCompanyId() != null ? AdvertType.COMPANY : AdvertType.INDIVIDUAL;
+        AdvertType advertType = companyId != null ? AdvertType.COMPANY : AdvertType.INDIVIDUAL;
 
         Advert advert = advertMapper.getById(advertDto.getId());
         advert.setLongDescription(advertDto.getLongDescription());
@@ -169,13 +168,13 @@ public class AdvertServiceImpl implements AdvertService {
         com.app.advert.portal.elasticsearch.document.Advert elasticAdvert = new com.app.advert.portal.elasticsearch.document.Advert(advert.getId(), advert.getTitle(), advert.getLongDescription(), advertType.name());
         elasticAdvertService.save(elasticAdvert);
 
-        return ResponseEntity.ok().body(advertMapper.getById(advert.getId()));
+        return advertMapper.getById(advert.getId());
     }
 
     @Override
-    public ResponseEntity<?> deleteAdvert(Long advertId) {
-        if (noAccessToAdvert(advertId)) {
-            return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
+    public boolean deleteAdvert(Long advertId, Long companyId, Long userId) {
+        if (noAccessToAdvert(advertId, companyId, userId)) {
+            return false;
         }
 
         //usunięcie plików przypisanych do ogłoszenia
@@ -191,13 +190,13 @@ public class AdvertServiceImpl implements AdvertService {
         deleteFileFromElasticsearch(advertId);
 
         advertMapper.deleteAdvertById(advertId);
-        return ResponseEntity.ok().build();
+        return true;
     }
 
     @Override
-    public ResponseEntity<?> archivedAdvert(Long advertId) {
-        if (noAccessToAdvert(advertId)) {
-            return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
+    public Advert archivedAdvert(Long advertId, Long companyId, Long userId) {
+        if (noAccessToAdvert(advertId, companyId, userId)) {
+            return null;
         }
 
         advertMapper.archivedAdvert(advertId);
@@ -205,12 +204,12 @@ public class AdvertServiceImpl implements AdvertService {
         //usunięcie ogłoszenia z elasticsearch
         deleteFileFromElasticsearch(advertId);
 
-        return ResponseEntity.ok().body(advertMapper.getById(advertId));
+        return advertMapper.getById(advertId);
     }
 
     @Override
-    public ResponseEntity<?> getAdvertCategories() {
-        return ResponseEntity.ok().body(advertMapper.getAdvertCategories());
+    public List<AdvertCategory> getAdvertCategories() {
+        return advertMapper.getAdvertCategories();
     }
 
 
@@ -219,9 +218,9 @@ public class AdvertServiceImpl implements AdvertService {
         elasticAdvertService.delete(elasticAdvert);
     }
 
-    private boolean noAccessToAdvert(Long advertId) {
+    private boolean noAccessToAdvert(Long advertId, Long companyId, Long userId) {
         if (advertId == null) return true;
         User user = advertMapper.getUserByAdvertId(advertId);
-        return user == null || !user.getId().equals(SecurityUtils.getLoggedUserId()) || (user.getCompanyId() != null && !user.getCompanyId().equals(SecurityUtils.getLoggedCompanyId()));
+        return user == null || !user.getId().equals(userId) || (user.getCompanyId() != null && !user.getCompanyId().equals(companyId));
     }
 }

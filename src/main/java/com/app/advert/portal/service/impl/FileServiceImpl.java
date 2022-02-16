@@ -9,16 +9,13 @@ import com.app.advert.portal.enums.ResourceType;
 import com.app.advert.portal.mapper.AdvertMapper;
 import com.app.advert.portal.mapper.FileMapper;
 import com.app.advert.portal.model.File;
-import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.AmazonS3ClientService;
 import com.app.advert.portal.service.FileService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -38,7 +35,7 @@ public class FileServiceImpl implements FileService {
 
 
     @Override
-    public ResponseEntity<?> saveFile(FileDto fileDto) throws IOException {
+    public File saveFile(FileDto fileDto) throws IOException {
         Long id = fileMapper.checkIfResourceFileExists(fileDto.getType(), fileDto.getResourceId());
         //jeśli istnieje to aktualizujemy
         if (id != null) {
@@ -68,17 +65,17 @@ public class FileServiceImpl implements FileService {
                     elasticFileService.saveFile(encodeFileToElasticFile(fileDto), advertType);
                 }
 
-                return ResponseEntity.ok().body(fileMapper.getFileById(fileMapper.lastAddFileId()));
+                return fileMapper.getFileById(fileMapper.lastAddFileId());
             }
 
-            return ResponseEntity.ok().body(null);
+            return null;
         }
 
-        return ResponseEntity.ok().body(null);
+        return null;
     }
 
     @Override
-    public ResponseEntity<?> updateFile(FileDto fileDto) throws IOException {
+    public File updateFile(FileDto fileDto) throws IOException {
         File file = fileMapper.getFileById(fileDto.getId());
         String s3Key = null;
         //zmiana pliku
@@ -108,20 +105,19 @@ public class FileServiceImpl implements FileService {
             elasticFileService.saveFile(encodeFileToElasticFile(fileDto), advertType);
         }
 
-        return ResponseEntity.ok().body(fileMapper.getFileById(file.getId()));
+        return fileMapper.getFileById(file.getId());
     }
 
     @Override
-    public ResponseEntity<?> deleteFile(Long id, File file) {
+    public void deleteFile(Long id, File file) {
         if (file == null) {
             file = fileMapper.getFileById(id);
         }
         s3ClientService.deleteFile(getBucketName(file.getResourceType()), file.getS3Key());
         fileMapper.deleteFile(id);
-        return ResponseEntity.ok().build();
     }
 
-
+    @Override
     public List<FileResponse> getFilesDataByResourceId(Long resourceId, ResourceType resourceType) {
         List<FileResponse> files = fileMapper.getFilesDataByResourceId(resourceId, resourceType);
 
@@ -132,7 +128,7 @@ public class FileServiceImpl implements FileService {
         return files;
     }
 
-    public com.app.advert.portal.elasticsearch.document.File encodeFileToElasticFile(FileDto fileDto) throws IOException {
+    private com.app.advert.portal.elasticsearch.document.File encodeFileToElasticFile(FileDto fileDto) throws IOException {
         com.app.advert.portal.elasticsearch.document.File elasticFIle = new com.app.advert.portal.elasticsearch.document.File();
 
         elasticFIle.setId(fileDto.getId());

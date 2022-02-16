@@ -2,6 +2,8 @@ package com.app.advert.portal.controller;
 
 import com.app.advert.portal.dto.ResourceTagRequestDto;
 import com.app.advert.portal.dto.TagRequestDto;
+import com.app.advert.portal.model.Tag;
+import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.TagService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +28,14 @@ public class TagController {
     public ResponseEntity<?> addTag(@Validated @RequestBody TagRequestDto requestDto) {
         try {
             log.info("TagController: Save new advert");
-            return tagService.saveTag(requestDto.getName());
+            if (requestDto.getName() == null) {
+                return ResponseEntity.unprocessableEntity().body("No name ");
+            }
+            Tag tag = tagService.saveTag(requestDto.getName(), SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedUserId());
+            if(tag == null) {
+                return ResponseEntity.unprocessableEntity().body("Tag has already exists ");
+            }
+            return ResponseEntity.ok().body(tag);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
@@ -37,7 +46,8 @@ public class TagController {
     public ResponseEntity<?> addResourceTag(@Validated @RequestBody ResourceTagRequestDto requestDto) {
         try {
             log.info("TagController: Add resource tag");
-            return tagService.saveResourceTag(requestDto);
+            tagService.saveResourceTag(requestDto, SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedUserId());
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
@@ -51,7 +61,7 @@ public class TagController {
     ) {
         try {
             log.info("TagController: Return tags list");
-            return tagService.getTagsList(limit, offset);
+            return ResponseEntity.ok().body(tagService.getTagsList(limit, offset));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }
@@ -65,7 +75,7 @@ public class TagController {
     ) {
         try {
             log.info("TagController: Return available tags list");
-            return tagService.getAvailableTagsList();
+            return ResponseEntity.ok().body(tagService.getAvailableTagsList(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedUserId()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }
