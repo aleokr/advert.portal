@@ -12,6 +12,7 @@ import com.app.advert.portal.model.File;
 import com.app.advert.portal.service.AmazonS3ClientService;
 import com.app.advert.portal.service.FileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,9 +30,14 @@ public class FileServiceImpl implements FileService {
     private final ElasticFileService elasticFileService;
     private final AdvertMapper advertMapper;
 
-    private final static String advertBucketName = "adverts";
-    private final static String userBucketName = "users";
-    private final static String companyBucketName = "companies";
+    @Value("${amazonS3.advert.bucket}")
+    private String advertBucketName;
+
+    @Value("${amazonS3.user.bucket}")
+    private String userBucketName;
+
+    @Value("${amazonS3.company.bucket}")
+    private String companyBucketName;
 
 
     @Override
@@ -40,7 +46,7 @@ public class FileServiceImpl implements FileService {
         //jeśli istnieje to aktualizujemy
         if (id != null) {
             fileDto.setId(id);
-            updateFile(fileDto);
+            return updateFile(fileDto);
         } else {
             String bucketName = getBucketName(fileDto.getResourceType());
 
@@ -50,10 +56,10 @@ public class FileServiceImpl implements FileService {
             if (s3Key != null) {
                 Long resourceId = fileDto.getResourceId();
                 ResourceType resourceType = fileDto.getResourceType();
-                File file = new File(fileDto.getFileName(), s3Key, fileDto.getContentType(), fileDto.getType(), resourceId, resourceType, fileDto.getType());
+                File file = new File(fileDto.getFileName(), s3Key, fileDto.getContentType(), fileDto.getType(), resourceId, resourceType);
                 fileMapper.saveFile(file);
 
-                Long fileId = fileMapper.lastAddFileId();
+                Long fileId = fileMapper.getFilesByResourceId(resourceId, resourceType).get(0).getId();
                 //zapis w elasticserach - zapisujemy tylko pliki .pdf
                 if (fileDto.getType().equals(FileType.ATTACHMENT)) {
                     AdvertType advertType = null;
@@ -65,37 +71,33 @@ public class FileServiceImpl implements FileService {
                     elasticFileService.saveFile(encodeFileToElasticFile(fileDto), advertType);
                 }
 
-                return fileMapper.getFileById(fileMapper.lastAddFileId());
+                return fileMapper.getFileById(fileId);
             }
 
             return null;
         }
-
-        return null;
     }
 
     @Override
     public File updateFile(FileDto fileDto) throws IOException {
         File file = fileMapper.getFileById(fileDto.getId());
         String s3Key = null;
-        //zmiana pliku
-        if (fileDto.getFile() != null) {
-            String bucketName = getBucketName(file.getResourceType());
-            s3ClientService.deleteFile(bucketName, file.getS3Key());
-            s3Key = s3ClientService.addFile(bucketName, fileDto.getFileName(), fileDto.getFile(), fileDto.getContentType());
-        }
+        String bucketName = getBucketName(file.getResourceType());
+        s3ClientService.deleteFile(bucketName, file.getS3Key());
+        s3Key = s3ClientService.addFile(bucketName, fileDto.getFileName(), fileDto.getFile(), fileDto.getContentType());
+
 
         File updatedFile = new File();
         updatedFile.setId(file.getId());
         updatedFile.setS3Key(s3Key != null ? s3Key : file.getS3Key());
         updatedFile.setName(fileDto.getFileName() != null ? fileDto.getFileName() : file.getName());
-        updatedFile.setFileType(fileDto.getType());
+        updatedFile.setType(fileDto.getType());
         updatedFile.setContentType(file.getContentType() != null ? fileDto.getContentType() : file.getContentType());
 
         fileMapper.updateFile(updatedFile);
 
         //zapis w elasticserach - zapisujemy tylko pliki pdf
-        if (updatedFile.getFileType().equals(FileType.ATTACHMENT)) {
+        if (updatedFile.getType().equals(FileType.ATTACHMENT)) {
             AdvertType advertType = null;
 
             if (fileDto.getResourceType().equals(ResourceType.ADVERT)) {

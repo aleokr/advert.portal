@@ -96,7 +96,7 @@ public class UserManagementController {
             if (userListRequest.getCompanyId() != null && !userListRequest.getCompanyId().equals(SecurityUtils.getLoggedCompanyId())) {
                 return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
             }
-            return ResponseEntity.ok().body(userService.getUsers(userListRequest));
+            return ResponseEntity.ok().body(userService.getUsers(userListRequest, SecurityUtils.getLoggedUserId()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }

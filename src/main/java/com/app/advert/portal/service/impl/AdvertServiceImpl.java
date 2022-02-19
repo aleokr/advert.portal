@@ -52,6 +52,9 @@ public class AdvertServiceImpl implements AdvertService {
     @Override
     public AdvertResponse getById(Long id, Long companyId, Long userId) {
         AdvertResponse advert = advertMapper.getAdvertInfoById(id);
+        if (advert == null) {
+            return null;
+        }
 
         advert.setApplicationExists(applicationService.checkIfApplicationExists(id, companyId != null ? null : userId, companyId));
         advert.setCanEdit(advert.getOwnerId().equals(userId) || advert.getOwnerId().equals(companyId));
@@ -78,13 +81,16 @@ public class AdvertServiceImpl implements AdvertService {
         //wyszukiwanie pełnotekstowe lub wyszukiwanie na podstawie podobieństwa plików
         if (request.getSearchText() != null || request.isSimilarFiles()) {
 
-            AdvertListElasticResponse elasticResponse;
+            AdvertListElasticResponse elasticResponse = null;
             //wyszukiwanie na podstawie podobieństw plików "głównych"
             if (request.isSimilarFiles()) {
                 List<FileResponse> files = fileService.getFilesDataByResourceId(companyId != null ? companyId : userId, companyId != null ? ResourceType.COMPANY : ResourceType.USER);
                 FileResponse attachmentFile = files.stream().filter(file -> file.getFileType().equals(FileType.ATTACHMENT)).findFirst().orElse(null);
                 if (attachmentFile != null) {
-                    elasticResponse = elasticFileService.findSimilarFile(elasticFileService.getFileById(attachmentFile.getId()), request.getType(), request.getOffset(), request.getLimit());
+                    com.app.advert.portal.elasticsearch.document.File file = elasticFileService.getFileById(attachmentFile.getId());
+                    if(file != null) {
+                        elasticResponse = elasticFileService.findSimilarFile(elasticFileService.getFileById(attachmentFile.getId()), request.getType(), request.getOffset(), request.getLimit());
+                    }
                 } else {
                     elasticResponse = new AdvertListElasticResponse(new HashSet<>(), 0L);
                 }
@@ -92,8 +98,8 @@ public class AdvertServiceImpl implements AdvertService {
                 elasticResponse = elasticAdvertService.getAdvertsWithText(request.getSearchText(), request.getType().name(), request.getLimit(), request.getOffset());
             }
 
-            totalCount = (int) elasticResponse.getTotalCount();
-            advertIds = new ArrayList<>(elasticResponse.getAdvertIds());
+            totalCount = elasticResponse != null ? (int) elasticResponse.getTotalCount() : 0;
+            advertIds = elasticResponse != null ? new ArrayList<>(elasticResponse.getAdvertIds()) : new ArrayList<>();
 
             if (advertIds.isEmpty()) {
                 PagingResponse pagingResponse = new PagingResponse(request.getOffset() / request.getLimit(), (totalCount % request.getLimit() == 0) ? totalCount / request.getLimit() : totalCount / request.getLimit() + 1, totalCount);
@@ -133,7 +139,7 @@ public class AdvertServiceImpl implements AdvertService {
         //dodanie ogłoszenia
         advertMapper.saveAdvert(advert);
 
-        advert = advertMapper.getById(advertMapper.lastAddAdvertId());
+        advert = advertMapper.getById(advertMapper.lastAddAdvertId(userId));
 
         if (advertRequestDto.getTagIds() != null && !advertRequestDto.getTagIds().isEmpty()) {
             //zapisanie tagów ogłoszenia
@@ -215,7 +221,9 @@ public class AdvertServiceImpl implements AdvertService {
 
     private void deleteFileFromElasticsearch(Long advertId) {
         com.app.advert.portal.elasticsearch.document.Advert elasticAdvert = elasticAdvertService.findAdvertById(advertId.intValue());
-        elasticAdvertService.delete(elasticAdvert);
+        if(elasticAdvert != null) {
+            elasticAdvertService.delete(elasticAdvert);
+        }
     }
 
     private boolean noAccessToAdvert(Long advertId, Long companyId, Long userId) {

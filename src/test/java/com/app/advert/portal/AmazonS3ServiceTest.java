@@ -1,6 +1,5 @@
 package com.app.advert.portal;
 
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.app.advert.portal.service.AmazonS3ClientService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Date;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -27,10 +22,10 @@ public class AmazonS3ServiceTest {
     @Test
     public void createBucket() {
         //when
-        amazonS3ClientService.createBucket("test");
+        amazonS3ClientService.createBucket("bucket");
 
         //then
-        assertTrue(amazonS3ClientService.checkIfBucketExists("test"));
+        assertTrue(amazonS3ClientService.checkIfBucketExists("bucket"));
     }
 
     @Test

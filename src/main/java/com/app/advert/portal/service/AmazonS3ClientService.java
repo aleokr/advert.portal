@@ -53,6 +53,9 @@ public class AmazonS3ClientService {
     }
 
     public void deleteFile(String bucketName, String fileKey) {
+        if (!checkIfBucketExists(bucketName)) {
+            return;
+        }
         s3Client.deleteObject(bucketName, fileKey);
     }
 }

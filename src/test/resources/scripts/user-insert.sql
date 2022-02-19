@@ -40,11 +40,11 @@ INSERT INTO ADVERTS (title, short_description, long_description, user_id, catego
 --USER ADVERTS
 INSERT INTO ADVERTS (title, short_description, long_description, user_id, category_id, type_id, created_at) VALUES ('Advert User 1', 'Advert User Short 1',
         'Advert User Long 1', (SELECT id FROM USERS WHERE login = 'test_Individual'), (SELECT id FROM ADVERT_CATEGORIES WHERE name = 'BIOLOGY'),
-         (SELECT id FROM ADVERT_TYPES WHERE name = 'USER'), now());
+         (SELECT id FROM ADVERT_TYPES WHERE name = 'INDIVIDUAL'), now());
 
 INSERT INTO ADVERTS (title, short_description, long_description, user_id, category_id, type_id, created_at) VALUES ('Advert User 2', 'Advert Company User 2',
         'Advert User Long 2', (SELECT id FROM USERS WHERE login = 'test_Individual'), (SELECT id FROM ADVERT_CATEGORIES WHERE name = 'PHYSICS'),
-         (SELECT id FROM ADVERT_TYPES WHERE name = 'USER'), now());
+         (SELECT id FROM ADVERT_TYPES WHERE name = 'INDIVIDUAL'), now());
 
 --COMPANY APPLICATIONS
 INSERT INTO APPLICATIONS (advert_id, user_id, company_id, created_at) VALUES ((SELECT id FROM ADVERTS WHERE title = 'Advert User 1'),

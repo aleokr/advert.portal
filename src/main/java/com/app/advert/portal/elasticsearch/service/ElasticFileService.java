@@ -1,5 +1,6 @@
 package com.app.advert.portal.elasticsearch.service;
 
+import com.app.advert.portal.annotations.Generated;
 import com.app.advert.portal.dto.AdvertListElasticResponse;
 import com.app.advert.portal.elasticsearch.document.File;
 import com.app.advert.portal.elasticsearch.helper.Indices;
@@ -24,6 +25,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -34,7 +36,12 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ElasticFileService {
 
-    private static final String ATTACHMENT_PIPELINE_NAME = "attachment";
+    @Value("${elasticsearch.file.index}")
+    private String FILES_INDEX;
+
+    @Value("${elasticsearch.pipeline.name}")
+    private String ATTACHMENT_PIPELINE_NAME;
+    
     private final RestHighLevelClient elasticClient;
     private final FileRepository fileRepository;
 
@@ -55,7 +62,7 @@ public class ElasticFileService {
         searchSourceBuilder.query(boolQueryBuilder);
         searchSourceBuilder.size(limit);
         searchSourceBuilder.from(offset);
-        searchRequest.indices(Indices.FILES_INDEX);
+        searchRequest.indices(FILES_INDEX);
         searchRequest.source(searchSourceBuilder);
 
         SearchResponse searchResponse = elasticClient.search(searchRequest, RequestOptions.DEFAULT);
@@ -80,7 +87,7 @@ public class ElasticFileService {
             putAttachmentPipeline();
         }
         IndexRequest indexRequest = new IndexRequest();
-        indexRequest.index(Indices.FILES_INDEX);
+        indexRequest.index(FILES_INDEX);
         indexRequest.setPipeline(ATTACHMENT_PIPELINE_NAME);
 
         indexRequest.source(mapElasticFileToJson(file, advertType));
@@ -99,6 +106,7 @@ public class ElasticFileService {
         return jsonMap;
     }
 
+    @Generated
     private boolean isExistingPipeline(String pipelineName) throws IOException {
         try {
             return elasticClient.ingest().getPipeline(new GetPipelineRequest(pipelineName), RequestOptions.DEFAULT).isFound();
@@ -110,6 +118,7 @@ public class ElasticFileService {
         }
     }
 
+    @Generated
     private void putAttachmentPipeline() throws IOException {
 
         JSONArray array = new JSONArray();

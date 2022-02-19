@@ -68,7 +68,7 @@ public interface UserMapper {
     void deleteCompanyFromUsers(Long companyId);
 
     @Select("<script>" +
-            "SELECT id, name, surname, email FROM USERS WHERE id != #{userId} " +
+            "SELECT id, name, surname, email, login FROM USERS WHERE id != #{userId} " +
             "<if test = 'request.companyId != null'> and company_id = #{request.companyId} </if> " +
             "<if test = 'request.active != null'> and active = #{request.active}</if> " +
             "<if test = 'request.limit != null'> LIMIT #{request.limit}</if> " +

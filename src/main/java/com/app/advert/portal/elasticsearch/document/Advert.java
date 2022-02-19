@@ -11,7 +11,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
 @Data
-@Document(indexName = Indices.ADVERTS_INDEX)
+@Document(indexName = "#{@indices.getADVERTS()}")
 @Setting(settingPath = "static/es-settings.json")
 @AllArgsConstructor
 @NoArgsConstructor

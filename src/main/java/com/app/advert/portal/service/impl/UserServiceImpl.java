@@ -89,8 +89,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> getUsers(UserListRequest userListRequest) {
-        return userMapper.getUserList(userListRequest, SecurityUtils.getLoggedUserId());
+    public List<UserResponse> getUsers(UserListRequest userListRequest, Long userId) {
+        return userMapper.getUserList(userListRequest, userId);
     }
 
     @Override

@@ -25,4 +25,9 @@ public class AdvertListRequest {
 
     private boolean similarFiles;
 
+    public AdvertListRequest(AdvertType type, Integer offset, Integer limit) {
+        this.type = type;
+        this.offset = offset;
+        this.limit = limit;
+    }
 }

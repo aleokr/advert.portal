@@ -67,8 +67,8 @@ public interface AdvertMapper {
     @Update("UPDATE ADVERTS SET archived = true where id = #{advertId}")
     void archivedAdvert(Long advertId);
 
-    @Select("SELECT LAST_INSERT_ID()")
-    Long lastAddAdvertId();
+    @Select("SELECT id FROM ADVERTS WHERE user_id=#{resource_id} ORDER BY id DESC LIMIT 1")
+    Long lastAddAdvertId(Long resourceId);
 
     @Select("SELECT u.id, u.name, u.surname, u.email, u.login, u.company_id from USERS u LEFT JOIN ADVERTS a on a.user_id = u.id " +
             "where a.id=#{advertId}")

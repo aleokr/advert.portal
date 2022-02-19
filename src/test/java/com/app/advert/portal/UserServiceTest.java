@@ -1,5 +1,6 @@
 package com.app.advert.portal;
 
+import com.app.advert.portal.dto.UserListRequest;
 import com.app.advert.portal.dto.UserRequestDto;
 import com.app.advert.portal.dto.UserResponse;
 import com.app.advert.portal.enums.UserRole;
@@ -225,5 +226,18 @@ public class UserServiceTest {
         assertNull(individualUserResponse.getImagePath());
 
         assertNull(individualUserResponse.getMainFilePath());
+    }
+
+    @Test
+    public void getUserList() {
+        //given
+        User user = userService.getByUsername("test_file");
+        //when
+        List<UserResponse> users = userService.getUsers(new UserListRequest(), user.getId());
+
+        //then
+        assertNotNull(users);
+        assertNull(users.stream().filter(u -> u.getLogin().equals(user.getLogin())).findFirst().orElse(null));
+        assertNotNull(users.stream().filter(u -> u.getLogin().equals("test_Individual")).findFirst().orElse(null));
     }
 }

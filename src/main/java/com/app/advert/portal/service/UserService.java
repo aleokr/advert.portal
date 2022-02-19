@@ -26,7 +26,7 @@ public interface UserService {
 
     void deleteUser(Long userId);
 
-    List<UserResponse> getUsers(UserListRequest userListRequest);
+    List<UserResponse> getUsers(UserListRequest userListRequest, Long userId);
 
     void activateUser(Long userId);
 
