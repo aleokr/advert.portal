@@ -1,17 +1,20 @@
 package com.app.advert.portal.service;
 
 import com.app.advert.portal.dto.ResourceTagRequestDto;
-import org.springframework.http.ResponseEntity;
+import com.app.advert.portal.dto.TagResponse;
+import com.app.advert.portal.model.Tag;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public interface TagService {
 
-    ResponseEntity<?> saveTag(String name);
+    Tag saveTag(String name, Long companyId, Long userId);
 
-    ResponseEntity<?> saveResourceTag(ResourceTagRequestDto request);
+    void saveResourceTag(ResourceTagRequestDto request, Long companyId, Long userId);
 
-    ResponseEntity<?> getTagsList(Integer limit, Integer offset);
+    List<TagResponse> getTagsList(Integer limit, Integer offset);
 
-    ResponseEntity<?> getAvailableTagsList();
+    List<TagResponse> getAvailableTagsList(Long companyId, Long userId);
 }

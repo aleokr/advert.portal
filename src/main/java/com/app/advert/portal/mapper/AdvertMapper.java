@@ -14,7 +14,7 @@ public interface AdvertMapper {
     @Select(
             "<script>" +
                     "SELECT a.id as id, a.title as title, a.short_description as shortDescription, null as longDescription, a.archived as archived, " +
-                    "a.user_id as ownerId, c.name as advertCategory, t.name as advertType, DATE_FORMAT(a.created_at, '%Y-%m-%d') as createdAt,  " +
+                    "a.user_id as ownerId, c.name as advertCategory, t.name as advertType, substring(a.created_at, 1, 10) as createdAt,  " +
                     "<choose>" +
                     "  <when test = 'request.type != null and request.type.name() == \"INDIVIDUAL\" '> concat(u.name, ' ', u.surname) as addedBy </when>" +
                     "  <otherwise> com.name as addedBy </otherwise>" +
@@ -67,8 +67,8 @@ public interface AdvertMapper {
     @Update("UPDATE ADVERTS SET archived = true where id = #{advertId}")
     void archivedAdvert(Long advertId);
 
-    @Select("SELECT LAST_INSERT_ID()")
-    Long lastAddAdvertId();
+    @Select("SELECT id FROM ADVERTS WHERE user_id=#{resource_id} ORDER BY id DESC LIMIT 1")
+    Long lastAddAdvertId(Long resourceId);
 
     @Select("SELECT u.id, u.name, u.surname, u.email, u.login, u.company_id from USERS u LEFT JOIN ADVERTS a on a.user_id = u.id " +
             "where a.id=#{advertId}")
@@ -99,7 +99,7 @@ public interface AdvertMapper {
             "   WHEN t.name LIKE 'COMPANY' THEN com.id  " +
             "   ELSE a.user_id " +
             "END as ownerId, " +
-            "c.name as advertCategory, t.name as advertType, DATE_FORMAT(a.created_at, '%Y-%m-%d') as createdAt,  " +
+            "c.name as advertCategory, t.name as advertType, substring(a.created_at, 1, 10) as createdAt,  " +
             "CASE " +
             "   WHEN t.name LIKE 'COMPANY' THEN com.name  " +
             "   ELSE  concat(u.name, ' ', u.surname) " +
@@ -116,7 +116,7 @@ public interface AdvertMapper {
     @Select(
             "<script>" +
                     "SELECT a.id as id, a.title as title, a.short_description as shortDescription, null as longDescription, a.archived,  " +
-                    "a.user_id as ownerId, c.name as advertCategory, t.name as advertType, DATE_FORMAT(a.created_at, '%Y-%m-%d') as createdAt,  " +
+                    "a.user_id as ownerId, c.name as advertCategory, t.name as advertType, substring(a.created_at, 1, 10) as createdAt,  " +
                     "<choose>" +
                     "  <when test = 'request.type != null and request.type.name() == \"INDIVIDUAL\" '> concat(u.name, ' ', u.surname) as addedBy, </when>" +
                     "  <otherwise> com.name as addedBy, </otherwise>" +

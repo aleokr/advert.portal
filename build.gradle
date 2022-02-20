@@ -34,10 +34,22 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	compile group: 'org.json', name: 'json', version: '20180813'
+	testImplementation(platform('org.junit:junit-bom:5.8.2'))
+	testImplementation('org.junit.jupiter:junit-jupiter')
+	testImplementation group: 'com.h2database', name: 'h2', version: '2.1.210'
+	testCompile("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:2.2.2")
+	// https://mvnrepository.com/artifact/org.mockito/mockito-inline
+	testImplementation group: 'org.mockito', name: 'mockito-inline', version: '2.7.21'
+
+
 }
 
 test {
 	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
 	finalizedBy jacocoTestReport
 }
 
@@ -52,5 +64,19 @@ jacocoTestReport {
 		xml.required = false
 		csv.required = false
 		html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+	}
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+					"**/dto/*",
+					"**/model/*",
+					"**/document",
+					"**/controller/*",
+					"**/helper/*",
+					"**/config/*",
+					"**/enums/*",
+					"**/security/*"
+			])
+		}))
 	}
 }

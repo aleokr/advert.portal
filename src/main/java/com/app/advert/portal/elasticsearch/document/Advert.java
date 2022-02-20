@@ -1,6 +1,5 @@
 package com.app.advert.portal.elasticsearch.document;
 
-import com.app.advert.portal.elasticsearch.helper.Indices;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +10,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
 @Data
-@Document(indexName = Indices.ADVERTS_INDEX)
+@Document(indexName = "#{@indices.getADVERTS()}")
 @Setting(settingPath = "static/es-settings.json")
 @AllArgsConstructor
 @NoArgsConstructor

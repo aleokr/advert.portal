@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper
 public interface CompanyMapper {
 
-    @Select("SELECT id, name, description, null, null from COMPANIES where id=#{id}")
+    @Select("SELECT id, name, description, null, null, null, null, null, null from COMPANIES where id=#{id}")
     @Results(value = {
             @Result(property = "id", column = "id"),
             @Result(property = "members", javaType = List.class, column = "id", many = @Many(select = "getCompanyUsers"))
@@ -31,14 +31,14 @@ public interface CompanyMapper {
     void deleteCompanyById(Long companyId);
 
     @Select("<script>" +
-            "SELECT id, name, null, null, null, null FROM COMPANIES WHERE 1 = 1 " +
+            "SELECT id, name, null, null, null, null, null, null FROM COMPANIES WHERE 1 = 1 " +
             "<if test = 'name != null'> and name LIKE CONCAT('%', #{name}, '%') </if> " +
             "<if test = 'limit != null'> LIMIT #{limit} </if> " +
             "<if test = 'offset != null'> OFFSET #{offset}</if> " +
             "</script>")
     List<CompanyResponse> getCompaniesList(CompanyListRequest companyListRequest);
 
-    @Select("SELECT id, name, description, null, null, null, null, null from COMPANIES where id=#{id}")
+    @Select("SELECT id, name, description, null, null, null, null, null, null, null from COMPANIES where id=#{id}")
     @Results(value = {
             @Result(property = "id", column = "id"),
             @Result(property = "members", javaType = List.class, column = "id", many = @Many(select = "getCompanyUsers"))

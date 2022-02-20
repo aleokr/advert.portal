@@ -25,16 +25,14 @@ public class File {
 
     private ResourceType resourceType;
 
-    private FileType fileType;
 
-    public File(String name, String s3Key, String contentType, FileType type, Long resourceId, ResourceType resourceType, FileType fileType) {
+    public File(String name, String s3Key, String contentType, FileType type, Long resourceId, ResourceType resourceType) {
         this.name = name;
         this.s3Key = s3Key;
         this.contentType = contentType;
         this.type = type;
         this.resourceId = resourceId;
         this.resourceType = resourceType;
-        this.fileType = fileType;
     }
 
 }

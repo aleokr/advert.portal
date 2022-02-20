@@ -2,28 +2,27 @@ package com.app.advert.portal.dto;
 
 import com.app.advert.portal.enums.AdvertCategory;
 import com.app.advert.portal.enums.AdvertType;
-import com.app.advert.portal.service.ApplicationService;
 import lombok.*;
 
 @Data
 @AllArgsConstructor
 public class ApplicationResponse {
 
-    Long advertId;
+    private Long advertId;
 
-    String advertTitle;
+    private String advertTitle;
 
-    String advertShortDescription;
+    private String advertShortDescription;
 
-    Long userId;
+    private Long userId;
 
-    String addedBy;
+    private String addedBy;
 
-    Long companyId;
+    private Long companyId;
 
-    AdvertCategory advertCategory;
+    private AdvertCategory advertCategory;
 
-    AdvertType advertType;
+    private AdvertType advertType;
 
-    String createdAt;
+    private String createdAt;
 }

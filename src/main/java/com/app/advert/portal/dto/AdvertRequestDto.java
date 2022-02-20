@@ -2,7 +2,6 @@ package com.app.advert.portal.dto;
 
 import com.app.advert.portal.enums.AdvertCategory;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
@@ -12,17 +11,17 @@ import java.util.List;
 @AllArgsConstructor
 public class AdvertRequestDto {
 
-    Long id;
+    private Long id;
 
     @NotEmpty
-    String title;
+    private String title;
 
     @NotEmpty
-    String shortDescription;
+    private String shortDescription;
 
-    String longDescription;
+    private String longDescription;
 
-    AdvertCategory category;
+    private AdvertCategory category;
 
-    List<Long> tagIds;
+    private List<Long> tagIds;
 }

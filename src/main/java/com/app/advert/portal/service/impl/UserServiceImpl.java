@@ -6,18 +6,15 @@ import com.app.advert.portal.enums.ResourceType;
 import com.app.advert.portal.enums.UserRole;
 import com.app.advert.portal.mapper.*;
 import com.app.advert.portal.model.File;
+import com.app.advert.portal.model.Role;
 import com.app.advert.portal.model.User;
-import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.FileService;
 import com.app.advert.portal.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.List;
 
 
@@ -41,9 +38,9 @@ public class UserServiceImpl implements UserService {
     private final FileService fileService;
 
     @Override
-    public ResponseEntity<?> getById(Long id) {
-        User user = userMapper.getById(id);
-        return getAdditionalUserData(user);
+    public UserResponse getById(Long userId, Long companyId) {
+        User user = userMapper.getById(userId);
+        return getAdditionalUserData(user, companyId, userId);
     }
 
     @Override
@@ -52,92 +49,73 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> saveUser(UserRequestDto userDto) {
+    public User getBasicUserDataById(Long id) {
+        return userMapper.getBasicUserDataById(id);
+    }
 
+    @Override
+    public User saveUser(UserRequestDto userDto) {
         User user = getByUsername(userDto.getLogin());
-        if (user != null) {
-            return ResponseEntity.unprocessableEntity().body("User with login " + user.getLogin() + " already exists");
+        if(user != null) {
+            return null;
         }
-        if (userDto.getPassword() == null) {
-            return ResponseEntity.unprocessableEntity().body("No password ");
-        }
-
         User userToSave = new User(null, userDto.getName(), userDto.getSurname(), userDto.getEmail(),
                 userDto.getLogin(), passwordEncoder.encode(userDto.getPassword()), userDto.getCompanyId(), userDto.getUserRole(), null, userDto.getUserRole().equals(UserRole.INDIVIDUAL_USER) || userDto.getUserRole().equals(UserRole.COMPANY_ADMIN));
         userMapper.saveUser(userToSave);
         userMapper.addRoleToUser(userDto.getUserRole().name(), userToSave.getLogin());
 
-        return ResponseEntity.ok().body(getByUsername(userToSave.getLogin()));
+        return getByUsername(userToSave.getLogin());
     }
 
     @Override
-    public ResponseEntity<?> updateUser(UserRequestDto userDto) {
-        if (!userDto.getId().equals(SecurityUtils.getLoggedUserId())) {
-            return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
-        }
-
+    public User updateUser(UserRequestDto userDto) {
         User user = new User(userDto.getId(), userDto.getName(), userDto.getSurname(), userDto.getEmail(), userDto.getPassword() != null ? passwordEncoder.encode(userDto.getPassword()) : null);
         userMapper.updateUser(user);
 
-        return ResponseEntity.ok().body(userMapper.getById(user.getId()));
+        return userMapper.getById(user.getId());
     }
 
     @Override
-    public ResponseEntity<?> deleteUser(Long userId) {
-        User user = userMapper.getById(userId);
-        if (!user.getId().equals(SecurityUtils.getLoggedUserId()) && (!SecurityUtils.isUserCompanyAdmin() && user.getCompanyId().equals(SecurityUtils.getLoggedCompanyId()))) {
-            return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
-        }
-
+    public void deleteUser(Long userId) {
         //usunięcie plików przypisanych do użytkownika
-        List<File> files = fileMapper.getFilesByResourceId(user.getId(), ResourceType.USER);
+        List<File> files = fileMapper.getFilesByResourceId(userId, ResourceType.USER);
         for (File file : files) {
             fileService.deleteFile(null, file);
         }
 
         userMapper.deleteUserRoles(userId);
         userMapper.deleteUserById(userId);
-
-        return ResponseEntity.ok().build();
     }
 
     @Override
-    public ResponseEntity<?> getUsers(UserListRequest userListRequest) {
-        if (userListRequest.getCompanyId() != null && !userListRequest.getCompanyId().equals(SecurityUtils.getLoggedCompanyId())) {
-            return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
-        }
-        return ResponseEntity.ok().body(userMapper.getUserList(userListRequest, SecurityUtils.getLoggedUserId()));
+    public List<UserResponse> getUsers(UserListRequest userListRequest, Long userId) {
+        return userMapper.getUserList(userListRequest, userId);
     }
 
     @Override
-    public ResponseEntity<?> activateUser(Long userId) {
-        User user = userMapper.getById(userId);
-        if (!user.getCompanyId().equals(SecurityUtils.getLoggedCompanyId())) {
-            return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
-        }
+    public void activateUser(Long userId) {
         userMapper.activateUser(userId);
-        return ResponseEntity.ok().build();
     }
 
     @Override
-    public ResponseEntity<?> getUserRoles() {
-        return ResponseEntity.ok().body(userMapper.getUserRoles());
+    public List<Role>  getUserRoles() {
+        return userMapper.getUserRoles();
     }
 
     @Override
-    public ResponseEntity<?> getLoggedUserInfo() {
-        User user = userMapper.getById(SecurityUtils.getLoggedUserId());
-        return getAdditionalUserData(user);
+    public UserResponse getLoggedUserInfo(Long companyId, Long userId) {
+        User user = userMapper.getById(userId);
+        return getAdditionalUserData(user, companyId, userId);
     }
 
-    private ResponseEntity<?> getAdditionalUserData(User user) {
-        Integer advertsCount = advertMapper.getAdvertsCountByUser(AdvertListRequest.builder().companyId(SecurityUtils.getLoggedCompanyId()).userId(SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId()).build());
-        Integer responsesCount = applicationMapper.getResponsesCountByUser(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
-        Integer applicationsCount = applicationMapper.getApplicationsCountByUser(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedCompanyId() != null ? null : SecurityUtils.getLoggedUserId());
+    private UserResponse getAdditionalUserData(User user, Long companyId, Long userId) {
+        Integer advertsCount = advertMapper.getAdvertsCountByUser(AdvertListRequest.builder().companyId(companyId).userId(companyId != null ? null : userId).build());
+        Integer responsesCount = applicationMapper.getResponsesCountByUser(companyId, companyId != null ? null : userId);
+        Integer applicationsCount = applicationMapper.getApplicationsCountByUser(companyId, companyId != null ? null : userId);
 
         UserResponse userResponse = new UserResponse(user.getId(), user.getName(), user.getSurname(), user.getEmail(),
                 user.getLogin(), user.getCompanyId(), user.getActive(), user.getType(), advertsCount, responsesCount, applicationsCount,
-                tagMapper.getTagsByResourceIdAndType(SecurityUtils.getLoggedCompanyId() != null ? SecurityUtils.getLoggedCompanyId() : SecurityUtils.getLoggedUserId(), SecurityUtils.getLoggedCompanyId() != null ? ResourceType.COMPANY : ResourceType.USER), null, null);
+                tagMapper.getTagsByResourceIdAndType(companyId != null ? companyId : userId, companyId != null ? ResourceType.COMPANY : ResourceType.USER), null, null);
 
         List<FileResponse> files = fileService.getFilesDataByResourceId(user.getId(), ResourceType.USER);
         for (FileResponse fileResponse : files) {
@@ -147,6 +125,6 @@ public class UserServiceImpl implements UserService {
                 userResponse.setImagePath(fileResponse.getFilePath());
             }
         }
-        return ResponseEntity.ok().body(userResponse);
+        return userResponse;
     }
 }

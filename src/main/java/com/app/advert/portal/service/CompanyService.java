@@ -2,24 +2,28 @@ package com.app.advert.portal.service;
 
 import com.app.advert.portal.dto.CompanyListRequest;
 import com.app.advert.portal.dto.CompanyRequestDto;
-import org.springframework.http.ResponseEntity;
+import com.app.advert.portal.dto.CompanyResponse;
+import com.app.advert.portal.model.Company;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 
 
 @Service
 public interface CompanyService {
 
-    ResponseEntity<?> getById(Long id);
+    CompanyResponse getById(Long id);
 
-    ResponseEntity<?> saveCompany(CompanyRequestDto companyDto) throws IOException;
+    Company getBasicCompanyDataByName(String name);
 
-    ResponseEntity<?> updateCompany(CompanyRequestDto companyDto);
+    Company saveCompany(CompanyRequestDto companyDto, Long userId) throws IOException;
 
-    ResponseEntity<?> deleteCompany(Long companyId);
+    Company updateCompany(CompanyRequestDto companyDto);
 
-    ResponseEntity<?> companiesList(CompanyListRequest companyListRequest);
+    void deleteCompany(Long companyId);
 
-    ResponseEntity<?> getLoggedUserCompany();
+    List<CompanyResponse> companiesList(CompanyListRequest companyListRequest);
+
+    CompanyResponse getLoggedUserCompany(Long companyId, boolean isAdmin);
 }

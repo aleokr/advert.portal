@@ -2,10 +2,13 @@ package com.app.advert.portal.controller;
 
 import com.app.advert.portal.dto.UserListRequest;
 import com.app.advert.portal.dto.UserRequestDto;
+import com.app.advert.portal.model.User;
+import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +31,16 @@ public class UserManagementController {
     public ResponseEntity<?> registerNewUser(@Validated @RequestBody UserRequestDto userDto) {
         try {
             log.info("UserManagementController: Register new user");
-            return userService.saveUser(userDto);
+
+            if (userDto.getPassword() == null) {
+                return ResponseEntity.unprocessableEntity().body("No password ");
+            }
+
+            User user = userService.saveUser(userDto);
+            if (user == null) {
+                return ResponseEntity.unprocessableEntity().body("User with login " + user.getLogin() + " already exists");
+            }
+            return ResponseEntity.ok().body(user);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
@@ -41,7 +53,13 @@ public class UserManagementController {
     public ResponseEntity<?> deleteUser(@PathVariable("id") Long userId) {
         try {
             log.info("UserManagementController: Delete user: " + userId);
-            return userService.deleteUser(userId);
+
+            User user = userService.getBasicUserDataById(userId);
+            if (!user.getId().equals(SecurityUtils.getLoggedUserId()) && (!SecurityUtils.isUserCompanyAdmin() && user.getCompanyId().equals(SecurityUtils.getLoggedCompanyId()))) {
+                return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
+            }
+            userService.deleteUser(userId);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
@@ -54,7 +72,10 @@ public class UserManagementController {
     public ResponseEntity<?> updateUser(@Validated @RequestBody UserRequestDto userDto) {
         try {
             log.info("UserManagementController: Update user: " + userDto.getId());
-            return userService.updateUser(userDto);
+            if (!userDto.getId().equals(SecurityUtils.getLoggedUserId())) {
+                return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
+            }
+            return ResponseEntity.ok().body(userService.updateUser(userDto));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
@@ -72,7 +93,10 @@ public class UserManagementController {
         try {
             UserListRequest userListRequest = new UserListRequest(companyId, offset, limit, active);
             log.info("UserManagementController: List of users");
-            return userService.getUsers(userListRequest);
+            if (userListRequest.getCompanyId() != null && !userListRequest.getCompanyId().equals(SecurityUtils.getLoggedCompanyId())) {
+                return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
+            }
+            return ResponseEntity.ok().body(userService.getUsers(userListRequest, SecurityUtils.getLoggedUserId()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
@@ -84,7 +108,12 @@ public class UserManagementController {
     public ResponseEntity<?> activateUser(@PathVariable Long userId) {
         try {
             log.info("UserManagementController: Activate user " + userId);
-            return userService.activateUser(userId);
+            User user = userService.getBasicUserDataById(userId);
+            if (!user.getCompanyId().equals(SecurityUtils.getLoggedCompanyId())) {
+                return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
+            }
+            userService.activateUser(userId);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }

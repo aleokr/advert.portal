@@ -5,7 +5,6 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 @Getter
@@ -21,13 +20,6 @@ public class UserPrincipal implements UserDetails {
     private Long companyId;
 
     private Collection<? extends GrantedAuthority> authorities;
-
-    public UserPrincipal(String username, String password, Long userId) {
-        this.username = username;
-        this.password = password;
-        this.userId = userId;
-        this.authorities = new ArrayList<>();
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

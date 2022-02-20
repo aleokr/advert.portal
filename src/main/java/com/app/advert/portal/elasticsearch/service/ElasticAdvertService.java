@@ -2,7 +2,6 @@ package com.app.advert.portal.elasticsearch.service;
 
 import com.app.advert.portal.dto.AdvertListElasticResponse;
 import com.app.advert.portal.elasticsearch.document.Advert;
-import com.app.advert.portal.elasticsearch.helper.Indices;
 import com.app.advert.portal.elasticsearch.repository.AdvertRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.lucene.search.TotalHits;
@@ -14,6 +13,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -22,6 +22,9 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class ElasticAdvertService {
+
+    @Value("${elasticsearch.advert.index}")
+    private String ADVERTS_INDEX;
 
     private final AdvertRepository advertRepository;
 
@@ -52,7 +55,7 @@ public class ElasticAdvertService {
         searchSourceBuilder.query(boolQueryBuilder);
         searchSourceBuilder.from(offset);
         searchSourceBuilder.size(limit);
-        searchRequest.indices(Indices.ADVERTS_INDEX);
+        searchRequest.indices(ADVERTS_INDEX);
         searchRequest.source(searchSourceBuilder);
 
         SearchResponse searchResponse = elasticClient.search(searchRequest, RequestOptions.DEFAULT);

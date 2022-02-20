@@ -1,5 +1,6 @@
 package com.app.advert.portal.service.impl;
 
+import com.app.advert.portal.annotations.Generated;
 import com.app.advert.portal.mapper.UserMapper;
 import com.app.advert.portal.model.Permission;
 import com.app.advert.portal.model.Role;
@@ -60,6 +61,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new UserPrincipal(user.getLogin(), user.getPassword(), user.getId(), user.getActive() ? user.getCompanyId() : null, authorities);
     }
 
+    @Generated
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {

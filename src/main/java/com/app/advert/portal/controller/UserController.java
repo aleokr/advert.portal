@@ -1,5 +1,6 @@
 package com.app.advert.portal.controller;
 
+import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +27,7 @@ public class UserController {
     public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
             log.info("UserController: Get user by id: " + id);
-            return userService.getById(id);
+            return ResponseEntity.ok().body(userService.getById(id, id.equals(SecurityUtils.getLoggedUserId()) ? SecurityUtils.getLoggedCompanyId() : null));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }
@@ -37,7 +38,7 @@ public class UserController {
     public ResponseEntity<?> getUserRoles() {
         try {
             log.info("UserController: Get user roles");
-            return userService.getUserRoles();
+            return ResponseEntity.ok().body(userService.getUserRoles());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }
@@ -48,7 +49,7 @@ public class UserController {
     public ResponseEntity<?> getLoggedUserInfo() {
         try {
             log.info("UserController: Get user by token");
-            return userService.getLoggedUserInfo();
+            return ResponseEntity.ok().body(userService.getLoggedUserInfo(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedUserId()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e);
         }

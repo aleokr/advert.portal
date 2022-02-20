@@ -2,31 +2,35 @@ package com.app.advert.portal.service;
 
 import com.app.advert.portal.dto.UserListRequest;
 import com.app.advert.portal.dto.UserRequestDto;
+import com.app.advert.portal.dto.UserResponse;
+import com.app.advert.portal.model.Role;
 import com.app.advert.portal.model.User;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 
 
 @Service
 public interface UserService {
 
-    ResponseEntity<?> getById(Long id);
+    UserResponse getById(Long userId, Long companyId);
 
     User getByUsername(String username);
 
-    ResponseEntity<?> saveUser(UserRequestDto userDto) throws IOException;
+    User getBasicUserDataById(Long id);
 
-    ResponseEntity<?> updateUser(UserRequestDto userDto);
+    User saveUser(UserRequestDto userDto) throws IOException;
 
-    ResponseEntity<?> deleteUser(Long userId);
+    User updateUser(UserRequestDto userDto);
 
-    ResponseEntity<?> getUsers(UserListRequest userListRequest);
+    void deleteUser(Long userId);
 
-    ResponseEntity<?> activateUser(Long userId);
+    List<UserResponse> getUsers(UserListRequest userListRequest, Long userId);
 
-    ResponseEntity<?> getUserRoles();
+    void activateUser(Long userId);
 
-    ResponseEntity<?> getLoggedUserInfo();
+    List<Role> getUserRoles();
+
+    UserResponse getLoggedUserInfo(Long companyId, Long userId);
 }

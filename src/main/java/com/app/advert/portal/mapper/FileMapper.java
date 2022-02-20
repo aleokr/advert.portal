@@ -18,7 +18,7 @@ public interface FileMapper {
             @Result(property = "contentType", column = "content_type"),
             @Result(property = "resourceId", column = "resource_id"),
             @Result(property = "resourceType", column = "resource_type"),
-            @Result(property = "fileType", column = "file_type")})
+            @Result(property = "type", column = "file_type")})
     File getFileById(Long id);
 
     @Select("SELECT id, name, s3_key, content_type, resource_id, resource_type, file_type from FILES where resource_id=#{resourceId} and resource_type=#{resourceType}")
@@ -28,10 +28,10 @@ public interface FileMapper {
             @Result(property = "contentType", column = "content_type"),
             @Result(property = "resourceId", column = "resource_id"),
             @Result(property = "resourceType", column = "resource_type"),
-            @Result(property = "fileType", column = "file_type")})
+            @Result(property = "type", column = "file_type")})
     List<File> getFilesByResourceId(Long resourceId, ResourceType resourceType);
 
-    @Insert("INSERT INTO FILES(name, s3_key, content_type, resource_id, resource_type, file_type) values (#{name},#{s3Key},#{contentType},#{resourceId},#{resourceType},#{fileType})")
+    @Insert("INSERT INTO FILES(name, s3_key, content_type, resource_id, resource_type, file_type) values (#{name},#{s3Key},#{contentType},#{resourceId},#{resourceType},#{type})")
     void saveFile(File file);
 
     @Update("UPDATE FILES SET name = #{name}, s3_key = #{s3Key}, content_type = #{contentType} where id = #{id}")
@@ -39,10 +39,6 @@ public interface FileMapper {
 
     @Delete("DELETE FROM FILES where id=#{id}")
     void deleteFile(Long id);
-
-    @Select("SELECT LAST_INSERT_ID()")
-    Long lastAddFileId();
-
 
     @Select("SELECT id, name, null, file_type, s3_key, content_type from FILES where resource_id=#{resourceId} and resource_type=#{resourceType}")
     @Results(value = {
