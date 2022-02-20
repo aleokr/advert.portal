@@ -86,7 +86,7 @@ public class FileServiceTest {
         MultipartFile multipartFile2 = new MockMultipartFile("test.pdf", inputStream2);
         //when
         FileDto fileDto = new FileDto(file.getId(), multipartFile2, "Test updated file", "attachment/pdf", FileType.ATTACHMENT, company.getId(), ResourceType.COMPANY);
-        File updatedFile =  fileService.saveFile(fileDto);
+        File updatedFile = fileService.saveFile(fileDto);
 
         assertNotNull(updatedFile);
 

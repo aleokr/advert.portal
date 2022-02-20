@@ -8,7 +8,6 @@ import com.app.advert.portal.mapper.*;
 import com.app.advert.portal.model.File;
 import com.app.advert.portal.model.Role;
 import com.app.advert.portal.model.User;
-import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.FileService;
 import com.app.advert.portal.service.UserService;
 import lombok.RequiredArgsConstructor;

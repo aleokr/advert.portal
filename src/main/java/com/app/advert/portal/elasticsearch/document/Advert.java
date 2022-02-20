@@ -1,6 +1,5 @@
 package com.app.advert.portal.elasticsearch.document;
 
-import com.app.advert.portal.elasticsearch.helper.Indices;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

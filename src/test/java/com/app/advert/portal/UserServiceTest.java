@@ -94,7 +94,7 @@ public class UserServiceTest {
     @Test
     public void deleteUser() throws IOException {
         //given
-        User user = userService.saveUser( new UserRequestDto(null, "Jim", "Halpert", "jim@dundermifflin.com",  "deleteUser", "maj123!", UserRole.INDIVIDUAL_USER, null));
+        User user = userService.saveUser(new UserRequestDto(null, "Jim", "Halpert", "jim@dundermifflin.com", "deleteUser", "maj123!", UserRole.INDIVIDUAL_USER, null));
         assertNotNull(user);
         //when
         userService.deleteUser(user.getId());

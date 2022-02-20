@@ -74,7 +74,7 @@ public class AdvertController {
         try {
             log.info("AdvertController: Update advert: " + advertRequestDto.getId());
             Advert advert = advertService.updateAdvert(advertRequestDto, SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedUserId());
-            if(advert == null) {
+            if (advert == null) {
                 return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
             }
             return ResponseEntity.ok().body(advert);
@@ -89,8 +89,8 @@ public class AdvertController {
         try {
             log.debug("AdvertController: Archived advert: " + id);
 
-            Advert advert =  advertService.archivedAdvert(id, SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedUserId());
-            if(advert == null) {
+            Advert advert = advertService.archivedAdvert(id, SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedUserId());
+            if (advert == null) {
                 return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
             }
             return ResponseEntity.ok().body(advert);
@@ -105,7 +105,7 @@ public class AdvertController {
         try {
             log.debug("AdvertController: Delete advert: " + id);
             boolean deleted = advertService.deleteAdvert(id, SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedUserId());
-            if(!deleted){
+            if (!deleted) {
                 return new ResponseEntity<>("No access to resource ", HttpStatus.FORBIDDEN);
             }
             return ResponseEntity.ok().build();

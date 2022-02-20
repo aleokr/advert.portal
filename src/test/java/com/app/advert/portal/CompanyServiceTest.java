@@ -3,7 +3,6 @@ package com.app.advert.portal;
 import com.app.advert.portal.dto.CompanyListRequest;
 import com.app.advert.portal.dto.CompanyRequestDto;
 import com.app.advert.portal.dto.CompanyResponse;
-import com.app.advert.portal.dto.UserResponse;
 import com.app.advert.portal.model.Company;
 import com.app.advert.portal.model.User;
 import com.app.advert.portal.service.CompanyService;
@@ -64,7 +63,7 @@ public class CompanyServiceTest {
         Company company = companyService.saveCompany(new CompanyRequestDto(null, "Dunder mifflin 2.0", "Paper company"), adminUser.getId());
 
         //when
-        companyService.updateCompany(new CompanyRequestDto(company.getId(),"Dunder mifflin Inc", "Paper company from Scranton" ));
+        companyService.updateCompany(new CompanyRequestDto(company.getId(), "Dunder mifflin Inc", "Paper company from Scranton"));
 
         CompanyResponse updatedCompany = companyService.getById(company.getId());
 

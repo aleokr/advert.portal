@@ -85,7 +85,7 @@ public class AdvertServiceTest {
 
         //when
         advertService.updateAdvert(new AdvertRequestDto(advert.getId(), "New advert title", "New short advert description",
-                "New long advert description", null, null),
+                        "New long advert description", null, null),
                 company.getId(), user.getId());
 
         AdvertResponse advertResponse = advertService.getById(advert.getId(), company.getId(), user.getId());
@@ -148,6 +148,7 @@ public class AdvertServiceTest {
         assertNotNull(advertResponse);
         assertTrue(advertResponse.isArchived());
     }
+
     @Test
     public void deleteWithNoAccess() throws IOException {
         User user = userService.getByUsername("test_individual");
@@ -156,7 +157,7 @@ public class AdvertServiceTest {
                 AdvertCategory.ADMINISTRATION, null), null, user.getId());
 
         //when
-        advertService.deleteAdvert(advert.getId(), null, user.getId() + 1 );
+        advertService.deleteAdvert(advert.getId(), null, user.getId() + 1);
 
         AdvertResponse advertResponse = advertService.getById(advert.getId(), null, user.getId());
 
@@ -220,7 +221,7 @@ public class AdvertServiceTest {
         assertNotNull(advertList.stream().filter(a -> a.getTitle().equals("Advert User 1")).findFirst().orElse(null));
         assertNotNull(advertList.stream().filter(a -> a.getTitle().equals("Advert User 2")).findFirst().orElse(null));
         assertTrue(advertList.size() >= 2);
-;
+
     }
 
     @Test
@@ -267,7 +268,7 @@ public class AdvertServiceTest {
         advertService.saveAdvert(new AdvertRequestDto(null, "Awesome advert title", "Short advert description", "Awesome long advert description",
                 AdvertCategory.ADMINISTRATION, null), company.getId(), user.getId());
         //when
-        AdvertListResponse list = advertService.getAdverts(new AdvertListRequest(null, null, null, 0, 100, AdvertType.COMPANY, "Awesome",  false), company.getId(), user.getId());
+        AdvertListResponse list = advertService.getAdverts(new AdvertListRequest(null, null, null, 0, 100, AdvertType.COMPANY, "Awesome", false), company.getId(), user.getId());
 
         //then
         assertNotNull(list);

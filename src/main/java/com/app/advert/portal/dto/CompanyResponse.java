@@ -2,8 +2,6 @@ package com.app.advert.portal.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.Setter;
-import lombok.Value;
 
 import java.util.List;
 

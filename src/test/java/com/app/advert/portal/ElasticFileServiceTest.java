@@ -19,8 +19,6 @@ import com.app.advert.portal.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -28,6 +26,7 @@ import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -82,9 +81,8 @@ public class ElasticFileServiceTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/files/test1.pdf");
         MultipartFile multipartFile = new MockMultipartFile("advert.pdf", inputStream);
 
-        File file1 = fileService.saveFile(new FileDto(null, multipartFile, "Advert file", "attachment/pdf", FileType.ATTACHMENT, advert.getId(), ResourceType.ADVERT));
+        fileService.saveFile(new FileDto(null, multipartFile, "Advert file", "attachment/pdf", FileType.ATTACHMENT, advert.getId(), ResourceType.ADVERT));
 
-        com.app.advert.portal.elasticsearch.document.File esFile1 = elasticFileService.getFileById(file1.getId());
         User individualUser = userService.getByUsername("test_individual_file_es");
         InputStream inputStream2 = this.getClass().getResourceAsStream("/files/test1.pdf");
         MultipartFile multipartFile2 = new MockMultipartFile("user.pdf", inputStream2);
@@ -100,6 +98,6 @@ public class ElasticFileServiceTest {
         //then
 
         assertNotNull(similarFiles);
-//        assertTrue(similarFiles.getAdvertIds().contains(advert.getId()));
+        assertTrue(similarFiles.getAdvertIds().contains(advert.getId()));
     }
 }

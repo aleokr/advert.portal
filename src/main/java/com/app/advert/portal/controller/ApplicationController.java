@@ -41,7 +41,7 @@ public class ApplicationController {
             @RequestParam(required = false) Integer offset,
             @RequestParam(required = false) Integer limit) {
         try {
-            ApplicationListRequest request =  new ApplicationListRequest(limit, offset);
+            ApplicationListRequest request = new ApplicationListRequest(limit, offset);
             log.info("ApplicationController: Return responses to user adverts");
             return ResponseEntity.ok().body(applicationService.getResponsesToUserAdverts(request, SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedUserId()));
         } catch (Exception e) {
@@ -55,7 +55,7 @@ public class ApplicationController {
         try {
             log.info("ApplicationController: Save response to advert");
             Application application = applicationService.saveResponseToAdvert(advertId, SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedUserId());
-            if(application == null) {
+            if (application == null) {
                 return ResponseEntity.badRequest().body("Application already exists!");
             }
             return ResponseEntity.ok().build();

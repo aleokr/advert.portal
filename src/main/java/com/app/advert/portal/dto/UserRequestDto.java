@@ -4,7 +4,6 @@ import com.app.advert.portal.enums.UserRole;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
 
 @Data
 @NoArgsConstructor

@@ -32,7 +32,7 @@ public class TagController {
                 return ResponseEntity.unprocessableEntity().body("No name ");
             }
             Tag tag = tagService.saveTag(requestDto.getName(), SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedUserId());
-            if(tag == null) {
+            if (tag == null) {
                 return ResponseEntity.unprocessableEntity().body("Tag has already exists ");
             }
             return ResponseEntity.ok().body(tag);

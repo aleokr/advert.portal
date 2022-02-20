@@ -4,7 +4,6 @@ import com.app.advert.portal.dto.CompanyListRequest;
 import com.app.advert.portal.dto.CompanyRequestDto;
 import com.app.advert.portal.dto.CompanyResponse;
 import com.app.advert.portal.model.Company;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;

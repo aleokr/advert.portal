@@ -46,7 +46,7 @@ public class UserDetailsServiceTest {
     }
 
     @Test
-    public void loadUserByUsernameWhereUserNotExists(){
+    public void loadUserByUsernameWhereUserNotExists() {
         //when
         UsernameNotFoundException thrown = Assertions.assertThrows(UsernameNotFoundException.class, () -> {
             userDetailsService.loadUserByUsername("not_existing_username");
