@@ -56,7 +56,7 @@ public class AdvertServiceImpl implements AdvertService {
             return null;
         }
 
-        advert.setApplicationExists(applicationService.checkIfApplicationExists(id, companyId != null ? null : userId, companyId));
+        advert.setApplicationExists(applicationService.checkIfApplicationExists(id, companyId, companyId != null ? null : userId));
         advert.setCanEdit(advert.getOwnerId().equals(userId) || advert.getOwnerId().equals(companyId));
         advert.setCanApplicate(!advert.getApplicationExists() && !advert.getCanEdit()
                 && ((advert.getAdvertType().equals(AdvertType.COMPANY) && !SecurityUtils.isCompanyUser()) || (advert.getAdvertType().equals(AdvertType.INDIVIDUAL) && SecurityUtils.isCompanyUser())));
