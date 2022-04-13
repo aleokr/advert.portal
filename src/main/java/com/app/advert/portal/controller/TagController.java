@@ -5,11 +5,9 @@ import com.app.advert.portal.dto.TagRequestDto;
 import com.app.advert.portal.model.Tag;
 import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.TagService;
-import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/tags")
 @RequiredArgsConstructor
 @Slf4j
-@Api(value = "Tag Controller", produces = MediaType.APPLICATION_JSON_VALUE, tags = {"Tag"})
 public class TagController {
 
     private final TagService tagService;

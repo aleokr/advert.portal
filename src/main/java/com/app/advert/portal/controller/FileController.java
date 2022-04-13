@@ -2,11 +2,9 @@ package com.app.advert.portal.controller;
 
 import com.app.advert.portal.dto.FileDto;
 import com.app.advert.portal.service.FileService;
-import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/files")
 @RequiredArgsConstructor
 @Slf4j
-@Api(value = "File Controller", produces = MediaType.APPLICATION_JSON_VALUE, tags = {"File"})
 public class FileController {
 
     private final FileService fileService;

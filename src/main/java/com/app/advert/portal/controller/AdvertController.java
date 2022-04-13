@@ -6,12 +6,10 @@ import com.app.advert.portal.enums.AdvertType;
 import com.app.advert.portal.model.Advert;
 import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.AdvertService;
-import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/adverts")
 @RequiredArgsConstructor
 @Slf4j
-@Api(value = "Advert Controller", produces = MediaType.APPLICATION_JSON_VALUE, tags = {"Advert"})
 public class AdvertController {
 
     private final AdvertService advertService;

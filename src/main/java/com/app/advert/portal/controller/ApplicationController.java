@@ -4,11 +4,9 @@ import com.app.advert.portal.dto.ApplicationListRequest;
 import com.app.advert.portal.model.Application;
 import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.ApplicationService;
-import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/applications")
 @RequiredArgsConstructor
 @Slf4j
-@Api(value = "Application Controller", produces = MediaType.APPLICATION_JSON_VALUE, tags = {"Application"})
 public class ApplicationController {
 
     private final ApplicationService applicationService;
