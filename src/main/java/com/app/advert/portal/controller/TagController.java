@@ -2,10 +2,15 @@ package com.app.advert.portal.controller;
 
 import com.app.advert.portal.dto.ResourceTagRequestDto;
 import com.app.advert.portal.dto.TagRequestDto;
+import com.app.advert.portal.dto.TagResponse;
 import com.app.advert.portal.model.Tag;
 import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.TagService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +27,11 @@ public class TagController {
 
     @Operation(tags = {"Tag"}, description = "Add tag")
     @PostMapping("/addTag")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dane poprawnie przetworzone", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Tag.class))}),
+            @ApiResponse(responseCode = "422", description = "Błąd przetwarzania danych", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "500", description = "Błąd generowania odpowiedzi", content = {@Content(mediaType = "application/json")})
+    })
     public ResponseEntity<?> addTag(@Validated @RequestBody TagRequestDto requestDto) {
         try {
             log.info("TagController: Save new advert");
@@ -40,6 +50,10 @@ public class TagController {
 
     @Operation(tags = {"Tag"}, description = "Add resource tag")
     @PostMapping("/addResourceTag")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dane poprawnie przetworzone", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "500", description = "Błąd generowania odpowiedzi", content = {@Content(mediaType = "application/json")})
+    })
     public ResponseEntity<?> addResourceTag(@Validated @RequestBody ResourceTagRequestDto requestDto) {
         try {
             log.info("TagController: Add resource tag");
@@ -52,6 +66,10 @@ public class TagController {
 
     @Operation(tags = {"Tag"}, description = "Return tags list")
     @GetMapping("/list")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dane poprawnie przetworzone", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = TagResponse.class))}),
+            @ApiResponse(responseCode = "500", description = "Błąd generowania odpowiedzi", content = {@Content(mediaType = "application/json")})
+    })
     public ResponseEntity<?> getTagsList(
             @RequestParam(required = false) Integer offset,
             @RequestParam(required = false) Integer limit
@@ -66,10 +84,11 @@ public class TagController {
 
     @Operation(tags = {"Tag"}, description = "Return available tags list")
     @GetMapping("/availableTags")
-    public ResponseEntity<?> getAvailableTagList(
-            @RequestParam(required = false) Integer offset,
-            @RequestParam(required = false) Integer limit
-    ) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dane poprawnie przetworzone", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = TagResponse.class))}),
+            @ApiResponse(responseCode = "500", description = "Błąd generowania odpowiedzi", content = {@Content(mediaType = "application/json")})
+    })
+    public ResponseEntity<?> getAvailableTagList() {
         try {
             log.info("TagController: Return available tags list");
             return ResponseEntity.ok().body(tagService.getAvailableTagsList(SecurityUtils.getLoggedCompanyId(), SecurityUtils.getLoggedUserId()));

@@ -2,10 +2,16 @@ package com.app.advert.portal.controller;
 
 import com.app.advert.portal.dto.UserListRequest;
 import com.app.advert.portal.dto.UserRequestDto;
+import com.app.advert.portal.dto.UserResponse;
+import com.app.advert.portal.model.Advert;
 import com.app.advert.portal.model.User;
 import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +31,11 @@ public class UserManagementController {
 
     @PostMapping("/addUser")
     @Operation(tags = {"User management"}, description = "Register new user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dane poprawnie przetworzone", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = User.class))}),
+            @ApiResponse(responseCode = "422", description = "Niekompletne żądanie", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "500", description = "Błąd generowania odpowiedzi", content = {@Content(mediaType = "application/json")})
+    })
     public ResponseEntity<?> registerNewUser(@Validated @RequestBody UserRequestDto userDto) {
         try {
             log.info("UserManagementController: Register new user");
@@ -47,6 +58,11 @@ public class UserManagementController {
     @DeleteMapping("/{id}")
     @Operation(tags = {"User management"}, description = "Delete user")
     @PreAuthorize("hasAnyAuthority('USER_WRITE', 'COMPANY_ADMIN')")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dane poprawnie przetworzone", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "403", description = "Brak dostępu do zasobu", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "500", description = "Błąd generowania odpowiedzi", content = {@Content(mediaType = "application/json")})
+    })
     public ResponseEntity<?> deleteUser(@PathVariable("id") Long userId) {
         try {
             log.info("UserManagementController: Delete user: " + userId);
@@ -66,6 +82,11 @@ public class UserManagementController {
     @PutMapping("/update")
     @Operation(tags = {"User management"}, description = "Update user")
     @PreAuthorize("hasAnyAuthority('USER_WRITE', 'COMPANY_USER', 'COMPANY_ADMIN')")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dane poprawnie przetworzone", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = User.class))}),
+            @ApiResponse(responseCode = "403", description = "Brak dostępu do zasobu", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "500", description = "Błąd generowania odpowiedzi", content = {@Content(mediaType = "application/json")})
+    })
     public ResponseEntity<?> updateUser(@Validated @RequestBody UserRequestDto userDto) {
         try {
             log.info("UserManagementController: Update user: " + userDto.getId());
@@ -81,6 +102,11 @@ public class UserManagementController {
     @GetMapping("/list")
     @Operation(tags = {"User management"}, description = "List of users")
     @PreAuthorize("hasAnyAuthority('COMPANY_ADMIN')")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dane poprawnie przetworzone", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "Brak dostępu do zasobu", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "500", description = "Błąd generowania odpowiedzi", content = {@Content(mediaType = "application/json")})
+    })
     public ResponseEntity<?> readUsersList(
             @RequestParam(required = false) Boolean active,
             @RequestParam(required = false) Long companyId,
@@ -102,6 +128,11 @@ public class UserManagementController {
     @PutMapping("/activate/{userId}")
     @Operation(tags = {"User management"}, description = "Activate user")
     @PreAuthorize("hasAnyAuthority('COMPANY_ADMIN')")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dane poprawnie przetworzone", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "403", description = "Brak dostępu do zasobu", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "500", description = "Błąd generowania odpowiedzi", content = {@Content(mediaType = "application/json")})
+    })
     public ResponseEntity<?> activateUser(@PathVariable Long userId) {
         try {
             log.info("UserManagementController: Activate user " + userId);
