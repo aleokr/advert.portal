@@ -27,9 +27,9 @@ public class OpenApiConfig{
                                 )
                 )
                 .info(new Info()
-                        .title("title")
-                        .version("version")
-                        .description("description")
+                        .title("Advert-portal")
+                        .version("1.0")
+                        .description("Advert portal documentation API")
                 );
     }
 }

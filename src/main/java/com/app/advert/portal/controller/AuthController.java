@@ -1,6 +1,7 @@
 package com.app.advert.portal.controller;
 
 import com.app.advert.portal.service.impl.UserDetailsServiceImpl;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Hidden
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor

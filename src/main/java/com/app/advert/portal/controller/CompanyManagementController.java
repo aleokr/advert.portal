@@ -8,6 +8,10 @@ import com.app.advert.portal.security.SecurityUtils;
 import com.app.advert.portal.service.CompanyService;
 import com.app.advert.portal.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +32,12 @@ public class CompanyManagementController {
     @PostMapping("/addCompany")
     @Operation(tags = {"Company management"}, description = "Register new company")
     @PreAuthorize("hasAuthority('COMPANY_ADMIN')")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dane poprawnie przetworzone", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Company.class))}),
+            @ApiResponse(responseCode = "400", description = "Błędne żądanie", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "422", description = "Błąd przetwarzania danych", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "500", description = "Błąd generowania odpowiedzi", content = {@Content(mediaType = "application/json")})
+    })
     public ResponseEntity<?> registerNewCompany(@Validated @RequestBody CompanyRequestDto companyDto) {
         try {
             log.info("CompanyController: Register new company");
@@ -50,6 +60,11 @@ public class CompanyManagementController {
     @DeleteMapping("{id}")
     @Operation(tags = {"Company management"}, description = "Delete company")
     @PreAuthorize("hasAuthority('COMPANY_ADMIN')")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dane poprawnie przetworzone", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "400", description = "Błędne żądanie", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "500", description = "Błąd generowania odpowiedzi", content = {@Content(mediaType = "application/json")})
+    })
     public ResponseEntity<?> deleteCompany(@PathVariable("id") Long companyId) {
         try {
             log.info("CompanyController: Delete company with id: " + companyId);
@@ -68,6 +83,12 @@ public class CompanyManagementController {
     @PutMapping("/update")
     @Operation(tags = {"Company management"}, description = "Update company")
     @PreAuthorize("hasAuthority('COMPANY_ADMIN')")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dane poprawnie przetworzone", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Company.class))}),
+            @ApiResponse(responseCode = "400", description = "Błędne żądanie", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "422", description = "Błąd przetwarzania danych", content = {@Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "500", description = "Błąd generowania odpowiedzi", content = {@Content(mediaType = "application/json")})
+    })
     public ResponseEntity<?> updateCompany(@Validated @RequestBody CompanyRequestDto companyDto) {
         try {
             log.info("CompanyController: Update company with id: " + companyDto.getId());
